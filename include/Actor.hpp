@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "Display/Sprite.hpp"
 #include "Point.hpp"
 #include "Vector.hpp"
@@ -15,12 +17,13 @@ public:
 
 	explicit Actor(Sprite&& InApperance) : Appearance(std::move(InApperance)) { }
 
-	void Update()
+	void Tick(std::int32_t CurrentFrame)
 	{
 		Position += Velocity; //TODO: worry about delta time later
 		
 		// Position.X = std::clamp(Position.X, static_cast<std::int32_t>(0), SCREEN_WIDTH);
 		// Position.Y = std::clamp(Position.Y, static_cast<std::int32_t>(0), SCREEN_HEIGHT);
 		Appearance.SetPosition(Position);
+		Appearance.Tick(CurrentFrame);
 	}
 };

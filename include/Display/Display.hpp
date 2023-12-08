@@ -5,7 +5,6 @@
 #include <bit>
 #include <cassert>
 #include <cstdint>
-#include <span>
 
 #include "DisplayRegisters.hpp"
 #include "MemoryMap.hpp"
@@ -41,7 +40,7 @@ class Display
 public:
 	explicit Display();
 
-	Sprite LoadSprite(const SpriteTileAsset& TileAsset, const PaletteBankAsset& PaletteAsset);
+	Sprite LoadSprite(std::vector<const SpriteTileAsset*> TileAssets, const PaletteBankAsset& PaletteAsset, std::int32_t CurrentFrame);
 
 	void VSync()
 	{
