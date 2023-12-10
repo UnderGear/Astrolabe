@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "MemoryMap.hpp"
-#include "Vector.hpp"
+#include "Math/Vector.hpp"
 
 enum class InputKey : std::uint32_t
 {

@@ -3,8 +3,8 @@
 #include <cstdint>
 
 #include "Display/Sprite.hpp"
-#include "Point.hpp"
-#include "Vector.hpp"
+#include "Math/Point.hpp"
+#include "Math/Vector.hpp"
 
 //TODO: should I cave and do an ECS like everyone else in the world?
 class Actor

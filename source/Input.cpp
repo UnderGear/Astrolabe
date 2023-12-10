@@ -1,4 +1,5 @@
 #include "Input.hpp"
+#include "Math/Fixed.hpp"
 
 void Input::Tick()
 {
@@ -10,19 +11,19 @@ void Input::Tick()
     //TODO: note that I've flipped the Y axis inputs for screen space
     if (IsKeyDown(InputKey::Up))
     {
-        DPadInput.Y -= 1;
+        DPadInput.Y -= i24f8_t{ 1 };
     }
     if (IsKeyDown(InputKey::Down))
     {
-        DPadInput.Y += 1;
+        DPadInput.Y += i24f8_t{ 1 };
     }
     if (IsKeyDown(InputKey::Left))
     {
-        DPadInput.X -= 1;
+        DPadInput.X -= i24f8_t{ 1 };
     }
     if (IsKeyDown(InputKey::Right))
     {
-        DPadInput.X += 1;
+        DPadInput.X += i24f8_t{ 1 };
     }
 
     //TODO: callbacks for state change?

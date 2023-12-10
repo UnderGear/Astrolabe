@@ -57,6 +57,7 @@
         "xhash": "cpp",
         "deque": "cpp",
         "ranges": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "numbers": "cpp"
     }
 }

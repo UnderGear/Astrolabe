@@ -4,8 +4,8 @@
 #include <random>
 #include <type_traits>
 
-#include "Point.hpp"
-#include "Vector.hpp"
+#include "Math/Point.hpp"
+#include "Math/Vector.hpp"
 
 template <typename ResultType>
 class Random

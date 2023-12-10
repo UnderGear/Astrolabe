@@ -1,6 +1,6 @@
 #include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
-#include "Point.hpp"
+#include "Math/Point.hpp"
 
 Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, std::vector<std::int32_t> InTileAssetIndices, std::int32_t InPaletteAssetIndex, std::int32_t InInitialFrame)
         : Owner(InOwner), Attributes(InAttributes), TileAssetIndices(InTileAssetIndices), PaletteAssetIndex(InPaletteAssetIndex), InitialFrame(InInitialFrame)

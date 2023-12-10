@@ -3,8 +3,8 @@
 #include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
 #include "Input.hpp"
+#include "Math/Vector.hpp"
 #include "Random.hpp"
-#include "Vector.hpp"
 
 int main()
 {
