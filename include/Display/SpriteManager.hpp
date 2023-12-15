@@ -101,15 +101,12 @@ public:
     void Tick();
 
     std::int32_t AddToPalette(const PaletteBankAsset& PaletteAsset);
-
     void RemoveFromPalette(std::int32_t Index);
 
 	//TODO: should this be limited in sizes available?
     std::int32_t LoadTiles(const SpriteTileAsset& ToAdd);
-
     void UnloadTiles(std::int32_t Index);
     
     ObjectAttributes* RequestOAM();
-
     void ReleaseOAM(ObjectAttributes& OAM);
 };

@@ -9,6 +9,8 @@ constexpr inline std::uint32_t DISPLAY_CONTROL_ADDRESS{ 0x04000000 };
 constexpr inline std::uint32_t DISPLAY_STATUS_ADDRESS{ 0x04000004 };
 constexpr inline std::uint32_t DISPLAY_SCANLINE_COUNT_ADDRESS{ 0x04000006 };
 constexpr inline std::uint32_t BG_CONTROL_ADDRESS{ 0x04000008 };
+constexpr inline std::uint32_t BG_OFFSET_ADDRESS{ 0x04000010 };
+constexpr inline std::uint32_t BG_AFFINE_ADDRESS{ 0x04000020 };
 constexpr inline std::uint32_t INPUT_ADDRESS{ 0x04000130 };
 constexpr inline std::uint32_t INPUT_INTERRUPT_ADDRESS{ 0x04000132 };
 

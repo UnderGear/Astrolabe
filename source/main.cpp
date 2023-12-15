@@ -1,5 +1,6 @@
 #include "Actor.hpp"
 #include "Assets/MetroidSprite.hpp"
+#include "Display/Background.hpp"
 #include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
 #include "Input.hpp"

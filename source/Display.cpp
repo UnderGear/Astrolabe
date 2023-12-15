@@ -5,7 +5,8 @@ Display::Display()
 {
     // TODO: set these in the DisplayControl ctor?
     DisplayControl->OBJCharacterVRAMMapping = 1; // 1D object mode
-    DisplayControl->BackgroundFlags = static_cast<std::uint16_t>(BackgroundLayerFlags::Object);
+    DisplayControl->BackgroundFlags = static_cast<std::uint16_t>(BackgroundLayerFlags::Object)
+        | static_cast<std::uint16_t>(BackgroundLayerFlags::Background0);
 }
 
 Sprite Display::LoadSprite(std::vector<const SpriteTileAsset*> TileAssets, const PaletteBankAsset& PaletteAsset, std::int32_t CurrentFrame)

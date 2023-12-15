@@ -6,6 +6,8 @@
 #include <cassert>
 #include <cstdint>
 
+#include "Background.hpp"
+#include "BackgroundManager.hpp"
 #include "DisplayRegisters.hpp"
 #include "MemoryMap.hpp"
 #include "Palette.hpp"
@@ -33,14 +35,20 @@ class Display
 		new(reinterpret_cast<void*>(DISPLAY_SCANLINE_COUNT_ADDRESS)) VerticalCountRegister{ }
 	};
 
-	//TODO: pull this into a BackgroundManager class
-	PaletteManager BackgroundPaletteManager{ reinterpret_cast<void*>(BACKGROUND_PALETTE_ADDRESS) };
 	SpriteManager Sprites{ reinterpret_cast<void*>(SPRITE_LOW_BLOCK_ADDRESS) };
+	BackgroundManager Backgrounds;
 
 public:
 	explicit Display();
 
 	Sprite LoadSprite(std::vector<const SpriteTileAsset*> TileAssets, const PaletteBankAsset& PaletteAsset, std::int32_t CurrentFrame);
+
+	//TODO: move implementation to .cpp after locking down the params
+	//TODO: add params for background tiles and maps
+	Background LoadBackground(const PaletteBankAsset& PaletteAsset)
+	{
+		//TODO: implement this
+	}
 
 	void VSync()
 	{
