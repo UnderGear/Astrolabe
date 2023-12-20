@@ -17,8 +17,11 @@ int main()
 	//TODO: I don't like the heap allocation here. what else can we pass through?
 	std::vector<const SpriteTileAsset*> MetroidAssets{ &MetroidTileAsset, &MetroidBoxTileAsset };
 	//TODO: I'm considering switching to a reference counted pointer for the return of LoadSprite
-	auto MetroidSprite{ DisplayMode.LoadSprite(std::move(MetroidAssets), MetroidPaletteAsset, CurrentFrame) };
+	auto MetroidSprite{ DisplayMode.LoadSprite(MetroidAssets, MetroidPaletteAsset, CurrentFrame) };
 	Actor Metroid{ std::move(MetroidSprite) };
+
+	//TODO: create background assets and test
+	//auto TestBG{ DisplayMode.LoadBackground() };
  
 	while (true)
 	{

@@ -50,7 +50,7 @@ private:
     struct SpriteTileData
     {
         std::int32_t ReferenceCount{ 0 };
-        std::int32_t AssetID{ PaletteBankAsset::ID_INVALID };
+        std::int32_t AssetID{ PaletteBankAsset::ID_INVALID }; //TODO: probably should be the asset ID value, not palette
         std::int32_t BeginIndex{ 0 };
         std::int32_t Length{ 0 };
 

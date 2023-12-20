@@ -170,3 +170,76 @@ struct alignas(std::uint32_t) ObjectAttributesAffine
 	volatile std::array<std::uint16_t, 3> Fill3;
 	std::int16_t Pd;
 };
+
+// One register per background, so 4 total
+struct BackgroundControlRegister
+{
+    std::uint16_t Priority : 2;
+    std::uint16_t TileBlockBaseIndex : 2;
+    std::uint16_t Padding : 2;
+    std::uint16_t MosaicEnabled : 1;
+    std::uint16_t ColorMode : 1;
+    std::uint16_t TileMapBlockBaseIndex : 5;
+    std::uint16_t AffineWrappingEnabled : 1;
+    std::uint16_t BackgroundSize : 2;
+};
+
+enum class RegularBackgroundDimensions
+{
+	t32xt32 = 0b00,
+	t64xt32 = 0b01,
+	t32xt64 = 0b10,
+	t64xt64 = 0b11,
+};
+
+// BackgroundSize (regular backgrounds)
+//    | tiles | pixels  |
+// 00 | 32x32 | 256x256 |
+// 01 | 64x32 | 512x256 |
+// 10 | 32x64 | 512x256 |
+// 11 | 64x64 | 512x512 |
+
+// BackgroundSize (affine backgrounds)
+//    |  tiles  |  pixels   |
+// 00 |  16x16  |  128x128  |
+// 01 |  32x32  |  256x256  |
+// 10 |  64x64  |  512x512  |
+// 11 | 128x128 | 1024x1024 |
+
+//TODO: I don't think I actually need this struct in the code base. let's just use raw 32 bit entries
+// These live in our background VRAM interspersed with actual tile data
+// Use the BG's control register to configure where to look for the two in the layout
+// Apparently it's customary to put tile maps at the end and tile data up front
+struct BackgroundTileMapEntry
+{
+    std::uint16_t TileIndex : 10;
+    std::uint16_t HorizontalFlip : 1;
+    std::uint16_t VerticalFlip : 1;
+    std::uint16_t PaletteBank : 4;
+};
+
+// a background tile is 8x8 pixels, so the screen is 30 tiles wide and 20 tiles tall
+// a background tile map is 16x16-128x128 tiles
+// Memory | 0x6000000 | 0x6004000 | 0x6008000 | 0x600C000 |
+// Tiles  |     0     |     1     |     2     |     3     |
+//  Maps  |   0 - 7   |  8 - 15   |  16 - 23  |  24 - 31  |
+
+// array of background offsets
+// write only
+struct alignas(std::int32_t) BackgroundOffset
+{
+    std::int16_t X{ 0 };
+    std::int16_t Y{ 0 };
+};
+
+// TODO: worry about affine backgrounds later
+// write only
+struct alignas(std::int32_t) BackgroundAffineParams
+{
+    std::int16_t A{ 0 };
+    std::int16_t B{ 0 };
+    std::int16_t C{ 0 };
+    std::int16_t D{ 0 };
+    std::int32_t X{ 0 };
+    std::int32_t Y{ 0 };
+};

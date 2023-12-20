@@ -1,4 +1,6 @@
+#include "Display/Background.hpp"
 #include "Display/Display.hpp"
+#include "Display/DisplayRegisters.hpp"
 #include "Display/Sprite.hpp"
 
 Display::Display()
@@ -9,7 +11,7 @@ Display::Display()
         | static_cast<std::uint16_t>(BackgroundLayerFlags::Background0);
 }
 
-Sprite Display::LoadSprite(std::vector<const SpriteTileAsset*> TileAssets, const PaletteBankAsset& PaletteAsset, std::int32_t CurrentFrame)
+Sprite Display::LoadSprite(const std::vector<const SpriteTileAsset*>& TileAssets, const PaletteBankAsset& PaletteAsset, std::int32_t CurrentFrame)
 {
     auto* OAM{ Sprites.RequestOAM() };
     assert(OAM != nullptr);
@@ -24,4 +26,15 @@ Sprite Display::LoadSprite(std::vector<const SpriteTileAsset*> TileAssets, const
     assert(LoadedPaletteIndex != PaletteManager::INDEX_INVALID);
 
     return Sprite{ Sprites, *OAM, LoadedTileIndices, LoadedPaletteIndex, CurrentFrame };
+}
+
+Background Display::LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteBankAsset& PaletteAsset, const BackgroundMapAsset& MapAsset)
+{
+    auto BackgroundIndex{ Backgrounds.LoadTiles(BackgroundAsset) };
+    auto TileMapBaseIndex{ Backgrounds.LoadMap(MapAsset, BackgroundIndex) };
+    auto& ControlRegister{ Backgrounds.GetControlRegister(BackgroundIndex) };
+    auto& Offset{ Backgrounds.GetBackgroundOffset(BackgroundIndex) };
+    auto LoadedPaletteIndex{ Sprites.AddToPalette(PaletteAsset) };
+    assert(LoadedPaletteIndex != PaletteManager::INDEX_INVALID);
+    return Background{ Backgrounds, BackgroundIndex, TileMapBaseIndex, LoadedPaletteIndex, BackgroundAsset.Dimensions, ControlRegister, Offset };
 }

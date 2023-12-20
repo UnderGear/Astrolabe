@@ -6,7 +6,6 @@
 #include <cassert>
 #include <cstdint>
 
-#include "Background.hpp"
 #include "BackgroundManager.hpp"
 #include "DisplayRegisters.hpp"
 #include "MemoryMap.hpp"
@@ -14,6 +13,7 @@
 #include "SpriteManager.hpp"
 
 class Sprite;
+class Background;
 
 constexpr inline std::int32_t SCREEN_WIDTH{ 240 };
 constexpr inline std::int32_t SCREEN_HEIGHT{ 160 };
@@ -41,14 +41,8 @@ class Display
 public:
 	explicit Display();
 
-	Sprite LoadSprite(std::vector<const SpriteTileAsset*> TileAssets, const PaletteBankAsset& PaletteAsset, std::int32_t CurrentFrame);
-
-	//TODO: move implementation to .cpp after locking down the params
-	//TODO: add params for background tiles and maps
-	Background LoadBackground(const PaletteBankAsset& PaletteAsset)
-	{
-		//TODO: implement this
-	}
+	Sprite LoadSprite(const std::vector<const SpriteTileAsset*>& TileAssets, const PaletteBankAsset& PaletteAsset, std::int32_t CurrentFrame);
+	Background LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteBankAsset& PaletteAsset, const BackgroundMapAsset& MapAsset);
 
 	void VSync()
 	{
