@@ -28,13 +28,12 @@ Sprite Display::LoadSprite(const std::vector<const SpriteTileAsset*>& TileAssets
     return Sprite{ Sprites, *OAM, LoadedTileIndices, LoadedPaletteIndex, CurrentFrame };
 }
 
-Background Display::LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteBankAsset& PaletteAsset, const BackgroundMapAsset& MapAsset)
+Background Display::LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset)
 {
     auto BackgroundIndex{ Backgrounds.LoadTiles(BackgroundAsset) };
     auto TileMapBaseIndex{ Backgrounds.LoadMap(MapAsset, BackgroundIndex) };
     auto& ControlRegister{ Backgrounds.GetControlRegister(BackgroundIndex) };
     auto& Offset{ Backgrounds.GetBackgroundOffset(BackgroundIndex) };
-    auto LoadedPaletteIndex{ Sprites.AddToPalette(PaletteAsset) };
-    assert(LoadedPaletteIndex != PaletteManager::INDEX_INVALID);
-    return Background{ Backgrounds, BackgroundIndex, TileMapBaseIndex, LoadedPaletteIndex, BackgroundAsset.Dimensions, ControlRegister, Offset };
+    Backgrounds.SetPalette(PaletteAsset);
+    return Background{ Backgrounds, BackgroundIndex, TileMapBaseIndex, BackgroundAsset.Dimensions, ControlRegister, Offset };
 }

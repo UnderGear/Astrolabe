@@ -22,7 +22,7 @@ struct BackgroundTileAsset : public Asset<std::span<const std::uint32_t>>
 };
 
 //TODO: is this the right shape for these?
-using BackgroundMapAsset = Asset<std::span<const BackgroundTileMapEntry>>;
+using BackgroundMapAsset = Asset<std::span<const std::uint16_t>>;
 
 using BackgroundTileBlock = std::array<std::uint32_t, 4096>;
 struct BackgroundTileBlockData
@@ -48,9 +48,9 @@ class BackgroundManager
     static constexpr std::size_t BackgroundCount{ 4 };
     static constexpr std::size_t AffineBackgroundCount{ 2 };
 
-    std::unique_ptr<std::array<BackgroundControlRegister, BackgroundCount>> ControlRegisters;
-    std::unique_ptr<std::array<BackgroundOffset, BackgroundCount>> OffsetRegisters;
-    std::unique_ptr<std::array<BackgroundAffineParams, AffineBackgroundCount>> AffineRegisters;
+    std::array<volatile BackgroundControlRegister, BackgroundCount>* ControlRegisters{ reinterpret_cast<std::array<volatile BackgroundControlRegister, BackgroundCount>*>(BG_CONTROL_ADDRESS) };
+    std::array<volatile BackgroundOffset, BackgroundCount>* OffsetRegisters{ reinterpret_cast<std::array<volatile BackgroundOffset, BackgroundCount>*>(BG_OFFSET_ADDRESS) };
+    std::array<volatile BackgroundAffineParams, AffineBackgroundCount>* AffineRegisters{ reinterpret_cast<std::array<volatile BackgroundAffineParams, AffineBackgroundCount>*>(BG_AFFINE_ADDRESS) };
 
 	PaletteManager BackgroundPaletteManager{ reinterpret_cast<void*>(BACKGROUND_PALETTE_ADDRESS) };
 
@@ -65,14 +65,16 @@ class BackgroundManager
     static constexpr std::int32_t TileMapEntriesPerBlock{ 1024 };
     static constexpr std::int32_t MaxTileMapEntries{ TileMapBlockCount * TileMapEntriesPerBlock };
     //TODO: should this just be backed with a std::uint16_t instead? or maybe even 32 for loading speed?
-    std::array<BackgroundTileMapEntry, MaxTileMapEntries>* TileMapEntries{ reinterpret_cast<std::array<BackgroundTileMapEntry, MaxTileMapEntries>*>(VRAM_ADDRESS) };
+    std::array<std::uint16_t, MaxTileMapEntries>* TileMapEntries{ reinterpret_cast<std::array<std::uint16_t, MaxTileMapEntries>*>(VRAM_ADDRESS) };
     
     std::array<BackgroundTileBlockData, BackgroundCount> LoadedTileBlocks;
     std::array<BackgroundTileMapEntryData, BackgroundCount> LoadedTileMaps;
 
 public:
 
-    std::int32_t AddToPalette(const PaletteBankAsset& PaletteAsset);
+    void SetPalette(const PaletteAsset& ToSet);
+    void ClearPalette();
+    std::int32_t AddToPalette(const PaletteBankAsset& ToAdd);
     void RemoveFromPalette(std::int32_t Index);
 
     // Returns the base tile block index for the loaded tiles
@@ -84,6 +86,6 @@ public:
     std::int32_t LoadMap(const BackgroundMapAsset& ToAdd, std::int32_t TileBlockIndex);
     void UnloadMap(std::int32_t TileBlockIndex);
 
-    BackgroundControlRegister& GetControlRegister(std::int32_t BackgroundIndex);
-    BackgroundOffset& GetBackgroundOffset(std::int32_t BackgroundIndex);
+    volatile BackgroundControlRegister& GetControlRegister(std::int32_t BackgroundIndex);
+    volatile BackgroundOffset& GetBackgroundOffset(std::int32_t BackgroundIndex);
 };

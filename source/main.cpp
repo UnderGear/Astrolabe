@@ -1,5 +1,6 @@
 #include "Actor.hpp"
 #include "Assets/MetroidSprite.hpp"
+#include "Assets/TestBackground.hpp"
 #include "Display/Background.hpp"
 #include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
@@ -20,17 +21,15 @@ int main()
 	auto MetroidSprite{ DisplayMode.LoadSprite(MetroidAssets, MetroidPaletteAsset, CurrentFrame) };
 	Actor Metroid{ std::move(MetroidSprite) };
 
-	//TODO: create background assets and test
-	//auto TestBG{ DisplayMode.LoadBackground() };
+	auto TestBG{ DisplayMode.LoadBackground(TestBackgroundAsset, TestBackgroundPaletteAsset, TestBackgroundMapAsset) };
+	//TODO: maybe move the background instead of the character
  
 	while (true)
 	{
 		DisplayMode.VSync(); //TODO: I think there's a better way of doing this. maybe an interrupt or something?
 
 		MyInput.Tick();
-
 		//TODO: update actors or whatever we're going to call them
-
 		Metroid.Velocity = MyInput.GetDPadInput();
 		Metroid.Tick(CurrentFrame);
 

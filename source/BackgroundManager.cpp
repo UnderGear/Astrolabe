@@ -2,6 +2,16 @@
 
 #include "Display/BackgroundManager.hpp"
 
+void BackgroundManager::SetPalette(const PaletteAsset& ToSet)
+{
+	BackgroundPaletteManager.SetPalette(ToSet);
+}
+
+void BackgroundManager::ClearPalette()
+{
+	BackgroundPaletteManager.ClearPalette();
+}
+
 std::int32_t BackgroundManager::AddToPalette(const PaletteBankAsset& PaletteAsset)
 {
 	return BackgroundPaletteManager.AddToPalette(PaletteAsset);
@@ -44,8 +54,8 @@ void BackgroundManager::UnloadTiles(std::int32_t Index)
 std::int32_t BackgroundManager::LoadMap(const BackgroundMapAsset& ToAdd, std::int32_t TileBlockIndex)
 {
 	//TODO: we should proooobably do some bounds checking with this information
-	const auto& TileBlockData{ LoadedTileBlocks[TileBlockIndex] };
-	auto TileBlockEntryCount{ std::distance((*TileBlocks)[TileBlockIndex].begin(), TileBlockData.NextAvailable) };
+	//const auto& TileBlockData{ LoadedTileBlocks[TileBlockIndex] };
+	//auto TileBlockEntryCount{ std::distance((*TileBlocks)[TileBlockIndex].begin(), TileBlockData.NextAvailable) };
 	// these are backed by uint32
 
 	auto ToAddCount{ std::distance(ToAdd.Data.begin(), ToAdd.Data.end()) };
@@ -73,13 +83,13 @@ void BackgroundManager::UnloadMap(std::int32_t TileBlockIndex)
 	//TODO: should we even bother clearing out the VRAM?
 }
 
-BackgroundControlRegister& BackgroundManager::GetControlRegister(std::int32_t BackgroundIndex)
+volatile BackgroundControlRegister& BackgroundManager::GetControlRegister(std::int32_t BackgroundIndex)
 {
 	//TODO: bounds checking
 	return (*ControlRegisters)[BackgroundIndex];
 }
 
-BackgroundOffset& BackgroundManager::GetBackgroundOffset(std::int32_t BackgroundIndex)
+volatile BackgroundOffset& BackgroundManager::GetBackgroundOffset(std::int32_t BackgroundIndex)
 {
 	//TODO: bounds checking
 	return (*OffsetRegisters)[BackgroundIndex];
