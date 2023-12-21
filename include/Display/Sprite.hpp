@@ -27,6 +27,9 @@ class Sprite
 
     std::int32_t CurrentFrameIndex{ 0 };
 
+    std::int32_t HalfWidth{ 0 };
+    std::int32_t HalfHeight{ 0 };
+
 public:
     //TODO: pass in position and other OAM params
     //TODO: only allow the display to hand these out?

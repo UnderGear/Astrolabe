@@ -11,11 +11,10 @@ struct Fixed
 {
 	SizeT Data{ 0 };
 
-	//TODO: no implicit conversions
-
 	constexpr Fixed() = default;
 
-	constexpr explicit Fixed(SizeT Value)
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr explicit Fixed(IntegralT Value)
 	{
 		Data = Value << FractionalBitCount;
 	}

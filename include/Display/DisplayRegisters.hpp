@@ -96,6 +96,33 @@ enum class Attribute0SpriteShape
 	Tall,
 };
 
+enum class Attribute1SpriteSize
+{
+	S8,
+	S16,
+	S32,
+	S64,
+};
+
+// Size/shape for non-affine sprites
+// S i z e    
+// h |    |   00 |  01   |  10   |  11   |
+// a | 00 |  8x8 | 16x16 | 32x32 | 64x64 |
+// p | 01 | 16x8 | 32x8  | 32x16 | 64x32 |
+// e | 10 | 8x16 | 8x32  | 16x32 | 32x64 |
+// WOW this compiler really doesn't let you get away with any template argument deduction on these initializers
+inline constexpr std::array<std::array<std::pair<std::int32_t, std::int32_t>, 4>, 3> SpriteDimensions
+{
+	std::array<std::pair<std::int32_t, std::int32_t>, 4>{ std::pair<std::int32_t, std::int32_t>{ 8, 8 }, std::pair<std::int32_t, std::int32_t>{ 16, 16 }, std::pair<std::int32_t, std::int32_t>{ 32, 32 }, std::pair<std::int32_t, std::int32_t>{ 64, 64 } },
+	std::array<std::pair<std::int32_t, std::int32_t>, 4>{ std::pair<std::int32_t, std::int32_t>{ 16, 8 }, std::pair<std::int32_t, std::int32_t>{ 32, 8 }, std::pair<std::int32_t, std::int32_t>{ 32, 16 }, std::pair<std::int32_t, std::int32_t>{ 64, 32 } },
+	std::array<std::pair<std::int32_t, std::int32_t>, 4>{ std::pair<std::int32_t, std::int32_t>{ 8, 16 }, std::pair<std::int32_t, std::int32_t>{ 8, 32 }, std::pair<std::int32_t, std::int32_t>{ 16, 32 }, std::pair<std::int32_t, std::int32_t>{ 32, 64 } }
+};
+
+inline constexpr std::pair<std::int32_t, int32_t> GetSpriteDimensions(Attribute0SpriteShape Shape, Attribute1SpriteSize Size)
+{
+	return SpriteDimensions[static_cast<std::size_t>(Shape)][static_cast<std::size_t>(Size)];
+}
+
 struct Attribute0Register
 {
 	std::uint16_t YCoordinate : 8; // top of the sprite
@@ -121,13 +148,6 @@ struct Attribute1RegisterAffine
 	std::uint16_t AffineIndex : 5;
 	std::uint16_t Padding1 : 2;
 };
-
-// Size/shape for non-affine sprites
-// S i z e    
-// h |    |   00 |  01   |  10   |  11   |
-// a | 00 |  8x8 | 16x16 | 32x32 | 64x64 |
-// p | 01 | 16x8 | 32x8  | 32x16 | 64x32 |
-// e | 10 | 8x16 | 8x32  | 16x32 | 32x64 |
 
 struct Attribute1Register
 {

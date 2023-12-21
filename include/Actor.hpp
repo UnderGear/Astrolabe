@@ -15,7 +15,11 @@ public:
 	Point2D Position{ Point::Origin };
 	Vector2D Velocity{ Vector::Zero };
 
-	explicit Actor(Sprite&& InApperance) : Appearance(std::move(InApperance)) { }
+	explicit Actor(Sprite&& InApperance, Point2D InPosition = Point::Origin)
+		: Appearance(std::move(InApperance)), Position(InPosition)
+	{
+		Appearance.SetPosition(Position);
+	}
 
 	void Tick(std::int32_t CurrentFrame)
 	{

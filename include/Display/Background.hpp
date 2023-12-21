@@ -2,6 +2,9 @@
 
 #include "BackgroundManager.hpp"
 #include "DisplayRegisters.hpp"
+#include "Math/Point.hpp"
+
+struct Vector2D;
 
 class Background
 {
@@ -14,6 +17,8 @@ class Background
 	volatile BackgroundControlRegister& ControlRegister;
 	volatile BackgroundOffset& Offset;
 
+	Point2D ScreenOffset{ Point::Origin };
+
 public:
 	explicit Background(BackgroundManager& InOwner,
 		std::int32_t InBackgroundIndex,
@@ -23,4 +28,6 @@ public:
 		volatile BackgroundOffset& InOffset);
 
 	~Background();
+
+    void MoveOffset(const Vector2D& MoveAmount);
 };

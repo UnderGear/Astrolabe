@@ -1,4 +1,5 @@
 #include "Display/Background.hpp"
+#include "Math/Vector.hpp"
 
 Background::Background(
 	BackgroundManager& InOwner,
@@ -25,4 +26,11 @@ Background::~Background()
 	Owner.UnloadTiles(BackgroundIndex);
 	Owner.UnloadMap(BackgroundIndex);
 	Owner.ClearPalette();
+}
+
+void Background::MoveOffset(const Vector2D& MoveAmount)
+{
+	ScreenOffset += MoveAmount;
+	Offset.X = static_cast<std::uint32_t>(ScreenOffset.X);
+	Offset.Y = static_cast<std::uint32_t>(ScreenOffset.Y);
 }
