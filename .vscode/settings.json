@@ -58,6 +58,7 @@
         "deque": "cpp",
         "ranges": "cpp",
         "stack": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "cstdarg": "cpp"
     }
 }

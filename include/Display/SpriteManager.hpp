@@ -100,6 +100,8 @@ public:
 
     void Tick();
 
+    void SetPalette(const PaletteAsset& ToSet);
+    void ClearPalette();
     std::int32_t AddToPalette(const PaletteBankAsset& PaletteAsset);
     void RemoveFromPalette(std::int32_t Index);
 

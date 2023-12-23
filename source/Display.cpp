@@ -28,6 +28,22 @@ Sprite Display::LoadSprite(const std::vector<const SpriteTileAsset*>& TileAssets
     return Sprite{ Sprites, *OAM, LoadedTileIndices, LoadedPaletteIndex, CurrentFrame };
 }
 
+Sprite Display::LoadSprite(const std::vector<const SpriteTileAsset*>& TileAssets, const PaletteAsset& PaletteAsset, std::int32_t CurrentFrame)
+{
+    auto* OAM{ Sprites.RequestOAM() };
+    assert(OAM != nullptr);
+    std::vector<std::int32_t> LoadedTileIndices;
+    for (const auto* TileAsset : TileAssets)
+    {
+        auto LoadedTileIndex{ Sprites.LoadTiles(*TileAsset) };
+        assert(LoadedTileIndex != SpriteManager::INDEX_INVALID);
+        LoadedTileIndices.push_back(LoadedTileIndex);
+    }
+    Sprites.SetPalette(PaletteAsset);
+
+    return Sprite{ Sprites, *OAM, LoadedTileIndices, PaletteManager::INDEX_INVALID, CurrentFrame };
+}
+
 Background Display::LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset)
 {
     auto BackgroundIndex{ Backgrounds.LoadTiles(BackgroundAsset) };

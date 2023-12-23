@@ -93,5 +93,7 @@ struct Fixed
 	}
 };
 
+//TODO: looks like we'll need some functions. transcendentals, sqrt, etc
+
 //TODO: is this the name we're going with?
 using i24f8_t = Fixed<int, 8>;

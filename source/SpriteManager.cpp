@@ -61,6 +61,16 @@ void SpriteManager::MergeGaps()
     }
 }
 
+void SpriteManager::SetPalette(const PaletteAsset& ToSet)
+{
+	SpritePaletteManager.SetPalette(ToSet);
+}
+
+void SpriteManager::ClearPalette()
+{
+	SpritePaletteManager.ClearPalette();
+}
+
 std::int32_t SpriteManager::AddToPalette(const PaletteBankAsset& PaletteAsset)
 {
     return SpritePaletteManager.AddToPalette(PaletteAsset);

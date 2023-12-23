@@ -42,6 +42,7 @@ public:
 	explicit Display();
 
 	Sprite LoadSprite(const std::vector<const SpriteTileAsset*>& TileAssets, const PaletteBankAsset& PaletteAsset, std::int32_t CurrentFrame);
+	Sprite LoadSprite(const std::vector<const SpriteTileAsset*>& TileAssets, const PaletteAsset& PaletteAsset, std::int32_t CurrentFrame);
 	Background LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset);
 
 	void VSync()

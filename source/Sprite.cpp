@@ -10,11 +10,12 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, std::vect
 	Attributes.Attribute0.ObjectMode = static_cast<std::uint16_t>(Attribute0ObjectMode::Normal);
 	Attributes.Attribute0.GraphicsMode = static_cast<std::uint16_t>(Attribute0GraphicsMode::Normal);
 	Attributes.Attribute0.SpriteShape = static_cast<std::uint16_t>(Attribute0SpriteShape::Square);
-	Attributes.Attribute1.Standard.SpriteSize = static_cast<std::uint16_t>(Attribute1SpriteSize::S64);
+	Attributes.Attribute0.ColorMode = 1; //TODO: another param to pass in
+	Attributes.Attribute1.Standard.SpriteSize = static_cast<std::uint16_t>(Attribute1SpriteSize::S32);
 	Attributes.Attribute2.PaletteBank = PaletteAssetIndex;
 	Attributes.Attribute2.TileIndex = TileAssetIndices[CurrentFrameIndex];
 
-	auto [SpriteWidth, SpriteHeight]{ GetSpriteDimensions(Attribute0SpriteShape::Square, Attribute1SpriteSize::S64) };
+	auto [SpriteWidth, SpriteHeight]{ GetSpriteDimensions(Attribute0SpriteShape::Square, Attribute1SpriteSize::S32) };
 	HalfWidth = SpriteWidth / 2;
 	HalfHeight = SpriteHeight / 2;
 
@@ -28,6 +29,7 @@ Sprite::~Sprite()
 	for (auto TileIndex : TileAssetIndices)
     	Owner.UnloadTiles(TileIndex);
     Owner.RemoveFromPalette(PaletteAssetIndex);
+	//TODO: depending on how we loaded our palette, look to unload it. more bookkeeping in palette, I guess
 }
 
 void Sprite::SetPosition(const Point2D& Position)
