@@ -1,5 +1,5 @@
 #include "Actor.hpp"
-#include "Assets/TestAsset.hpp"
+#include "Assets/TestAssets.hpp"
 #include "Assets/TestBackground.hpp"
 #include "Display/Background.hpp"
 #include "Display/Display.hpp"

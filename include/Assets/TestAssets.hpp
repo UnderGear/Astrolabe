@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Display/SpriteManager.hpp"
-#include "TestGenerated.hpp"
+#include "TestPalette.hpp"
+#include "TestTiles.hpp"
 
 //TODO: figure out the tooling pipeline some more. move Utilety into a subfolder of this repo?
 
@@ -13,7 +14,7 @@ inline constexpr PaletteAsset TestPaletteAsset
 
 inline constexpr SpriteTileAsset TestTileAsset
 {
-	std::span<const std::uint32_t>{ TestTiles.begin(), TestTiles.end() },
+	std::span<const std::uint32_t>{ TestTiles12.begin(), TestTiles12.end() },
 	0x00042
 };
 
