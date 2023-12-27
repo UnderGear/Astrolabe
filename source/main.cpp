@@ -1,5 +1,6 @@
 #include "Actor.hpp"
-#include "Assets/TestAssets.hpp"
+#include "Assets/isaaclook_tiles.hpp"
+#include "Assets/isaac_palette.hpp"
 #include "Assets/TestBackground.hpp"
 #include "Display/Background.hpp"
 #include "Display/Display.hpp"
@@ -18,9 +19,9 @@ int main()
 	int CurrentFrame{ 0 };
 
 	//TODO: I don't like the heap allocation here. what else can we pass through?
-	std::vector<const SpriteTileAsset*> TestAssets{ &TestTileAsset };
+	std::vector<const SpriteTileAsset*> TestAssets{ &isaaclook_tiles[0] };
 	//TODO: I'm considering switching to a reference counted pointer for the return of LoadSprite
-	auto TestSprite{ DisplayMode.LoadSprite(TestAssets, TestPaletteAsset, CurrentFrame) };
+	auto TestSprite{ DisplayMode.LoadSprite(TestAssets, isaac_palette, CurrentFrame) };
 	Actor TestActor{ std::move(TestSprite), Point2D{ static_cast<i24f8_t>((SCREEN_WIDTH / 2)), static_cast<i24f8_t>((SCREEN_HEIGHT / 2)) } };
 
 	auto TestBG{ DisplayMode.LoadBackground(TestBackgroundAsset, TestBackgroundPaletteAsset, TestBackgroundMapAsset) };

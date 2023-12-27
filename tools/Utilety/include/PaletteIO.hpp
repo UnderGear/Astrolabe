@@ -28,7 +28,7 @@ namespace PaletteIO
 		std::vector<std::byte> RawData{ static_cast<std::size_t>(Position) };
 		PaletteFile.read(reinterpret_cast<char*>(RawData.data()), static_cast<std::size_t>(Position));
 		
-		for (int i{ 0 }; i < RawData.size(); i += sizeof(std::uint16_t))
+		for (std::size_t i{ 0 }; i < RawData.size(); i += sizeof(std::uint16_t))
 		{
 			auto RawColor{ static_cast<std::uint16_t>(RawData[i]) };
 			if (i + 1 < RawData.size())

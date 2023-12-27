@@ -33,3 +33,4 @@
 *.map
 *.elf
 *.gba
+.vscode/settings.json

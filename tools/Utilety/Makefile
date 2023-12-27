@@ -1,5 +1,3 @@
-CXX=x86_64-w64-mingw32-g++
-
 EXE_NAME	:= Utilety.exe
 
 export ROOT	?= $(CURDIR)

@@ -13,6 +13,24 @@
             "command": "make",
             "args": ["bDEBUG=1"],
             "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "make tools",
+            "command": "make",
+            "options": {
+                "cwd": "tools/Utilety/"
+            },
+            "args": [""],
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "bake sprites",
+            "command": "tools/Utilety/build/Utilety.exe",
+            "args": [""],
+            "problemMatcher": [],
+            "dependsOn": ["make tools"],
         }
     ],
     "version": "2.0.0"
