@@ -38,6 +38,8 @@ struct Vector2D
 	//TODO: subtract vector
 	//TODO: magnitude, squaremagnitude
 	//TODO: normalize, get normalized
+	
+	auto operator<=>(const Vector2D& Other) const = default;
 };
 
 namespace Vector

@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <limits>
 #include <map>
+#include <memory>
 #include <span>
 #include <string>
 #include <vector>
@@ -38,6 +39,17 @@ inline constexpr auto TileHeight{ 8 };
 
 //TODO: look into SIMD and/or parallelization if it seems slow on larger sheets
 
+template <auto Deleter>
+struct DeleterFunc
+{
+	template <typename T>
+	void operator()(T* Pointer) const
+	{
+		Deleter(Pointer);
+	}
+};
+
+using stbi_image_ptr = std::unique_ptr<unsigned char, DeleterFunc<&stbi_image_free>>;
 
 void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 {
@@ -60,6 +72,13 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 	//TODO: what if we associate another description file with the raw spritesheet that at least names its entries?
 	// it could also include sprite dimension information
 	
+	//TODO: maybe these should come from a description of this sprite
+	auto TileMode{ TilingMode::Tiled };
+	auto SpriteWidth{ SpriteDimension::p32 };
+	auto SpriteHeight{ SpriteDimension::p32 };
+	std::vector<std::vector<std::uint32_t>> SpriteTileIndices;
+	std::filesystem::path HeaderName{ Directory.path().stem().string() + "_tiles" };
+
 	auto HasPaletteChanged{ false };
 	for (const auto& Entry : std::filesystem::directory_iterator{ Directory })
 	{
@@ -68,20 +87,16 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 		if (Entry.path().extension() != ".bmp")
 			continue;
 
-		auto TileMode{ TilingMode::Tiled };
-		auto SpriteWidth{ SpriteDimension::p32 };
-		auto SpriteHeight{ SpriteDimension::p32 };
-
 		int Width, Height, ChannelCount;
 		static constexpr auto PixelSize{ 4 };
-		auto* Bytes{ stbi_load(Entry.path().string().c_str(), &Width, &Height, &ChannelCount, PixelSize) }; //TODO: RAII for this c array
+		stbi_image_ptr Bytes{ stbi_load(Entry.path().string().c_str(), &Width, &Height, &ChannelCount, PixelSize) };
 		if (Bytes == nullptr)
 		{
 			//TODO: error messaging
 			continue;
 		}
 
-		std::span<Pixel> Pixels{ reinterpret_cast<Pixel*>(Bytes), static_cast<std::size_t>(Width * Height * ChannelCount / PixelSize) };
+		std::span<Pixel> Pixels{ reinterpret_cast<Pixel*>(Bytes.get()), static_cast<std::size_t>(Width * Height * ChannelCount / PixelSize) };
 
 		// Associate bitmap pixels with palette indices, add new colors to the palette
 		std::vector<std::uint16_t> Indices;
@@ -113,7 +128,6 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 
 			Indices.push_back(PaletteIndex);
 		}
-		delete[] Bytes;
 
 		// Pack palette indices into uint32s to make it faster for the GBA hardware to process
 		std::vector<std::uint32_t> PackedIndices;
@@ -145,14 +159,11 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 		auto VerticalSpriteCount{ VerticalTileCount / static_cast<int>(SpriteHeight) };
 		auto SpriteCount{ HorizontalSpriteCount * VerticalSpriteCount };
 
-		std::filesystem::path HeaderName{ Entry.path().stem().string() + "_tiles" };
-
 		//TODO: completely eliminate bitmap mode?
 		// Generate the new tile header
 		if (TileMode == TilingMode::Tiled)
 		{
-			std::vector<std::vector<std::uint32_t>> SpriteTileIndices;
-			SpriteTileIndices.resize(SpriteCount);
+			SpriteTileIndices.reserve(SpriteTileIndices.size() + SpriteCount);
 
 			// Loop over sprites, 
 			for (int SpriteIndex{ 0 }; SpriteIndex < SpriteCount; ++SpriteIndex)
@@ -163,8 +174,8 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 				auto SpriteTilesStartY{ static_cast<int>(SpriteHeight) * SpriteY };
 				auto SpriteTilesStartX{ static_cast<int>(SpriteWidth) * SpriteX };
 
-				auto& AdjustedIndices{ SpriteTileIndices[SpriteIndex] };
 				static constexpr auto HorizontalTileMultiplier{ TileWidth / TilesIndicesPerTilePack };
+				std::vector<std::uint32_t> AdjustedIndices;
 				AdjustedIndices.reserve(HorizontalTileMultiplier * TileHeight);
 				
 				//TODO: consider deduplicating tiles
@@ -194,17 +205,18 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 						}
 					}
 				}
+
+				SpriteTileIndices.push_back(std::move(AdjustedIndices));
 			}
-			
-			Codegen::GenerateTileHeader((CogedenPath / HeaderName).string(), HeaderName.string(), SpriteTileIndices);
 		}
 		else // Bitmap
 		{
 			//TODO: we need to split out our tiles into sprites
-
-			//Codegen::GenerateTileHeader((Entry.path() / HeaderName).string(), HeaderName.string(), PackedIndices);
 		}
 	}
+
+	if (SpriteTileIndices.size() > 0)
+		Codegen::GenerateTileHeader((CogedenPath / HeaderName).string(), HeaderName.string(), SpriteTileIndices);
 
 	if (HasPaletteChanged && ShouldWritePaletteFiles)
 	{

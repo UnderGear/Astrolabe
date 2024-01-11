@@ -26,6 +26,8 @@ struct Point2D
 	{
 		return { X - Other.X, Y - Other.Y };
 	}
+
+	auto operator<=>(const Point2D& Other) const = default;
 };
 
 namespace Point

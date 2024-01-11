@@ -91,6 +91,8 @@ struct Fixed
 		Data /= Other.Data;
 		return *this;
 	}
+
+	auto operator<=>(const Fixed& Other) const = default;
 };
 
 //TODO: looks like we'll need some functions. transcendentals, sqrt, etc

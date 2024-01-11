@@ -13,7 +13,7 @@
 namespace Codegen
 {
 	// Utilities for asset index tracking
-	inline constexpr auto AssetIndexingFileName{ "AssetIndexing" };
+	inline constexpr auto AssetIndexingFileName{ "assets/AssetIndexing" };
 
 	int GetNextAssetIndex()
 	{
@@ -81,6 +81,7 @@ namespace Codegen
 		WriteLastUsedAssetIndex(NextIndex);
 	}
 
+	// array of array of assets
 	void GenerateTileHeader(std::string_view AssetPathName, std::string_view AssetName, const std::vector<std::vector<std::uint32_t>>& PackedIndices)
 	{
 		// includes section
