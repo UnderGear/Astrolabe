@@ -9,6 +9,7 @@
 #include <string>
 
 #include "PaletteColor.hpp"
+#include "SpritesheetDescription.hpp"
 
 namespace Codegen
 {
@@ -82,11 +83,11 @@ namespace Codegen
 	}
 
 	// array of array of assets
-	void GenerateTileHeader(std::string_view AssetPathName, std::string_view AssetName, const std::vector<std::vector<std::uint32_t>>& PackedIndices)
+	void GenerateTileHeader(std::filesystem::path Directory, std::filesystem::path AssetPath, const std::vector<std::vector<std::uint32_t>>& PackedIndices, const SpritesheetDescription& Desc)
 	{
 		// includes section
 		std::ofstream File;
-		std::filesystem::path FileName{ std::string{ AssetPathName } + std::string{ HeaderSuffix } };
+		std::filesystem::path FileName{ (Directory/AssetPath).string() + ".hpp" };
 		File.open(FileName);
 		File << "// GENERATED CODE. DO NOT MANUALLY MODIFY THIS FILE.\n";
 		File << "\n";
@@ -96,25 +97,47 @@ namespace Codegen
 		File << "#include <cstdint>\n";
 		File << "#include <span>\n";
 		File << "\n";
+		File << "#include \"Display/Sprite.hpp\"\n";
 		File << "#include \"Display/SpriteManager.hpp\"\n";
 		File << "\n";
 
 		for (std::size_t i{ 0 }; i < PackedIndices.size(); ++i)
 		{
-			auto NameAtIndex{ std::string{ AssetName } + std::to_string(i) };
+			auto NameAtIndex{ AssetPath.string() + std::to_string(i) };
 			PrintAsset(File, PackedIndices[i], NameAtIndex);
 			File << "\n";
 		}
 
 		auto NextIndex{ GetNextAssetIndex() };
 
-		File << "\n";
-		File << "inline constexpr std::array<SpriteTileAsset, " << PackedIndices.size() << "> " << AssetName << "\n";
+		File << "inline constexpr std::array<SpriteTileAsset, " << PackedIndices.size() << "> " << AssetPath.string() << "_tiles\n";
 		File << "{\n";
 		for (std::size_t i{ 0 }; i < PackedIndices.size(); ++i)
 		{
-			auto NameAtIndex{ std::string{ AssetName } + std::to_string(i) };
+			auto NameAtIndex{ AssetPath.string() + std::to_string(i) };
 			File << "\tSpriteTileAsset{ std::span<const std::uint32_t>{ " << NameAtIndex << ".begin(), " << NameAtIndex << ".end() }, " << NextIndex++ << " },\n";
+		}
+		File << "};\n";
+
+		File << "\n";
+		File << "inline const std::array<Animation, " << Desc.TotalAnimationCount << "> " << AssetPath.string() << "_anims\n";
+		File << "{\n";
+		for (const auto& AnimDesc : Desc.AnimationSetDescriptions)
+		{
+			for (const auto& AnimSet : AnimDesc.AnimIndices)
+			{
+				for (std::size_t i{ 0 }; i < AnimDesc.AnimIndices.size(); i += AnimDesc.AnimFrameCount)
+				{
+					File << "\tAnimation{";
+
+					for (auto j{ 0 }; j < AnimDesc.AnimFrameCount; ++j)
+					{
+						File << " { &" << AssetPath.string() << "_tiles[" << AnimSet[i + j] << "], " << AnimDesc.FrameDurations[j] << " },";
+					}
+					
+					File << " },\n";
+				}
+			}
 		}
 		File << "};\n";
 

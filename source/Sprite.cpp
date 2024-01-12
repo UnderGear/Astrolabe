@@ -2,10 +2,10 @@
 #include "Display/Sprite.hpp"
 #include "Math/Point.hpp"
 
-Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, std::span<Animation> InAnimations, std::int32_t InPaletteAssetIndex, std::int32_t InInitialFrame)
-        : Owner(InOwner), Attributes(InAttributes), Animations(InAnimations), PaletteAssetIndex(InPaletteAssetIndex), InitialFrame(InInitialFrame)
+Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, std::span<const Animation> InAnimations, std::int32_t InPaletteAssetIndex)
+        : Owner(InOwner), Attributes(InAttributes), Animations(InAnimations), PaletteAssetIndex(InPaletteAssetIndex)
 {
-	CurrentSpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex];
+	CurrentSpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex].Asset;
 	auto LoadedTileIndex{ Owner.LoadTiles(*CurrentSpriteAsset) };
 	assert(LoadedTileIndex != SpriteManager::INDEX_INVALID);
 
@@ -69,14 +69,18 @@ void Sprite::Tick()
 	//TODO: maybe return a value indicating that the animation has finished.
 	//TODO: member variable for progression frequency instead of hard-coded half second
 	++CurrentFrameCounter;
-	if ((CurrentFrameCounter % 30) == 0)
+	if ((CurrentFrameCounter % Animations[CurrentAnimationIndex][CurrentFrameIndex].FrameDuration) == 0)
 	{
 		++CurrentFrameIndex;
 		auto Count{ Animations[CurrentAnimationIndex].size() };
 		CurrentFrameIndex %= Count;
+
+		// If we're back at the first frame, restart the counter
+		if (CurrentFrameIndex == 0)
+			CurrentFrameCounter = 0;
 	}
 
-	auto* SpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex];
+	auto* SpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex].Asset;
 	if (SpriteAsset != CurrentSpriteAsset)
 	{
 		Owner.UnloadTiles(Attributes.Attribute2.TileIndex);

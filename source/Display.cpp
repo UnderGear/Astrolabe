@@ -10,7 +10,7 @@ Display::Display()
         | static_cast<std::uint16_t>(BackgroundLayerFlags::Background0);
 }
 
-Sprite Display::LoadSprite(std::span<Animation> Animations, const PaletteBankAsset& PaletteAsset, std::int32_t CurrentFrame)
+Sprite Display::LoadSprite(std::span<const Animation> Animations, const PaletteBankAsset& PaletteAsset)
 {
     auto* OAM{ Sprites.RequestOAM() };
     assert(OAM != nullptr);
@@ -18,17 +18,17 @@ Sprite Display::LoadSprite(std::span<Animation> Animations, const PaletteBankAss
     auto LoadedPaletteIndex{ Sprites.AddToPalette(PaletteAsset) };
     assert(LoadedPaletteIndex != PaletteManager::INDEX_INVALID);
 
-    return Sprite{ Sprites, *OAM, Animations, LoadedPaletteIndex, CurrentFrame };
+    return Sprite{ Sprites, *OAM, Animations, LoadedPaletteIndex };
 }
 
-Sprite Display::LoadSprite(std::span<Animation> Animations, const PaletteAsset& PaletteAsset, std::int32_t CurrentFrame)
+Sprite Display::LoadSprite(std::span<const Animation> Animations, const PaletteAsset& PaletteAsset)
 {
     auto* OAM{ Sprites.RequestOAM() };
     assert(OAM != nullptr);
 
     Sprites.SetPalette(PaletteAsset);
 
-    return Sprite{ Sprites, *OAM, Animations, PaletteManager::INDEX_INVALID, CurrentFrame };
+    return Sprite{ Sprites, *OAM, Animations, PaletteManager::INDEX_INVALID };
 }
 
 Background Display::LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset)

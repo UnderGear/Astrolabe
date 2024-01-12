@@ -1,13 +1,17 @@
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <charconv>
 #include <cstdint>
 #include <filesystem>
+#include <iomanip>
 #include <limits>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -18,7 +22,7 @@
 #include "PaletteIO.hpp"
 #include "Pixel.hpp"
 #include "SpriteDimension.hpp"
-#include "TilingMode.hpp"
+#include "SpritesheetDescription.hpp"
  
 // Tools
 //  - Utilety
@@ -69,100 +73,157 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 		PaletteMapping[Palette[i]] = i;
 	}
 
-	//TODO: what if we associate another description file with the raw spritesheet that at least names its entries?
-	// it could also include sprite dimension information
-	
-	//TODO: maybe these should come from a description of this sprite
-	auto TileMode{ TilingMode::Tiled };
-	auto SpriteWidth{ SpriteDimension::p32 };
-	auto SpriteHeight{ SpriteDimension::p32 };
-	std::vector<std::vector<std::uint32_t>> SpriteTileIndices;
-	std::filesystem::path HeaderName{ Directory.path().stem().string() + "_tiles" };
-
 	auto HasPaletteChanged{ false };
 	for (const auto& Entry : std::filesystem::directory_iterator{ Directory })
 	{
-		// If it's not a bitmap file, continue
-		//TODO: support different input file types
-		if (Entry.path().extension() != ".bmp")
+		// If it's not an anim description file, continue
+		if (Entry.path().extension() != ".ad")
 			continue;
 
-		int Width, Height, ChannelCount;
-		static constexpr auto PixelSize{ 4 };
-		stbi_image_ptr Bytes{ stbi_load(Entry.path().string().c_str(), &Width, &Height, &ChannelCount, PixelSize) };
-		if (Bytes == nullptr)
+		SpritesheetDescription Desc;
+		//TODO: parse it from the entry path.
+		std::ifstream DescFile{ Entry.path() };
+		std::string Buffer;
+		std::getline(DescFile, Buffer, ',');
+		Desc.SpriteWidth = static_cast<SpriteDimension>(std::stoi(Buffer));
+		std::getline(DescFile, Buffer);
+		Desc.SpriteHeight = static_cast<SpriteDimension>(std::stoi(Buffer));
+
+		std::getline(DescFile, Buffer);
+		int FileCount{ std::stoi(Buffer) };
+		Desc.AnimationSetDescriptions.reserve(FileCount);
+
+		for (int FileIndex{ 0 }; FileIndex < FileCount; ++FileIndex)
 		{
-			//TODO: error messaging
-			continue;
+			SpriteAnimationSetDescription AnimDesc;
+			std::getline(DescFile, Buffer);
+			AnimDesc.FilePath = Buffer;
+			
+			std::getline(DescFile, Buffer, ',');
+			AnimDesc.AnimFrameCount = std::stoi(Buffer);
+			std::getline(DescFile, Buffer);
+			AnimDesc.AnimCount = std::stoi(Buffer);
+			Desc.TotalAnimationCount += AnimDesc.AnimCount;
+
+			//TODO read 
+			AnimDesc.AnimIndices.reserve(AnimDesc.AnimCount);
+			for (int AnimIndex{ 0 }; AnimIndex < AnimDesc.AnimCount; ++ AnimIndex)
+			{
+				std::vector<int> AnimIndices;
+				AnimIndices.reserve(AnimDesc.AnimFrameCount);
+
+				std::getline(DescFile, Buffer);
+				for (auto IndicesString : std::views::split(Buffer, ','))
+				{
+					int PanelIndex{ 0 };
+					std::string_view sv(&*IndicesString.begin(), std::ranges::distance(IndicesString));
+					std::from_chars(sv.data(), sv.data() + sv.size(), PanelIndex);
+					AnimIndices.push_back(PanelIndex);
+				}
+
+				AnimDesc.AnimIndices.push_back(std::move(AnimIndices));
+			}
+
+
+			std::getline(DescFile, Buffer);
+			for (auto DurationString : std::views::split(Buffer, ','))
+			{
+				int AnimDuration{ 0 };
+				std::string_view sv(&*DurationString.begin(), std::ranges::distance(DurationString));
+				std::from_chars(sv.data(), sv.data() + sv.size(), AnimDuration);
+				AnimDesc.FrameDurations.push_back(AnimDuration);
+			}
+
+			std::getline(DescFile, Buffer);
+			for (auto SuffixString : std::views::split(Buffer, ','))
+			{
+				std::string_view sv(&*SuffixString.begin(), std::ranges::distance(SuffixString));
+				AnimDesc.AnimSuffixes.push_back(std::string{ sv });
+			}
+
+			Desc.AnimationSetDescriptions.push_back(std::move(AnimDesc));
 		}
 
-		std::span<Pixel> Pixels{ reinterpret_cast<Pixel*>(Bytes.get()), static_cast<std::size_t>(Width * Height * ChannelCount / PixelSize) };
+		std::vector<std::vector<std::uint32_t>> SpriteTileIndices;
 
-		// Associate bitmap pixels with palette indices, add new colors to the palette
-		std::vector<std::uint16_t> Indices;
-		Indices.reserve(Width * Height);
-		for (auto& Sample : Pixels)
+		for (const auto& AnimSetDesc : Desc.AnimationSetDescriptions)
 		{
-			std::uint16_t PaletteIndex{ 0 };
+			//TODO: make sure it's the right extension
+			auto FullPath{ Directory / AnimSetDesc.FilePath };
 
-			// If it's transparent, don't bother adding it to the palette. Use the default index 0 (which is always transparent in GBA)
-			if (Sample.A == 0)
+			int Width, Height, ChannelCount;
+			static constexpr auto PixelSize{ 4 };
+			stbi_image_ptr Bytes{ stbi_load(FullPath.string().c_str(), &Width, &Height, &ChannelCount, PixelSize) };
+			if (Bytes == nullptr)
 			{
-				Indices.push_back(PaletteIndex);
+				//TODO: error messaging
 				continue;
 			}
 
-			auto SampleColor{ Sample.ToColor() };
-			auto Iter{ PaletteMapping.find(SampleColor) };
-			if (Iter == PaletteMapping.end())
+			std::span<Pixel> Pixels{ reinterpret_cast<Pixel*>(Bytes.get()), static_cast<std::size_t>(Width * Height * ChannelCount / PixelSize) };
+
+			// Associate bitmap pixels with palette indices, add new colors to the palette
+			std::vector<std::uint16_t> Indices;
+			Indices.reserve(Width * Height);
+			for (auto& Sample : Pixels)
 			{
-				Palette.push_back(SampleColor);
-				PaletteIndex = Palette.size() - 1;
-				PaletteMapping[SampleColor] = PaletteIndex;
-				HasPaletteChanged = true;
-			}
-			else
-			{
-				PaletteIndex = Iter->second;
+				std::uint16_t PaletteIndex{ 0 };
+
+				// If it's transparent, don't bother adding it to the palette. Use the default index 0 (which is always transparent in GBA)
+				if (Sample.A == 0)
+				{
+					Indices.push_back(PaletteIndex);
+					continue;
+				}
+
+				auto SampleColor{ Sample.ToColor() };
+				auto Iter{ PaletteMapping.find(SampleColor) };
+				if (Iter == PaletteMapping.end())
+				{
+					Palette.push_back(SampleColor);
+					PaletteIndex = Palette.size() - 1;
+					PaletteMapping[SampleColor] = PaletteIndex;
+					HasPaletteChanged = true;
+				}
+				else
+				{
+					PaletteIndex = Iter->second;
+				}
+
+				Indices.push_back(PaletteIndex);
 			}
 
-			Indices.push_back(PaletteIndex);
-		}
-
-		// Pack palette indices into uint32s to make it faster for the GBA hardware to process
-		std::vector<std::uint32_t> PackedIndices;
-		static constexpr auto TilesIndicesPerTilePack{ 4 };
-		PackedIndices.reserve(Indices.size() / TilesIndicesPerTilePack);
-		for (std::size_t i{ 0 }; i < Indices.size(); i += TilesIndicesPerTilePack)
-		{
-			std::uint32_t Value{ 0 };
-			Value = std::bit_cast<std::uint16_t>(Indices[i]);
-			// Shift the remaining indices into our ui32
-			if (i + 1 < Indices.size())
+			// Pack palette indices into uint32s to make it faster for the GBA hardware to process
+			std::vector<std::uint32_t> PackedIndices;
+			static constexpr auto TilesIndicesPerTilePack{ 4 };
+			PackedIndices.reserve(Indices.size() / TilesIndicesPerTilePack);
+			for (std::size_t i{ 0 }; i < Indices.size(); i += TilesIndicesPerTilePack)
 			{
-				Value |= (static_cast<std::uint32_t>(std::bit_cast<std::uint16_t>(Indices[i + 1])) << 8);
+				std::uint32_t Value{ 0 };
+				Value = std::bit_cast<std::uint16_t>(Indices[i]);
+				// Shift the remaining indices into our ui32
+				if (i + 1 < Indices.size())
+				{
+					Value |= (static_cast<std::uint32_t>(std::bit_cast<std::uint16_t>(Indices[i + 1])) << 8);
+				}
+				if (i + 2 < Indices.size())
+				{
+					Value |= (static_cast<std::uint32_t>(std::bit_cast<std::uint16_t>(Indices[i + 2])) << 16);
+				}
+				if (i + 3 < Indices.size())
+				{
+					Value |= (static_cast<std::uint32_t>(std::bit_cast<std::uint16_t>(Indices[i + 3])) << 24);
+				}
+				PackedIndices.push_back(Value);
 			}
-			if (i + 2 < Indices.size())
-			{
-				Value |= (static_cast<std::uint32_t>(std::bit_cast<std::uint16_t>(Indices[i + 2])) << 16);
-			}
-			if (i + 3 < Indices.size())
-			{
-				Value |= (static_cast<std::uint32_t>(std::bit_cast<std::uint16_t>(Indices[i + 3])) << 24);
-			}
-			PackedIndices.push_back(Value);
-		}
 
-		auto HorizontalTileCount{ Width / TileWidth };
-		auto VerticalTileCount{ Height / TileHeight };
-		auto HorizontalSpriteCount{ HorizontalTileCount / static_cast<int>(SpriteWidth) };
-		auto VerticalSpriteCount{ VerticalTileCount / static_cast<int>(SpriteHeight) };
-		auto SpriteCount{ HorizontalSpriteCount * VerticalSpriteCount };
+			auto HorizontalTileCount{ Width / TileWidth };
+			auto VerticalTileCount{ Height / TileHeight };
+			auto HorizontalSpriteCount{ HorizontalTileCount / static_cast<int>(Desc.SpriteWidth) };
+			auto VerticalSpriteCount{ VerticalTileCount / static_cast<int>(Desc.SpriteHeight) };
+			auto SpriteCount{ HorizontalSpriteCount * VerticalSpriteCount };
 
-		//TODO: completely eliminate bitmap mode?
-		// Generate the new tile header
-		if (TileMode == TilingMode::Tiled)
-		{
+			// Generate the new tile header
 			SpriteTileIndices.reserve(SpriteTileIndices.size() + SpriteCount);
 
 			// Loop over sprites, 
@@ -171,8 +232,8 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 				//TODO: this could probably be done in-place by swapping entries and some really fiddly indexing
 				auto SpriteY{ SpriteIndex / HorizontalSpriteCount };
 				auto SpriteX{ SpriteIndex % HorizontalSpriteCount };
-				auto SpriteTilesStartY{ static_cast<int>(SpriteHeight) * SpriteY };
-				auto SpriteTilesStartX{ static_cast<int>(SpriteWidth) * SpriteX };
+				auto SpriteTilesStartY{ static_cast<int>(Desc.SpriteHeight) * SpriteY };
+				auto SpriteTilesStartX{ static_cast<int>(Desc.SpriteWidth) * SpriteX };
 
 				static constexpr auto HorizontalTileMultiplier{ TileWidth / TilesIndicesPerTilePack };
 				std::vector<std::uint32_t> AdjustedIndices;
@@ -185,9 +246,9 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 				// sprite assets can be an array of indices into the character tile array
 				// loading a sprite would be done tile by tile by index
 				// indices could also be packed
-				for (int SpriteTileY{ SpriteTilesStartY }; SpriteTileY < SpriteTilesStartY + static_cast<int>(SpriteWidth); ++SpriteTileY)
+				for (int SpriteTileY{ SpriteTilesStartY }; SpriteTileY < SpriteTilesStartY + static_cast<int>(Desc.SpriteWidth); ++SpriteTileY)
 				{
-					for (int SpriteTileX{ SpriteTilesStartX }; SpriteTileX < SpriteTilesStartX + static_cast<int>(SpriteWidth); ++SpriteTileX)
+					for (int SpriteTileX{ SpriteTilesStartX }; SpriteTileX < SpriteTilesStartX + static_cast<int>(Desc.SpriteWidth); ++SpriteTileX)
 					{
 						auto TileStartY{ TileHeight * SpriteTileY };
 						auto TileStartX{ HorizontalTileMultiplier * SpriteTileX };
@@ -209,14 +270,13 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 				SpriteTileIndices.push_back(std::move(AdjustedIndices));
 			}
 		}
-		else // Bitmap
+
+		std::filesystem::path HeaderName{ Directory.path().stem() };
+		if (SpriteTileIndices.size() > 0)
 		{
-			//TODO: we need to split out our tiles into sprites
+			Codegen::GenerateTileHeader(CogedenPath, HeaderName, SpriteTileIndices, Desc);
 		}
 	}
-
-	if (SpriteTileIndices.size() > 0)
-		Codegen::GenerateTileHeader((CogedenPath / HeaderName).string(), HeaderName.string(), SpriteTileIndices);
 
 	if (HasPaletteChanged && ShouldWritePaletteFiles)
 	{
@@ -244,7 +304,6 @@ void ProcessDirectory(const std::filesystem::directory_entry& Directory)
 
 			PackedPalette.push_back(Value);
 		}
-		
 		
 		std::filesystem::path HeaderName{ Directory.path().stem().string() + "_palette" };
 		Codegen::GeneratePaletteHeader((CogedenPath / HeaderName).string(), HeaderName.string(), PackedPalette);
