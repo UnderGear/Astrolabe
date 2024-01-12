@@ -38,7 +38,7 @@ struct Fixed
 		return Result;
 	}
 
-	constexpr Fixed operator +=(Fixed Other)
+	Fixed& operator +=(Fixed Other)
 	{
 		Data += Other.Data;
 		return *this;
@@ -58,7 +58,7 @@ struct Fixed
 		return Result;
 	}
 
-	constexpr Fixed operator -=(Fixed Other)
+	Fixed& operator -=(Fixed Other)
 	{
 		Data -= Other.Data;
 		return *this;
@@ -71,7 +71,7 @@ struct Fixed
 		return Result;
 	}
 
-	constexpr Fixed operator *=(Fixed Other)
+	Fixed& operator *=(Fixed Other)
 	{
 		Data *= Other.Data;
 		Data >>= FractionalBitCount;
@@ -85,11 +85,26 @@ struct Fixed
 		return Result;
 	}
 
-	constexpr Fixed operator /=(Fixed Other)
+	Fixed& operator /=(Fixed Other)
 	{
 		Data *= (1 << FractionalBitCount);
 		Data /= Other.Data;
 		return *this;
+	}
+
+	constexpr friend Fixed sqrt(Fixed Value)
+	{
+		Fixed X{ Value };
+		Fixed Root;
+
+		constexpr auto Iterations{ 20 };
+		for (auto i{ 0 }; i < Iterations; ++i)
+		{
+			Root = (X + (Value / X)) / Fixed{ 2 };
+			X = Root;
+		}
+
+		return Root;
 	}
 
 	auto operator<=>(const Fixed& Other) const = default;

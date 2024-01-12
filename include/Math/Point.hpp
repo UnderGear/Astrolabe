@@ -15,7 +15,7 @@ struct Point2D
 		return { X + Other.X, Y + Other.Y };
 	}
 
-	constexpr Point2D& operator +=(const Vector2D& Other)
+	Point2D& operator +=(const Vector2D& Other)
 	{
 		X += Other.X;
 		Y += Other.Y;

@@ -16,16 +16,11 @@ struct Vector2D
 		return { X * Scalar, Y * Scalar };
 	}
 
-	constexpr Vector2D& operator *(i24f8_t Scalar)
+	Vector2D& operator *=(i24f8_t Scalar)
 	{
 		X *= Scalar;
 		Y *= Scalar;
 		return *this;
-	}
-
-	constexpr Vector2D operator *=(i24f8_t Scalar)
-	{
-		return { X * Scalar, Y * Scalar };
 	}
 
 	//TODO: add vector
@@ -37,9 +32,42 @@ struct Vector2D
 
 	//TODO: subtract vector
 	//TODO: magnitude, squaremagnitude
-	//TODO: normalize, get normalized
 	
-	auto operator<=>(const Vector2D& Other) const = default;
+	constexpr auto operator<=>(const Vector2D& Other) const = default;
+
+	constexpr i24f8_t SquaredMagnitude() const
+	{
+		return X * X + Y * Y;
+	}
+
+	constexpr i24f8_t Magnitude() const
+	{
+		return sqrt(SquaredMagnitude());
+	}
+
+	Vector2D& Normalize()
+	{
+		auto Mag{ Magnitude() };
+		if (Mag == i24f8_t{ 0 })
+			return *this;
+
+		X /= Mag;
+		Y /= Mag;
+		return *this;
+	}
+
+	constexpr Vector2D GetNormalized() const
+	{
+		auto Result = *this;
+		//TODO:
+		auto Mag{ Result.Magnitude() };
+		if (Mag == i24f8_t{ 0 })
+			return Result;
+
+		Result.X /= Mag;
+		Result.Y /= Mag;
+		return Result;
+	}
 };
 
 namespace Vector
