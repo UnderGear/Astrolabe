@@ -33,9 +33,18 @@ int main()
 
 		MyInput.Tick();
 		//TODO: update actors or whatever we're going to call them
-		TestActor.Velocity = MyInput.GetDPadInput();
-		TestBG.MoveOffset(MyInput.GetDPadInput());
-		TestActor.UpdateFacing(MyInput.GetDPadInput());
+
+		static constexpr i24f8_t RunMultiplier{ 2.f };
+
+		auto DPadInput{ MyInput.GetDPadInput().GetNormalized() };
+		auto IsBDown{ MyInput.IsKeyDown(InputKey::B) };
+		if (IsBDown)
+			DPadInput *= RunMultiplier;
+
+		//TODO: create a world state, camera, attach camera to the character
+		TestActor.Velocity = DPadInput;
+		TestBG.MoveOffset(DPadInput);
+		TestActor.UpdateInput(DPadInput, IsBDown);
 		TestActor.Tick();
 
 		DisplayMode.Tick();

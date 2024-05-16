@@ -92,6 +92,8 @@ struct Fixed
 		return *this;
 	}
 
+	//TOOD: make a LUT? try a different iteration count? weigh expense vs needed precision vs memory footprint on gba
+	// maybe that decision can be made down the line
 	constexpr friend Fixed sqrt(Fixed Value)
 	{
 		Fixed X{ Value };

@@ -10,8 +10,8 @@
 enum class AnimationSuite
 {
 	Idle,
-	Run,
 	Walk,
+	Run,
 };
 
 inline constexpr std::array<std::size_t, 3> AnimationSuiteIndexOffsets
@@ -57,6 +57,7 @@ class Actor
 	Sprite Appearance;
 	FacingDirection Facing{ FacingDirection::South };
 	AnimationSuite CurrentAnimationSuite{ AnimationSuite::Idle };
+	bool IsRunPressed{ false };
 
 public:
 	Point2D Position{ Point::Origin };
@@ -68,18 +69,20 @@ public:
 		Appearance.SetPosition(Position);
 	}
 
-	void UpdateFacing(const Vector2D& Input)
+	void UpdateInput(const Vector2D& Input, bool InIsRunPressed)
 	{
+		IsRunPressed = InIsRunPressed;
 		auto& Y{ Input.Y };
 		auto& X{ Input.X };
 
-		if (Y < 0)
+		constexpr i24f8_t Zero{ 0 };
+		if (Y < Zero)
 		{
-			if (X > 0)
+			if (X > Zero)
 			{
 				Facing = FacingDirection::NorthEast;
 			}
-			else if (X < 0)
+			else if (X < Zero)
 			{
 				Facing = FacingDirection::NorthWest;
 			}
@@ -88,13 +91,13 @@ public:
 				Facing = FacingDirection::North;
 			}
 		}
-		else if (Y > 0)
+		else if (Y > Zero)
 		{
-			if (X > 0)
+			if (X > Zero)
 			{
 				Facing = FacingDirection::SouthEast;
 			}
-			else if (X < 0)
+			else if (X < Zero)
 			{
 				Facing = FacingDirection::SouthWest;
 			}
@@ -105,11 +108,11 @@ public:
 		}
 		else
 		{
-			if (X > 0)
+			if (X > Zero)
 			{
 				Facing = FacingDirection::East;
 			}
-			else if (X < 0)
+			else if (X < Zero)
 			{
 				Facing = FacingDirection::West;
 			}
@@ -119,7 +122,7 @@ public:
 	void Tick()
 	{
 		//Position += Velocity; //TODO: worry about delta time later
-		CurrentAnimationSuite = Velocity == Vector::Zero ? AnimationSuite::Idle : AnimationSuite::Walk;
+		CurrentAnimationSuite = Velocity == Vector::Zero ? AnimationSuite::Idle : (IsRunPressed ? AnimationSuite::Run : AnimationSuite::Walk);
 
 		auto FacingInfo{ FacingArrayIndexing[static_cast<std::size_t>(Facing)] };
 		auto Index{ AnimationSuiteIndexOffsets[static_cast<std::size_t>(CurrentAnimationSuite)] + FacingInfo.BaseIndex };
