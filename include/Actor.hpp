@@ -6,8 +6,10 @@
 #include "Math/Point.hpp"
 #include "Math/Vector.hpp"
 
+class Display;
+
 //TODO: these two are very specific to the test character. let's pull this out
-enum class AnimationSuite
+enum class AnimationSuiteType
 {
 	Idle,
 	Walk,
@@ -56,18 +58,14 @@ class Actor
 {
 	Sprite Appearance;
 	FacingDirection Facing{ FacingDirection::South };
-	AnimationSuite CurrentAnimationSuite{ AnimationSuite::Idle };
+	AnimationSuiteType CurrentAnimationSuite{ AnimationSuiteType::Idle };
 	bool IsRunPressed{ false };
 
 public:
 	Point2D Position{ Point::Origin };
 	Vector2D Velocity{ Vector::Zero };
 
-	explicit Actor(Sprite&& InApperance, Point2D InPosition = Point::Origin)
-		: Appearance(std::move(InApperance)), Position(InPosition)
-	{
-		Appearance.SetPosition(Position);
-	}
+	explicit Actor(Display& TargetDisplay, const AnimationSuite& AnimSuite, const PaletteAsset& Pal, Point2D InPosition = Point::Origin);
 
 	void UpdateInput(const Vector2D& Input, bool InIsRunPressed)
 	{
@@ -122,7 +120,7 @@ public:
 	void Tick()
 	{
 		//Position += Velocity; //TODO: worry about delta time later
-		CurrentAnimationSuite = Velocity == Vector::Zero ? AnimationSuite::Idle : (IsRunPressed ? AnimationSuite::Run : AnimationSuite::Walk);
+		CurrentAnimationSuite = Velocity == Vector::Zero ? AnimationSuiteType::Idle : (IsRunPressed ? AnimationSuiteType::Run : AnimationSuiteType::Walk);
 
 		auto FacingInfo{ FacingArrayIndexing[static_cast<std::size_t>(Facing)] };
 		auto Index{ AnimationSuiteIndexOffsets[static_cast<std::size_t>(CurrentAnimationSuite)] + FacingInfo.BaseIndex };

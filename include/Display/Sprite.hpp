@@ -20,21 +20,22 @@ enum class SpriteAnimationBehavior
 //TODO: include dimensions as template parameters on the sprite tile asset, then on the sprite?
 struct AnimationFrame
 {
-    const SpriteTileAsset* Asset = nullptr;
-    std::int32_t FrameDuration;
+    const SpriteTileAsset* Asset{ nullptr };
+    std::int32_t FrameDuration{ 0 };
 };
 using Animation = std::vector<AnimationFrame>;
+using AnimationSuite = std::span<const Animation>;
 
 class Sprite
 {
     SpriteManager& Owner;
     ObjectAttributes& Attributes; // this is the one in the buffer, not directly in vram
 
-    std::span<const Animation> Animations;
+    AnimationSuite Animations;
     const SpriteTileAsset* CurrentSpriteAsset;
     std::int32_t CurrentAnimationIndex{ 0 };
     bool ShouldFlipHorizontal{ false };
-    std::int32_t PaletteAssetIndex;
+    std::int32_t PaletteAssetIndex{ 0 };
 
     std::int32_t CurrentFrameIndex{ 0 };
     std::int32_t CurrentFrameCounter{ 0 };
@@ -45,7 +46,7 @@ class Sprite
 public:
     //TODO: pass in position and other OAM params
     //TODO: only allow the display to hand these out?
-    explicit Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, std::span<const Animation> InAnimations, std::int32_t InPaletteAssetIndex);
+    explicit Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex);
 
     ~Sprite();
 

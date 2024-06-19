@@ -21,9 +21,8 @@ int main()
 	Random<std::int32_t> MyRandom{ 5, -1, 1 };
 	int CurrentFrame{ 0 };
 
-	std::span<const Animation> TestAnims{ isaac_anims.begin(), isaac_anims.end() };
-	auto TestSprite{ DisplayMode.LoadSprite(TestAnims, isaac_palette) };
-	Actor TestActor{ std::move(TestSprite), Point2D{ static_cast<i24f8_t>((SCREEN_WIDTH / 2)), static_cast<i24f8_t>((SCREEN_HEIGHT / 2)) } };
+	//auto TestSprite{ DisplayMode.LoadSprite(isaac_animsuite, isaac_palette) };
+	Actor TestActor{ DisplayMode, isaac_animsuite, isaac_palette, Point2D{ static_cast<i24f8_t>((SCREEN_WIDTH / 2)), static_cast<i24f8_t>((SCREEN_HEIGHT / 2)) } };
 
 	auto TestBG{ DisplayMode.LoadBackground(TestBackgroundAsset, TestBackgroundPaletteAsset, TestBackgroundMapAsset) };
 

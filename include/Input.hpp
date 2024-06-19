@@ -36,7 +36,7 @@ struct InputInterruptRegister
     std::uint16_t Down : 1;
     std::uint16_t RB : 1;
     std::uint16_t LB : 1;
-    std::uint16_t Padding : 4;
+    std::uint16_t : 4;
     std::uint16_t IRQEnable : 1;
     std::uint16_t Comparitor : 1; // 0 OR, 1 AND comparison of all set keys required to raise the interrupt
 };

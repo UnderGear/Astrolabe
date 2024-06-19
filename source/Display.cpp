@@ -10,7 +10,7 @@ Display::Display()
         | static_cast<std::uint16_t>(BackgroundLayerFlags::Background0);
 }
 
-Sprite Display::LoadSprite(std::span<const Animation> Animations, const PaletteBankAsset& PaletteAsset)
+Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset)
 {
     auto* OAM{ Sprites.RequestOAM() };
     assert(OAM != nullptr);
@@ -21,7 +21,7 @@ Sprite Display::LoadSprite(std::span<const Animation> Animations, const PaletteB
     return Sprite{ Sprites, *OAM, Animations, LoadedPaletteIndex };
 }
 
-Sprite Display::LoadSprite(std::span<const Animation> Animations, const PaletteAsset& PaletteAsset)
+Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset)
 {
     auto* OAM{ Sprites.RequestOAM() };
     assert(OAM != nullptr);

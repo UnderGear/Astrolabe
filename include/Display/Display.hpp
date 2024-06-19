@@ -43,8 +43,8 @@ class Display
 public:
 	explicit Display();
 
-	Sprite LoadSprite(std::span<const Animation> Animations, const PaletteBankAsset& PaletteAsset);
-	Sprite LoadSprite(std::span<const Animation> Animations, const PaletteAsset& PaletteAsset);
+	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset);
+	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset);
 	Background LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset);
 
 	void VSync()

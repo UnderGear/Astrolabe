@@ -34,17 +34,17 @@ enum class WindowDisplayFlags
 struct DisplayControlRegister
 {
 	std::uint16_t Mode : 3; // DisplayMode
-	std::uint16_t Reserved : 1;
+	std::uint16_t Reserved : 1{ 0 };
 	std::uint16_t DisplayPageSelect : 1; // for modes 4, 5 only. toggle between pages at runtime to switch out the screen
 	std::uint16_t HBlankIntervalFree : 1; // 1: allow access to OAM during H-Blank
 	std::uint16_t OBJCharacterVRAMMapping : 1; // 0 2D, 1 1D
-	std::uint16_t ForcedBlank : 1;
+	std::uint16_t ForcedBlank : 1{ 0 };
 	std::uint16_t BackgroundFlags : 5; // BackgroundLayerFlags
 	std::uint16_t WindowFlags : 3; // WindowDisplayFlags
 
 	constexpr explicit DisplayControlRegister(DisplayMode InMode, BackgroundLayerFlags InBackgroundFlags, WindowDisplayFlags InWindowFlags = WindowDisplayFlags::None) noexcept
-		: Mode(static_cast<std::uint16_t>(InMode)), Reserved(0), DisplayPageSelect(0), HBlankIntervalFree(0)
-		, OBJCharacterVRAMMapping(0), ForcedBlank(0), BackgroundFlags(static_cast<std::uint16_t>(InBackgroundFlags))
+		: Mode(static_cast<std::uint16_t>(InMode)), DisplayPageSelect(0), HBlankIntervalFree(0)
+		, OBJCharacterVRAMMapping(0), BackgroundFlags(static_cast<std::uint16_t>(InBackgroundFlags))
 		, WindowFlags(static_cast<std::uint16_t>(InWindowFlags))
 	{ }
 };
@@ -57,14 +57,14 @@ struct DisplayStatusRegister
 	std::uint16_t VBlankInterruptRequest : 1;
 	std::uint16_t HBlankInterruptRequest : 1;
 	std::uint16_t VCountInterruptRequest : 1;
-	std::uint16_t Padding : 2;
+	std::uint16_t : 2;
 	std::uint16_t VCountTriggerValue : 8;
 };
 
 struct VerticalCountRegister
 {
 	std::uint16_t VerticalCount : 8;
-	std::uint16_t Padding : 8;
+	std::uint16_t : 8;
 };
 
 
@@ -136,7 +136,7 @@ struct Attribute0Register
 struct Attribute1RegisterStandard
 {
 	std::uint16_t XCoordinate : 9; // left edge of sprite
-	std::uint16_t Padding : 3;
+	std::uint16_t : 3;
 	std::uint16_t HorizontalFlip : 1;
 	std::uint16_t VerticalFlip : 1;
 	std::uint16_t SpriteSize : 2;
@@ -144,9 +144,9 @@ struct Attribute1RegisterStandard
 
 struct Attribute1RegisterAffine
 {
-	std::uint16_t Padding0 : 9;
+	std::uint16_t : 9;
 	std::uint16_t AffineIndex : 5;
-	std::uint16_t Padding1 : 2;
+	std::uint16_t : 2;
 };
 
 struct Attribute1Register
@@ -196,7 +196,7 @@ struct BackgroundControlRegister
 {
     std::uint16_t Priority : 2;
     std::uint16_t TileBlockBaseIndex : 2;
-    std::uint16_t Padding : 2;
+    std::uint16_t : 2;
     std::uint16_t MosaicEnabled : 1;
     std::uint16_t ColorMode : 1;
     std::uint16_t TileMapBlockBaseIndex : 5;

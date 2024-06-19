@@ -3361,3 +3361,8 @@ inline const std::array<Animation, 15> isaac_anims
 	Animation{ { &isaac_tiles[83], 10 }, { &isaac_tiles[78], 10 }, { &isaac_tiles[79], 10 }, { &isaac_tiles[80], 10 }, { &isaac_tiles[81], 10 }, { &isaac_tiles[82], 10 }, },
 	Animation{ { &isaac_tiles[89], 10 }, { &isaac_tiles[84], 10 }, { &isaac_tiles[85], 10 }, { &isaac_tiles[86], 10 }, { &isaac_tiles[87], 10 }, { &isaac_tiles[88], 10 }, },
 };
+
+inline const AnimationSuite isaac_animsuite
+{
+	std::span<const Animation>{ isaac_anims.begin(), isaac_anims.end() }
+};

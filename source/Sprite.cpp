@@ -2,7 +2,7 @@
 #include "Display/Sprite.hpp"
 #include "Math/Point.hpp"
 
-Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, std::span<const Animation> InAnimations, std::int32_t InPaletteAssetIndex)
+Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex)
         : Owner(InOwner), Attributes(InAttributes), Animations(InAnimations), PaletteAssetIndex(InPaletteAssetIndex)
 {
 	CurrentSpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex].Asset;

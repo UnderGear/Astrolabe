@@ -141,6 +141,12 @@ namespace Codegen
 		}
 		File << "};\n";
 
+		File << "\n";
+		File << "inline const AnimationSuite " << AssetPath.string() << "_animsuite\n";
+		File << "{\n";
+		File << "\tstd::span<const Animation>{ " << AssetPath.string() << "_anims.begin(), " << AssetPath.string() << "_anims.end() }\n";
+		File << "};\n";
+
 		WriteLastUsedAssetIndex(NextIndex);
 	}
 };
