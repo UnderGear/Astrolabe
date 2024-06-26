@@ -34,3 +34,10 @@ void Background::MoveOffset(const Vector2D& MoveAmount)
 	Offset.X = static_cast<std::uint32_t>(ScreenOffset.X);
 	Offset.Y = static_cast<std::uint32_t>(ScreenOffset.Y);
 }
+
+void Background::SetOffset(const Point2D& NewScreenOffset)
+{
+	ScreenOffset = NewScreenOffset;
+	Offset.X = static_cast<std::uint32_t>(ScreenOffset.X);
+	Offset.Y = static_cast<std::uint32_t>(ScreenOffset.Y);
+}

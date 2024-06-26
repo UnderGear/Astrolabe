@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
 #include "Math/Point.hpp"
 #include "Math/Vector.hpp"
@@ -119,18 +120,23 @@ public:
 
 	void Tick()
 	{
-		//Position += Velocity; //TODO: worry about delta time later
+		Position += Velocity; //TODO: worry about delta time later
+
+		//TODO: determine if movement is blocked. adjust velocity and position accordingly
+		//TODO: maybe a pending move to handle?
+	}
+
+	void UpdateSprite(const Point2D& RelativePosition)
+	{
 		CurrentAnimationSuite = Velocity == Vector::Zero ? AnimationSuiteType::Idle : (IsRunPressed ? AnimationSuiteType::Run : AnimationSuiteType::Walk);
 
-		auto FacingInfo{ FacingArrayIndexing[static_cast<std::size_t>(Facing)] };
+		auto& FacingInfo{ FacingArrayIndexing[static_cast<std::size_t>(Facing)] };
 		auto Index{ AnimationSuiteIndexOffsets[static_cast<std::size_t>(CurrentAnimationSuite)] + FacingInfo.BaseIndex };
-		//TODO: look up the index to use
+
 		Appearance.SetShouldFlipHorizontal(FacingInfo.ShouldFlipHorizontal);
 		Appearance.SetSpriteAnimationIndex(Index);
-		
-		// Position.X = std::clamp(Position.X, static_cast<std::int32_t>(0), SCREEN_WIDTH);
-		// Position.Y = std::clamp(Position.Y, static_cast<std::int32_t>(0), SCREEN_HEIGHT);
-		Appearance.SetPosition(Position);
+
+		Appearance.SetPosition(RelativePosition);
 		Appearance.Tick();
 	}
 };

@@ -29,5 +29,6 @@ public:
 
 	~Background();
 
-    void MoveOffset(const Vector2D& MoveAmount);
+	void MoveOffset(const Vector2D& MoveAmount);
+	void SetOffset(const Point2D& NewScreenOffset);
 };

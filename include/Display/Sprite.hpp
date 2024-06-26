@@ -58,5 +58,8 @@ public:
     void SetShouldFlipHorizontal(bool InShouldFlipHorizontal);
 
     void Tick();
+
+    std::int32_t GetHalfWidth() const { return HalfWidth; }
+    std::int32_t GetHalfHeight() const { return HalfHeight; }
 };
  
