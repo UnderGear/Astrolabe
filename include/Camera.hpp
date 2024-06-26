@@ -9,11 +9,10 @@
 class Camera
 {
 	Point2D DrawOffset;
-	//TODO: initialize some bounds. use the level's bounds and bump in by half the screen dimensions across the board
+
 	Box Bounds;
 
 	Point2D Position;
-
 
 	const Actor* Target = nullptr;
 
@@ -24,22 +23,15 @@ public:
 		, Bounds(
 			{ LevelBounds.Origin.X + DrawOffset.X, LevelBounds.Origin.Y + DrawOffset.Y },
 			{ LevelBounds.Extents.X - DrawOffset.X, LevelBounds.Extents.Y - DrawOffset.Y })
+		, Position(Bounds.GetCenter())
 		, Target(InTarget)
 	{
 		//TODO: validation on level dimensions vs screen dimensions.
 		// we may have no solution in some cases, where I guess we should just use a point at screen center
-
-		Position = Bounds.GetCenter();
 	}
-	//TODO: interpolation from current location to target
 
-	void Tick()
-	{
-		if (Target != nullptr)
-		{
-			Position = Bounds.ClampPoint(Target->Position);
-		}
-	}
+	//TODO: interpolation from current location to target?
+	void Tick();
 
 	const Point2D& GetPosition() const
 	{
