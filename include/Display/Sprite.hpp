@@ -48,6 +48,12 @@ public:
     //TODO: only allow the display to hand these out?
     explicit Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex);
 
+    Sprite(Sprite&&) = default;
+    Sprite& operator =(Sprite&&) = default;
+
+    Sprite(const Sprite&) = delete;
+    Sprite& operator =(const Sprite&) = delete;
+
     ~Sprite();
 
     // provide some access to the OAM

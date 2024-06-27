@@ -27,6 +27,12 @@ public:
 		volatile BackgroundControlRegister& InControlRegister,
 		volatile BackgroundOffset& InOffset);
 
+	Background(Background&&) = default;
+	Background& operator =(Background&&) = default;
+
+	Background(const Background&) = delete;
+	Background& operator =(const Background&) = delete;
+
 	~Background();
 
 	void MoveOffset(const Vector2D& MoveAmount);
