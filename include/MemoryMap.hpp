@@ -14,8 +14,9 @@
 
 // IWRAM (Internal Work RAM, fastest available RAM, best place for ARM code)
 // 0x03000000-0x03007FFF (32kb), 32 bit
-constexpr inline std::uint32_t ISR_MAIN_REGISTER_ADDRESS{ 0x03007FFC };
-//TODO: apparently 0x03007F9F is the end of the default interrupt stack
+constexpr inline std::uint32_t INTERRUPT_BIOS_FLAGS_ADDRESS{ 0x03007FF8 };
+constexpr inline std::uint32_t INTERRUPT_MAIN_REGISTER_ADDRESS{ 0x03007FFC };
+// 0x03007F9F is the end of the default interrupt stack
 
 
 // IO RAM (memory-mapped registers)

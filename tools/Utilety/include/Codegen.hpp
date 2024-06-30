@@ -35,7 +35,7 @@ namespace Codegen
 
 	void PrintAsset(std::ofstream& File, const std::vector<std::uint32_t>& Asset, std::string_view AssetName)
 	{
-		File << "inline constexpr std::array<std::uint32_t, " << Asset.size() << "> " << AssetName << "\n";
+		File << "inline constexpr std::array<std::uint32_t, " << Asset.size() << "> __attribute__((section(\".rodata\"), aligned(2))) " << AssetName << "\n";
 		File << "{";
 
 		auto OldFlags{ File.flags() };

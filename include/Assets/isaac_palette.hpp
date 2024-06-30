@@ -8,7 +8,7 @@
 
 #include "Display/Palette.hpp"
 
-inline constexpr std::array<std::uint32_t, 128> isaac_palette_raw
+inline constexpr std::array<std::uint32_t, 128> __attribute__((section(".rodata"), aligned(2))) isaac_palette_raw
 {
 	0x19ad0000, 0x19b51ab5, 0x36bb01b5, 0x18cd4a52, 0x01ad36b5, 0x25292d6b, 0x1abb18c6, 0x00c600cd, 
 	0x377b3def, 0x02bb01bb, 0x577e377e, 0x6fde577b, 0x57de1084, 0x56bb1abe, 0x56be36be, 0x56b56f7b, 

@@ -10,6 +10,7 @@
 #include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
 #include "Input.hpp"
+#include "Interrupt.hpp"
 #include "Level.hpp"
 #include "Math/Box.hpp"
 #include "Math/Fixed.hpp"
@@ -19,7 +20,13 @@
 
 int main()
 {
+	Interrupts::SetIRQHandler(&HBlank);
+
 	Display DisplayMode;
+
+	// Enable interrupts
+	Interrupts::InterruptMasterEnabledRegister->DisableAll = 1;//static_cast<std::uint16_t>(true);
+
 	Input MyInput;
 	Random<std::int32_t> MyRandom{ 5, -1, 1 };
 	int CurrentFrame{ 0 };
