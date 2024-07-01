@@ -8,6 +8,7 @@
 #include <span>
 
 #include "BackgroundManager.hpp"
+#include "BIOS.hpp"
 #include "DisplayRegisters.hpp"
 #include "MemoryMap.hpp"
 #include "Palette.hpp"
@@ -49,8 +50,7 @@ public:
 
 	void VSync()
 	{
-		while (VerticalCount->VerticalCount >= 160);
-		while (VerticalCount->VerticalCount < 160);
+		BIOS::VBlankWait();
 	}
 
 	void Tick()

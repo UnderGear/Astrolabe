@@ -10,10 +10,10 @@ Display::Display()
     DisplayControl->BackgroundFlags = static_cast<std::uint16_t>(BackgroundLayerFlags::Object)
         | static_cast<std::uint16_t>(BackgroundLayerFlags::Background0);
 
-    // request hblank interrupts
-    DisplayStatus->HBlankInterruptRequest = static_cast<std::uint16_t>(true);
-    // enable the hblank interrupt
-    Interrupts::InterruptEnableRegister->HBlank = static_cast<std::uint16_t>(true);
+    // request vblank interrupts
+    DisplayStatus->VBlankInterruptRequest = static_cast<std::uint16_t>(true);
+    // enable the vblank interrupt
+    Interrupts::EnableInterrupt(Interrupts::InterruptType::VBlank);
 }
 
 Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset)

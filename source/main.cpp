@@ -5,6 +5,7 @@
 #include "Assets/isaac.hpp"
 #include "Assets/isaac_palette.hpp"
 #include "Assets/TestBackground.hpp"
+#include "BIOS.hpp"
 #include "Camera.hpp"
 #include "Display/Background.hpp"
 #include "Display/Display.hpp"
@@ -20,12 +21,10 @@
 
 int main()
 {
-	Interrupts::SetIRQHandler(&HBlank);
-
 	Display DisplayMode;
 
 	// Enable interrupts
-	Interrupts::InterruptMasterEnabledRegister->DisableAll = 1;//static_cast<std::uint16_t>(true);
+	Interrupts::MasterEnable();
 
 	Input MyInput;
 	Random<std::int32_t> MyRandom{ 5, -1, 1 };
@@ -47,7 +46,7 @@ int main()
 
 	while (true)
 	{
-		DisplayMode.VSync(); //TODO: I think there's a better way of doing this. maybe an interrupt or something?
+		DisplayMode.VSync();
 
 		MyInput.Tick();
 		//TODO: update actors or whatever we're going to call them

@@ -1,34 +1,41 @@
 #pragma once
 
+#include <algorithm>
+#include <array>
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "MemoryMap.hpp"
 
-struct InterruptRegister
-{
-	std::uint16_t VBlank: 1;
-	std::uint16_t HBlank: 1;
-	std::uint16_t VCount: 2;
-	std::uint16_t Timers: 4; //TODO: maybe split into individual bits per timer or maybe an array?
-	std::uint16_t Serial: 1;
-	std::uint16_t DMAs: 4; //TODO: again, 4 DMA channels
-	std::uint16_t Keypad: 1;
-	std::uint16_t Cartridge: 1; // interrupt on removal, yikes
-	std::uint16_t Padding: 2{ 0 };
-};
-
-struct InterruptMasterEnableRegister
-{
-	std::uint16_t DisableAll: 1; // set 0 to disable all
-};
-
-// ohhh, looks like we need to set the whole register to that single bit when acking an interrupt
-// your ISR BETTER do that.
-
-
 namespace Interrupts
 {
+	struct InterruptMasterEnableRegister
+	{
+		std::uint16_t Enabled: 1; // set 0 to disable all
+	};
+
+	// It seems a bit easier to do it this way than with a bit field struct
+	using InterruptRegister = std::uint16_t;
+
+	enum class InterruptType
+	{
+		VBlank,
+		HBlank,
+		VCount,
+		Timer0,
+		Timer1,
+		Timer2,
+		Timer3,
+		Serial,
+		DMA0,
+		DMA1,
+		DMA2,
+		DMA3,
+		Keypad,
+		Cartridge,
+	};
+
 	static inline std::unique_ptr<volatile InterruptRegister> InterruptEnableRegister
 	{
 		new(reinterpret_cast<void*>(INTERRUPT_ENABLE_ADDRESS)) InterruptRegister
@@ -39,26 +46,62 @@ namespace Interrupts
 		new(reinterpret_cast<void*>(INTERRUPT_REQUEST_FLAGS_ADDRESS)) InterruptRegister
 	};
 
+	static inline std::unique_ptr<volatile InterruptRegister> BIOSFlagsRegister
+	{
+		new(reinterpret_cast<void*>(INTERRUPT_BIOS_FLAGS_ADDRESS)) InterruptRegister
+	};
+
 	static std::unique_ptr<volatile InterruptMasterEnableRegister> InterruptMasterEnabledRegister
 	{
 		new(reinterpret_cast<void*>(INTERRUPT_MASTER_ENABLE_ADDRESS)) InterruptMasterEnableRegister
 	};
 
-	using IRQHandlerT = void(*)();
+	__attribute__((section(".iwram"), long_call))
+	void MasterInterrupt();
 
-	static inline IRQHandlerT* Handler
+	using IRQHandler = void(*)();
+	static inline IRQHandler* Handler
 	{
-		new(reinterpret_cast<IRQHandlerT*>(INTERRUPT_MAIN_REGISTER_ADDRESS)) IRQHandlerT
+		new(reinterpret_cast<IRQHandler*>(INTERRUPT_MAIN_REGISTER_ADDRESS)) IRQHandler{ MasterInterrupt }
 	};
 
-	static inline void SetIRQHandler(IRQHandlerT InHandler)
+	static constexpr std::uint16_t HandlerCount{ 14 };
+	static inline std::array<std::vector<IRQHandler>, HandlerCount> Handlers;
+
+	inline void MasterEnable()
 	{
-		*Handler = InHandler;
+		InterruptMasterEnabledRegister->Enabled = 1;
 	}
 
+	inline void MasterDisable()
+	{
+		InterruptMasterEnabledRegister->Enabled = 0;
+	}
+
+	inline void EnableInterrupt(InterruptType Type)
+	{
+		*Interrupts::InterruptEnableRegister |= (1 << static_cast<std::uint16_t>(Type));
+	}
+
+	inline void DisableInterrupt(InterruptType Type)
+	{
+		*Interrupts::InterruptEnableRegister &= ~(1 << static_cast<std::uint16_t>(Type));
+	}
+
+	inline void AddHandler(InterruptType Type, IRQHandler Handler)
+	{
+		auto& Bundle = Handlers[static_cast<std::uint16_t>(Type)];
+		Bundle.push_back(Handler);
+	}
+
+	inline void RemoveHandler(InterruptType Type, IRQHandler Handler)
+	{
+		auto& Bundle{ Handlers[static_cast<std::uint16_t>(Type)] };
+		std::remove(Bundle.begin(), Bundle.end(), Handler);
+	}
+
+	inline void ClearHandlers(InterruptType Type)
+	{
+		Handlers[static_cast<std::uint16_t>(Type)].clear();
+	}
 };
-
-//TODO: interrupt switchboard instead of just handling the hblank
-
-__attribute__((section(".iwram"), long_call))
-void HBlank();
