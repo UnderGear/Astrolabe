@@ -6,7 +6,6 @@
 #include "Assets/brin_palette.hpp"
 #include "Assets/isaac.hpp"
 #include "Assets/isaac_palette.hpp"
-#include "Assets/TestBackground.hpp"
 #include "BIOS.hpp"
 #include "Camera.hpp"
 #include "Display/Background.hpp"
@@ -20,21 +19,6 @@
 #include "Math/Point.hpp"
 #include "Math/Vector.hpp"
 #include "Random.hpp"
-
-inline constexpr BackgroundTileAsset BrinTilesAsset
-{
-	std::span<const std::uint32_t>(brinTiles.begin(), brinTiles.end()),
-	0x00001,
-	RegularBackgroundDimensions::t64xt32
-};
-
-inline constexpr BackgroundMapAsset BrinMapAsset
-{
-	std::span<const std::uint16_t>(brinMap.begin(), brinMap.end()),
-	0x00001
-};
-
-
 
 int main()
 {
@@ -54,7 +38,7 @@ int main()
 
 
 	//TODO: bundle the background, level bounds, and level together a little tighter, along the lines of Actor
-	auto TestBG{ DisplayMode.LoadBackground(BrinTilesAsset, brin_palette, BrinMapAsset) };
+	auto TestBG{ DisplayMode.LoadBackground(brin_tiles, brin_palette, brin_map) };
 	//auto TestBG{ DisplayMode.LoadBackground(TestBackgroundAsset, TestBackgroundPaletteAsset, TestBackgroundMapAsset) };
 
 	int LevelWidthTiles{ 64 };

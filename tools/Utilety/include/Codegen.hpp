@@ -155,7 +155,7 @@ namespace Codegen
 	}
 
 	void GenerateBackgroundHeader(std::filesystem::path Directory, std::filesystem::path AssetPath,
-		const std::vector<std::uint32_t>& Tiles, const std::vector<TileMapEntry>& TileMap)
+		const std::vector<std::uint32_t>& Tiles, const std::vector<TileMapEntry>& TileMap, int WidthTiles, int HeightTiles)
 	{
 		// includes section
 		std::ofstream File;
@@ -173,7 +173,7 @@ namespace Codegen
 		File << "#include \"Display/SpriteManager.hpp\"\n";
 		File << "\n";
 
-		PrintAsset(File, Tiles, "std::uint32_t", 8, AssetPath.string() + "Tiles");
+		PrintAsset(File, Tiles, "std::uint32_t", 8, AssetPath.string() + "_tiles_raw");
 		File << "\n";
 
 		std::vector<std::uint16_t> TransformedTileMap;
@@ -184,6 +184,25 @@ namespace Codegen
 			return std::bit_cast<std::uint16_t>(Entry);
 		});
 
-		PrintAsset(File, TransformedTileMap, "std::uint16_t", 4, AssetPath.string() + "Map");
+		PrintAsset(File, TransformedTileMap, "std::uint16_t", 4, AssetPath.string() + "_map_raw");
+		File << "\n";
+
+		auto TileIndex{ GetNextAssetIndex() };
+		File << "inline constexpr BackgroundTileAsset " << AssetPath.string() << "_tiles\n";
+		File << "{\n";
+		File << "\tstd::span<const std::uint32_t>(" << AssetPath.string() << "_tiles_raw.begin(), " << AssetPath.string() << "_tiles_raw.end()),\n";
+		File << "\t" << TileIndex << ",\n";
+		File << "\t" << "RegularBackgroundDimensions::t" << WidthTiles << "xt" << HeightTiles << "\n";
+		File << "};\n";
+		File << "\n";
+		WriteLastUsedAssetIndex(TileIndex);
+
+		auto MapIndex{ GetNextAssetIndex() };
+		File << "inline constexpr BackgroundMapAsset " << AssetPath.string() << "_map\n";
+		File << "{\n";
+		File << "\tstd::span<const std::uint16_t>(" << AssetPath.string() << "_map_raw.begin(), " << AssetPath.string() << "_map_raw.end()),\n";
+		File << "\t" << TileIndex << "\n";
+		File << "};\n";
+		WriteLastUsedAssetIndex(MapIndex);
 	}
 };

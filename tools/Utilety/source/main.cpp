@@ -74,7 +74,7 @@ static const std::filesystem::path CogedenPath{ "include/Assets/" };
 
 template<typename PixelT>
 std::pair<std::vector<std::uint32_t>, bool> UpdatePalette(PaletteDescription& PaletteDesc,
-	std::span<PixelT> Pixels, int Width, int Height, int TilesIndicesPerTilePack)
+	std::span<PixelT> Pixels, int Width, int Height, std::size_t TilesIndicesPerTilePack)
 {
 	// Associate bitmap pixels with palette indices, add new colors to the palette
 	std::vector<std::uint16_t> Indices;
@@ -448,7 +448,7 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 				}
 			}
 
-			Codegen::GenerateBackgroundHeader(CogedenPath, HeaderName, FlattenedTiles, AdjustedTileMap);
+			Codegen::GenerateBackgroundHeader(CogedenPath, HeaderName, FlattenedTiles, AdjustedTileMap, HorizontalTileCount, VerticalTileCount);
 		}
 	}
 

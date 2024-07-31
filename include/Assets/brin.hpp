@@ -9,7 +9,7 @@
 #include "Display/Sprite.hpp"
 #include "Display/SpriteManager.hpp"
 
-inline constexpr std::array<std::uint32_t, 328> __attribute__((section(".rodata"), aligned(2))) brinTiles
+inline constexpr std::array<std::uint32_t, 328> __attribute__((section(".rodata"), aligned(2))) brin_tiles_raw
 {
 	0000000000, 0000000000, 0000000000, 0000000000, 0000000000, 0000000000, 0000000000, 0000000000, 
 	0x11111111, 0x54514111, 0x25214141, 0x55161511, 0x65521211, 0x12421111, 0x26546111, 0x61444121, 
@@ -54,7 +54,7 @@ inline constexpr std::array<std::uint32_t, 328> __attribute__((section(".rodata"
 	0000000000, 0x00560000, 0x02254004, 0x07227115, 0x61661331, 0x16722115, 0x76215666, 0x61156121, 
 };
 
-inline constexpr std::array<std::uint16_t, 2048> __attribute__((section(".rodata"), aligned(2))) brinMap
+inline constexpr std::array<std::uint16_t, 2048> __attribute__((section(".rodata"), aligned(2))) brin_map_raw
 {
 	000000, 000000, 000000, 000000, 000000, 000000, 0x0001, 0x0002, 
 	000000, 000000, 000000, 000000, 000000, 000000, 000000, 000000, 
@@ -312,4 +312,17 @@ inline constexpr std::array<std::uint16_t, 2048> __attribute__((section(".rodata
 	000000, 000000, 000000, 000000, 000000, 000000, 000000, 000000, 
 	000000, 000000, 000000, 000000, 000000, 000000, 000000, 000000, 
 	000000, 000000, 000000, 000000, 000000, 000000, 000000, 000000, 
+};
+
+inline constexpr BackgroundTileAsset brin_tiles
+{
+	std::span<const std::uint32_t>(brin_tiles_raw.begin(), brin_tiles_raw.end()),
+	90,
+	RegularBackgroundDimensions::t64xt32
+};
+
+inline constexpr BackgroundMapAsset brin_map
+{
+	std::span<const std::uint16_t>(brin_map_raw.begin(), brin_map_raw.end()),
+	90
 };
