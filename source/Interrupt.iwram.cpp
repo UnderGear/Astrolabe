@@ -11,8 +11,8 @@ namespace Interrupts
 		auto TriggeredMask{ EnabledMask & FlagMask };
 
 		// Set our interrupts as handled
-		*Interrupts::InterruptRequestFlagsRegister = Mask;
-		*Interrupts::BIOSFlagsRegister |= Mask;
+		*Interrupts::InterruptRequestFlagsRegister = FlagMask;
+		*Interrupts::BIOSFlagsRegister |= FlagMask;
 
 		for (std::uint16_t i{ 0 }; i < HandlerCount; ++i)
 		{

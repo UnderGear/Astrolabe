@@ -14,6 +14,26 @@ namespace BIOS
 		swi_call(0x0);
 	}
 
+	inline void RegisterRAMReset()
+	{
+		swi_call(0x1);
+	}
+
+	inline void Halt()
+	{
+		swi_call(0x2);
+	}
+
+	inline void Stop()
+	{
+		swi_call(0x3);
+	}
+
+	inline void InterruptWait()
+	{
+		swi_call(0x4);
+	}
+
 	inline void VBlankWait()
 	{
 		swi_call(0x5);

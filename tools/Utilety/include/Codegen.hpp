@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <bit>
 #include <cstdint>
 #include <filesystem>
@@ -10,6 +11,7 @@
 
 #include "PaletteColor.hpp"
 #include "SpritesheetDescription.hpp"
+#include "TileMap.hpp"
 
 namespace Codegen
 {
@@ -33,9 +35,11 @@ namespace Codegen
 	static constexpr auto EntriesPerLine{ 8 };
 	static constexpr std::string_view HeaderSuffix{ ".hpp" };
 
-	void PrintAsset(std::ofstream& File, const std::vector<std::uint32_t>& Asset, std::string_view AssetName)
+	//TODO: param for array's data type, I guess the call to setw, too
+	template <typename BackingT>
+	void PrintAsset(std::ofstream& File, const std::vector<BackingT>& Asset, std::string_view BackingTypeName, int DigitsCount, std::string_view AssetName)
 	{
-		File << "inline constexpr std::array<std::uint32_t, " << Asset.size() << "> __attribute__((section(\".rodata\"), aligned(2))) " << AssetName << "\n";
+		File << "inline constexpr std::array<" << BackingTypeName << ", " << Asset.size() << "> __attribute__((section(\".rodata\"), aligned(2))) " << AssetName << "\n";
 		File << "{";
 
 		auto OldFlags{ File.flags() };
@@ -45,7 +49,7 @@ namespace Codegen
 			{
 				File << "\n\t";
 			}
-			File << std::showbase << std::internal << std::setfill('0') << std::setw(10) << std::hex << Asset[i] << ", ";
+			File << std::showbase << std::internal << std::setfill('0') << std::setw(2 + DigitsCount) << std::hex << Asset[i] << ", ";
 		}
 		File << "\n};";
 		File << "\n";
@@ -69,7 +73,7 @@ namespace Codegen
 		File << "\n";
 
 		auto RawName{ std::string{ PaletteName } + "_raw" };
-		PrintAsset(File, PackedPalette, RawName);
+		PrintAsset(File, PackedPalette, "std::uint32_t", 8, RawName);
 
 		auto NextIndex{ GetNextAssetIndex() };
 		
@@ -83,7 +87,7 @@ namespace Codegen
 	}
 
 	// array of array of assets
-	void GenerateTileHeader(std::filesystem::path Directory, std::filesystem::path AssetPath, const std::vector<std::vector<std::uint32_t>>& PackedIndices, const SpritesheetDescription& Desc)
+	void GenerateSpriteTileHeader(std::filesystem::path Directory, std::filesystem::path AssetPath, const std::vector<std::vector<std::uint32_t>>& PackedIndices, const SpritesheetDescription& Desc)
 	{
 		// includes section
 		std::ofstream File;
@@ -104,7 +108,7 @@ namespace Codegen
 		for (std::size_t i{ 0 }; i < PackedIndices.size(); ++i)
 		{
 			auto NameAtIndex{ AssetPath.string() + std::to_string(i) };
-			PrintAsset(File, PackedIndices[i], NameAtIndex);
+			PrintAsset(File, PackedIndices[i], "std::uint32_t", 8, NameAtIndex);
 			File << "\n";
 		}
 
@@ -148,5 +152,38 @@ namespace Codegen
 		File << "};\n";
 
 		WriteLastUsedAssetIndex(NextIndex);
+	}
+
+	void GenerateBackgroundHeader(std::filesystem::path Directory, std::filesystem::path AssetPath,
+		const std::vector<std::uint32_t>& Tiles, const std::vector<TileMapEntry>& TileMap)
+	{
+		// includes section
+		std::ofstream File;
+		std::filesystem::path FileName{ (Directory/AssetPath).string() + ".hpp" };
+		File.open(FileName);
+		File << "// GENERATED CODE. DO NOT MANUALLY MODIFY THIS FILE.\n";
+		File << "\n";
+		File << "#pragma once\n";
+		File << "\n";
+		File << "#include <array>\n";
+		File << "#include <cstdint>\n";
+		File << "#include <span>\n";
+		File << "\n";
+		File << "#include \"Display/Sprite.hpp\"\n";
+		File << "#include \"Display/SpriteManager.hpp\"\n";
+		File << "\n";
+
+		PrintAsset(File, Tiles, "std::uint32_t", 8, AssetPath.string() + "Tiles");
+		File << "\n";
+
+		std::vector<std::uint16_t> TransformedTileMap;
+		TransformedTileMap.reserve(TileMap.size());
+
+		std::ranges::transform(TileMap, std::back_inserter(TransformedTileMap), [](const TileMapEntry& Entry)
+		{
+			return std::bit_cast<std::uint16_t>(Entry);
+		});
+
+		PrintAsset(File, TransformedTileMap, "std::uint16_t", 4, AssetPath.string() + "Map");
 	}
 };

@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <vector>
 
-#include <SpriteDimension.hpp>
+#include "SpriteDimension.hpp"
 
 struct SpriteAnimationSetDescription
 {

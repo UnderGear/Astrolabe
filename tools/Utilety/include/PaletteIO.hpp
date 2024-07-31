@@ -11,14 +11,15 @@
 
 namespace PaletteIO
 {
-	void LoadPalette(std::filesystem::path FileName, std::vector<PaletteColor>& Palette)
+	void LoadPalette(std::filesystem::path FileName, std::vector<PaletteColor>& Palette, bool AddAlpha)
 	{
 		std::ifstream PaletteFile{ FileName, std::ios::binary | std::ios::ate };
 		auto Position{ PaletteFile.tellg() };
 		if (Position <= 0)
 		{
 			// No/empty palette file. Add the default color
-			Palette.emplace_back(0, 0, 0);
+			if (AddAlpha)
+				Palette.emplace_back(0, 0, 0);
 			return;
 		}
 

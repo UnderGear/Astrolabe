@@ -11,7 +11,7 @@
 
 //TODO: I'm tempted to pull the background asset struct out of the bg manager header
 
-inline constexpr std::array<std::uint32_t, 128> brinPal
+inline constexpr std::array<std::uint32_t, 128> brinPalOld
 {
 	0x02DF1042,0x00AC01D7,0x41AD5A73,0x18632D08,
 	0x48FB0BB1,0x00007FFF,0x44E57FFF,0x00007FFF,
@@ -50,7 +50,7 @@ inline constexpr std::array<std::uint32_t, 128> brinPal
 	0x0F3F30A4,0x001F01BF,0x00000012,0x00000000,
 };
 
-inline constexpr std::array<std::uint32_t, 248> brinTiles
+inline constexpr std::array<std::uint32_t, 248> brinTilesOld
 {
 	0x00000000,0x00000000,0x00000000,0x00000000,
 	0x00000000,0x00000000,0x00000000,0x00000000,
@@ -125,18 +125,18 @@ inline constexpr std::array<std::uint32_t, 248> brinTiles
 
 inline constexpr PaletteAsset TestBackgroundPaletteAsset
 {
-	std::span<const std::uint32_t>(brinPal.begin(), brinPal.end()),
+	std::span<const std::uint32_t>(brinPalOld.begin(), brinPalOld.end()),
 	0x00001
 };
 
 inline constexpr BackgroundTileAsset TestBackgroundAsset
 {
-	std::span<const std::uint32_t>(brinTiles.begin(), brinTiles.end()),
+	std::span<const std::uint32_t>(brinTilesOld.begin(), brinTilesOld.end()),
 	0x00001,
 	RegularBackgroundDimensions::t64xt32
 };
 
-inline constexpr std::array<std::uint16_t, 2048> brinMap
+inline constexpr std::array<std::uint16_t, 2048> brinMapOld
 {
 	0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x3001,0x3002,
 	0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,
@@ -429,6 +429,6 @@ inline constexpr std::array<std::uint16_t, 2048> brinMap
 
 inline constexpr BackgroundMapAsset TestBackgroundMapAsset
 {
-	std::span<const std::uint16_t>(brinMap.begin(), brinMap.end()),
+	std::span<const std::uint16_t>(brinMapOld.begin(), brinMapOld.end()),
 	0x00001
 };
