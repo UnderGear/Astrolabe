@@ -4,6 +4,8 @@
 #include "DisplayRegisters.hpp"
 #include "Math/Point.hpp"
 
+#include <utility>
+
 struct Vector2D;
 
 class Background
@@ -37,4 +39,6 @@ public:
 
 	void MoveOffset(const Vector2D& MoveAmount);
 	void SetOffset(const Point2D& NewScreenOffset);
+
+	std::pair<int, int> GetDimensions() const;
 };

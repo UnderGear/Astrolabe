@@ -41,8 +41,7 @@ int main()
 	auto TestBG{ DisplayMode.LoadBackground(brin_tiles, brin_palette, brin_map) };
 	//auto TestBG{ DisplayMode.LoadBackground(TestBackgroundAsset, TestBackgroundPaletteAsset, TestBackgroundMapAsset) };
 
-	int LevelWidthTiles{ 64 };
-	int LevelHeightTiles{ 32 };
+	auto [LevelWidthTiles, LevelHeightTiles]{ TestBG.GetDimensions() };
 	constexpr int TileDimension{ 8 }; //TODO: this will depend on the BackgroundControlRegister::BackgroundSize used and may not even be square
 	Box LevelBounds{ Point::Origin, Point2D{ static_cast<i24f8_t>(LevelWidthTiles * TileDimension), static_cast<i24f8_t>(LevelHeightTiles * TileDimension) } };
 	Level TestLevel{ LevelBounds, std::move(TestBG) };

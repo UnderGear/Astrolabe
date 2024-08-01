@@ -41,3 +41,18 @@ void Background::SetOffset(const Point2D& NewScreenOffset)
 	Offset.X = static_cast<std::uint32_t>(ScreenOffset.X);
 	Offset.Y = static_cast<std::uint32_t>(ScreenOffset.Y);
 }
+
+std::pair<int, int> Background::GetDimensions() const
+{
+	switch (Dimensions)
+	{
+	case RegularBackgroundDimensions::t32xt32:
+		return { 32, 32 };
+	case RegularBackgroundDimensions::t32xt64:
+		return { 32, 64 };
+	case RegularBackgroundDimensions::t64xt32:
+		return { 64, 32 };
+	case RegularBackgroundDimensions::t64xt64:
+		return { 64, 64 };
+	}
+}
