@@ -354,6 +354,8 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 			continue;
 		}
 
+		std::cout << FullPath << std::endl;
+
 		//TODO: we have width and height. we should validate dimensions with the bg type
 
 		std::span<PixelNoAlpha> Pixels{ reinterpret_cast<PixelNoAlpha*>(Bytes.get()), static_cast<std::size_t>(Width * Height) };
@@ -371,7 +373,9 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 		std::vector<std::array<std::uint32_t, TileHeight>> Tiles;
 		Tiles.reserve(TileCount);
 		std::vector<std::vector<TileMapEntry>> TileMaps;
-		auto TileMapCount{ TileCount / (32 * 32) };
+		constexpr std::size_t TileMapDimension{ 32 };
+		constexpr std::size_t TileMapSize{ TileMapDimension * TileMapDimension }; // Each tile map is 32x32 tiles
+		auto TileMapCount{ TileCount / TileMapSize };
 		TileMaps.reserve(TileMapCount);
 		//std::cout << "tile count: " << TileCount << ", tile map count: " << TileMapCount << std::endl;
 		for (auto TileMapIndex{ 0 }; TileMapIndex < TileMapCount; ++TileMapIndex)
@@ -386,6 +390,7 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 			auto TileY{ TileIndex / HorizontalTileCount };
 			auto TileX{ TileIndex % HorizontalTileCount };
 
+			// Build up the current tile by the packed palette indices it contains
 			std::array<std::uint32_t, TileHeight> Tile;
 			for (int TileRowIndex{ 0 }; TileRowIndex < TileHeight; ++TileRowIndex)
 			{
@@ -398,7 +403,7 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 			}
 
 			//TODO try the tile flipped vertically, horizontally, and both
-			// If we have a match, just set our flip bits when inserting into the tile map and don't add a new tile
+			// If we have a matching tile already, just set our flip bits when inserting into the tile map and don't add a new tile
 			auto TileIter{ std::find(Tiles.begin(), Tiles.end(), Tile) };
 			if (TileIter == Tiles.end())
 			{
@@ -406,7 +411,9 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 				TileIter = std::prev(Tiles.end());
 			}
 
+			// Now add the tile to the tile map at the appropriate index
 			// based on the map layout, we need to split this into multiple background maps
+			// each map is 32x32 tiles:
 			// 32x32 - 0
 			// 64x32 - 0, 1
 			// 32x64 - 0
@@ -419,7 +426,7 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 			MapEntry.VerticalFlip = 0;
 			MapEntry.PaletteBank = 0;
 
-			auto MapIndex{ TileY / 32 + TileX / 32 };
+			auto MapIndex{ TileY / TileMapDimension + TileX / TileMapDimension };
 			TileMaps[MapIndex].push_back(std::move(MapEntry));
 		}
 
