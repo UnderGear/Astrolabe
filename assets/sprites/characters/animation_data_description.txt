@@ -1,0 +1,15 @@
+.ad suffix for "animation data"
+see isaac/isaac.ad
+
+4, 4 - tiles per sprite/animation frame. 4 tiles wide, 4 tiles tall
+3 - 3 animation sheet files
+isaaclook.bmp - first animation sheet file
+12,5 - this animation sheet has 12 animation poses and 5 directional rows
+0,1,2,3,2,3,2,1,0,4,0,5 - first directional row animation pose indices (all indices reference the first row)
+6,7,8,9,8,9,8,7,6,10,6,11 - second directional row animation pose indices (all indices reference the second row)
+...
+180,30,60,30,30,30,60,30,60,30,60,30 - game frame durations to hold this pose
+_s,_se,_e,_ne,_n - suffixes to append. do we really need these anymore?
+
+
+
