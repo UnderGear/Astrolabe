@@ -13,7 +13,7 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerServerAddress": "localhost:2345",
-            "miDebuggerPath": "C:/devkitPro/devkitARM/bin/arm-none-eabi-gdb.exe",
+            "miDebuggerPath": "${env:DEVKITARM}/bin/arm-none-eabi-gdb.exe",
             "setupCommands": [
                 {
                     "text": "shell start /b \"\" \"${env:ProgramFiles}/mGBA/mGBA.exe\" -g \"${workspaceFolder}/Astrolabe.elf\""
@@ -34,7 +34,7 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerServerAddress": "localhost:2345",
-            "miDebuggerPath": "C:/devkitPro/devkitARM/bin/arm-none-eabi-gdb.exe",
+            "miDebuggerPath": "${env:DEVKITARM}/bin/arm-none-eabi-gdb.exe",
             "setupCommands": [
                 {
                     "text": "shell start /b \"\" \"${env:ProgramFiles}/mGBA/mGBA.exe\" -g \"${workspaceFolder}/Astrolabe.elf\""
