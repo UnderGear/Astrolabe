@@ -42,7 +42,7 @@ void Background::SetOffset(const Point2D& NewScreenOffset)
 	Offset.Y = static_cast<std::uint32_t>(ScreenOffset.Y);
 }
 
-std::pair<int, int> Background::GetDimensions() const
+[[nodiscard]] std::pair<int, int> Background::GetDimensions() const
 {
 	switch (Dimensions)
 	{
@@ -52,7 +52,7 @@ std::pair<int, int> Background::GetDimensions() const
 		return { 32, 64 };
 	case RegularBackgroundDimensions::t64xt32:
 		return { 64, 32 };
-	case RegularBackgroundDimensions::t64xt64:
+	default:
 		return { 64, 64 };
 	}
 }
