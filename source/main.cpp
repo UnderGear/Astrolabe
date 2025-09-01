@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <cstdint>
 
 #include "Actor.hpp"
 #include "Assets/brin.hpp"
@@ -7,8 +8,8 @@
 #include "Assets/isaac.hpp"
 #include "Assets/isaac_palette.hpp"
 #include "BIOS.hpp"
-#include "Camera.hpp"
 #include "Display/Background.hpp"
+#include "Display/Camera.hpp"
 #include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
 #include "Input.hpp"
@@ -29,7 +30,7 @@ int main()
 
 	Input MyInput;
 	Random<std::int32_t> MyRandom{ 5, -1, 1 };
-	int CurrentFrame{ 0 };
+	std::uint32_t CurrentFrame{ 0 };
 
 	constexpr Point2D ScreenCenter{ static_cast<i24f8_t>((SCREEN_WIDTH / 2)), static_cast<i24f8_t>((SCREEN_HEIGHT / 2)) };
 	Actor TestActor{ DisplayMode, isaac_animsuite, isaac_palette, ScreenCenter };
@@ -37,7 +38,7 @@ int main()
 
 
 
-	//TODO: bundle the background, level bounds, and level together a little tighter, along the lines of Actor
+	//TODO: bundle the background, level bounds, and level together a little tighter, along the lines of Actor. that should also call the appropriate dtor/tear down logic
 	auto TestBG{ DisplayMode.LoadBackground(brin_tiles, brin_palette, brin_map) };
 	//auto TestBG{ DisplayMode.LoadBackground(TestBackgroundAsset, TestBackgroundPaletteAsset, TestBackgroundMapAsset) };
 
@@ -55,6 +56,7 @@ int main()
 		MyInput.Tick();
 		//TODO: update actors or whatever we're going to call them
 
+		//TODO: this kind of input logic handling needs to live in some dedicated controller or something
 		static constexpr i24f8_t RunMultiplier{ 2.f };
 
 		auto DPadInput{ MyInput.GetDPadInput().GetNormalized() };

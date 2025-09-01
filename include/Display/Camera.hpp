@@ -33,12 +33,12 @@ public:
 	//TODO: interpolation from current location to target?
 	void Tick();
 
-	const Point2D& GetPosition() const
+	[[nodiscard]] const Point2D& GetPosition() const
 	{
 		return Position;
 	}
 
-	const Point2D& GetDrawOffset() const
+	[[nodiscard]] const Point2D& GetDrawOffset() const
 	{
 		return DrawOffset;
 	}

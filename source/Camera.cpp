@@ -1,4 +1,4 @@
-#include "Camera.hpp"
+#include "Display/Camera.hpp"
 
 void Camera::Tick()
 {

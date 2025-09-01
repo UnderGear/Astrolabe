@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-#include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
 #include "Math/Point.hpp"
 #include "Math/Vector.hpp"

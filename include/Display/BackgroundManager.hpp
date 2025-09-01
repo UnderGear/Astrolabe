@@ -6,6 +6,7 @@
 #include <span>
 
 #include "Assets/Asset.hpp"
+#include "Camera.hpp"
 #include "DisplayRegisters.hpp"
 #include "MemoryMap.hpp"
 #include "Palette.hpp"
@@ -48,9 +49,10 @@ class BackgroundManager
     static constexpr std::size_t BackgroundCount{ 4 };
     static constexpr std::size_t AffineBackgroundCount{ 2 };
 
-    std::array<volatile BackgroundControlRegister, BackgroundCount>* ControlRegisters{ reinterpret_cast<std::array<volatile BackgroundControlRegister, BackgroundCount>*>(BG_CONTROL_ADDRESS) };
-    std::array<volatile BackgroundOffset, BackgroundCount>* OffsetRegisters{ reinterpret_cast<std::array<volatile BackgroundOffset, BackgroundCount>*>(BG_OFFSET_ADDRESS) };
-    std::array<volatile BackgroundAffineParams, AffineBackgroundCount>* AffineRegisters{ reinterpret_cast<std::array<volatile BackgroundAffineParams, AffineBackgroundCount>*>(BG_AFFINE_ADDRESS) };
+    //TODO: make sure that only sensible combinations of backgrounds can be used concurrently
+    std::array<volatile BackgroundControlRegister, BackgroundCount>& ControlRegisters{ *reinterpret_cast<std::array<volatile BackgroundControlRegister, BackgroundCount>*>(BG_CONTROL_ADDRESS) };
+    std::array<volatile BackgroundOffset, BackgroundCount>& OffsetRegisters{ *reinterpret_cast<std::array<volatile BackgroundOffset, BackgroundCount>*>(BG_OFFSET_ADDRESS) };
+    std::array<volatile BackgroundAffineParams, AffineBackgroundCount>& AffineRegisters{ *reinterpret_cast<std::array<volatile BackgroundAffineParams, AffineBackgroundCount>*>(BG_AFFINE_ADDRESS) };
 
 	PaletteManager BackgroundPaletteManager{ reinterpret_cast<void*>(BACKGROUND_PALETTE_ADDRESS) };
 
@@ -58,14 +60,14 @@ class BackgroundManager
     // TileMapEntries and TileBlocks are overlapping memory. We need to be VERY careful about what we allow access to
     
     // 4 blocks of raw tile data
-    std::array<BackgroundTileBlock, BackgroundCount>* TileBlocks{ reinterpret_cast<std::array<BackgroundTileBlock, BackgroundCount>*>(VRAM_ADDRESS) };
+    std::array<BackgroundTileBlock, BackgroundCount>& TileBlocks{ *reinterpret_cast<std::array<BackgroundTileBlock, BackgroundCount>*>(VRAM_ADDRESS) };
 
     // 32 allowable tile map blocks, 2048 bytes each = 1024 entries per map block
     static constexpr std::int32_t TileMapBlockCount{ 32 };
     static constexpr std::int32_t TileMapEntriesPerBlock{ 1024 };
     static constexpr std::int32_t MaxTileMapEntries{ TileMapBlockCount * TileMapEntriesPerBlock };
     //TODO: should this just be backed with a std::uint16_t instead? or maybe even 32 for loading speed?
-    std::array<std::uint16_t, MaxTileMapEntries>* TileMapEntries{ reinterpret_cast<std::array<std::uint16_t, MaxTileMapEntries>*>(VRAM_ADDRESS) };
+    std::array<std::uint16_t, MaxTileMapEntries>& TileMapEntries{ *reinterpret_cast<std::array<std::uint16_t, MaxTileMapEntries>*>(VRAM_ADDRESS) };
     
     std::array<BackgroundTileBlockData, BackgroundCount> LoadedTileBlocks;
     std::array<BackgroundTileMapEntryData, BackgroundCount> LoadedTileMaps;
@@ -80,6 +82,23 @@ public:
     // Returns the base tile block index for the loaded tiles
     std::int32_t LoadTiles(const BackgroundTileAsset& ToAdd);
     void UnloadTiles(std::int32_t Index);
+
+
+    //TODO: ok. let's move away from the LoadMap API, at least in this incarnation
+    // instead, let's set a target map for a specific background layer
+    // and then control a view into it as we move a "camera" around
+    // 256x256 pixels is what Golden Sun uses, sliding the 240x160 pixel screen around on it
+    // they rely on background wrapping and offsets to draw everything and load tile references on demand as the window moves around the background
+    // note: some tiles may be blank depending on the background layer in question. maybe we need a reserved alpha tile?
+
+    // we need to map our screen coordinates within the whole map asset
+    // then we need to 
+    // we'd have up to 4 rects to describe the parts of the 
+
+
+    //TODO: maybe we should have a camera as part of the ctor
+    void SetMapTarget(const BackgroundMapAsset& Target, std::int32_t TileBlockIndex, const Camera& Cam, std::size_t BackgroundIndex);
+
 
     // Returns the base tile map block index
     //TODO: I guess we'd do animations by modifying the map at runtime?

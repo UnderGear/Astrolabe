@@ -33,7 +33,7 @@ std::int32_t BackgroundManager::LoadTiles(const BackgroundTileAsset& ToAdd)
 	// Calculate the index of our tile block from the iterator
 	auto Index{ std::distance(LoadedTileBlocks.begin(), EmptyBlockEntry) };
 	// Copy the data into the tile block at the index
-	auto [LastIterator, Next] { std::ranges::copy(ToAdd.Data, (*TileBlocks)[Index].begin()) };
+	auto [LastIterator, Next] { std::ranges::copy(ToAdd.Data, TileBlocks[Index].begin()) };
 
 	EmptyBlockEntry->AssetID = ToAdd.ID;
 	EmptyBlockEntry->NextAvailable = Next;
@@ -43,7 +43,7 @@ std::int32_t BackgroundManager::LoadTiles(const BackgroundTileAsset& ToAdd)
 void BackgroundManager::UnloadTiles(std::int32_t Index)
 {
 	auto& ToClear{ LoadedTileBlocks[Index] };
-	auto& Block{ (*TileBlocks)[Index] };
+	auto& Block{ TileBlocks[Index] };
 	ToClear.AssetID = BackgroundTileAsset::ID_INVALID;
 	ToClear.NextAvailable = Block.begin();
 	Block.fill(0); //TODO: this is also stomping map data. maybe this isn't the right move. is it even worth doing?
@@ -62,10 +62,11 @@ std::int32_t BackgroundManager::LoadMap(const BackgroundMapAsset& ToAdd, std::in
 	auto TileMapEntryBlocksRequired{ ((ToAddCount - 1) / TileMapEntriesPerBlock) + 1 };
 	// and these are backed by uint16 (for now)
 
+	//TODO: magic number.
 	auto StartIndex{ 8 * TileBlockIndex + 8 - TileMapEntryBlocksRequired };
 
 	// note that we HAVE to start on our tile map entry block beginning
-	auto Start{ std::ranges::next(TileMapEntries->begin(), StartIndex * TileMapEntriesPerBlock) };
+	auto Start{ std::ranges::next(TileMapEntries.begin(), StartIndex * TileMapEntriesPerBlock) };
 	std::ranges::copy(ToAdd.Data, Start);
 
 	auto& TileMapData{ LoadedTileMaps[TileBlockIndex] };
@@ -86,11 +87,11 @@ void BackgroundManager::UnloadMap(std::int32_t TileBlockIndex)
 volatile BackgroundControlRegister& BackgroundManager::GetControlRegister(std::int32_t BackgroundIndex)
 {
 	//TODO: bounds checking
-	return (*ControlRegisters)[BackgroundIndex];
+	return ControlRegisters[BackgroundIndex];
 }
 
 volatile BackgroundOffset& BackgroundManager::GetBackgroundOffset(std::int32_t BackgroundIndex)
 {
 	//TODO: bounds checking
-	return (*OffsetRegisters)[BackgroundIndex];
+	return OffsetRegisters[BackgroundIndex];
 }
