@@ -97,7 +97,7 @@ namespace Interrupts
 	inline void RemoveHandler(InterruptType Type, IRQHandler Handler)
 	{
 		auto& Bundle{ Handlers[static_cast<std::uint16_t>(Type)] };
-		std::remove(Bundle.begin(), Bundle.end(), Handler);
+		[[maybe_unused]] auto Removed{ std::remove(Bundle.begin(), Bundle.end(), Handler) };
 	}
 
 	inline void ClearHandlers(InterruptType Type)
