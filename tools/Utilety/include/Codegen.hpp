@@ -169,8 +169,8 @@ namespace Codegen
 		File << "#include <cstdint>\n";
 		File << "#include <span>\n";
 		File << "\n";
-		File << "#include \"Display/Sprite.hpp\"\n";
-		File << "#include \"Display/SpriteManager.hpp\"\n";
+		File << "#include \"Display/Background.hpp\"\n";
+		File << "#include \"Display/BackgroundManager.hpp\"\n";
 		File << "\n";
 
 		PrintAsset(File, Tiles, "std::uint32_t", 8, AssetPath.string() + "_tiles_raw");

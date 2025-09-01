@@ -6,8 +6,8 @@
 #include <cstdint>
 #include <span>
 
-#include "Display/Sprite.hpp"
-#include "Display/SpriteManager.hpp"
+#include "Display/Background.hpp"
+#include "Display/BackgroundManager.hpp"
 
 inline constexpr std::array<std::uint32_t, 328> __attribute__((section(".rodata"), aligned(2))) brin_tiles_raw
 {
