@@ -79,6 +79,11 @@
         "xlocmon": "cpp",
         "xloctime": "cpp",
         "xtree": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "codecvt": "cpp",
+        "cwctype": "cpp",
+        "numeric": "cpp",
+        "string_view": "cpp",
+        "text_encoding": "cpp"
     }
 }

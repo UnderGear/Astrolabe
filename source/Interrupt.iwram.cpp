@@ -1,4 +1,4 @@
-#include "Interrupt.hpp"
+#include "Hardware/Interrupt.hpp"
 
 namespace Interrupts
 {

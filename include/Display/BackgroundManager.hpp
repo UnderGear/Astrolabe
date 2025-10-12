@@ -6,9 +6,9 @@
 #include <span>
 
 #include "Assets/Asset.hpp"
-#include "Camera.hpp"
 #include "DisplayRegisters.hpp"
-#include "MemoryMap.hpp"
+#include "GameFramework/Camera.hpp"
+#include "Hardware/MemoryMap.hpp"
 #include "Palette.hpp"
 
 // based on video mode we have different background types available
@@ -29,15 +29,15 @@ using BackgroundTileBlock = std::array<std::uint32_t, 4096>;
 struct BackgroundTileBlockData
 {
     BackgroundTileBlock::iterator NextAvailable; // A block entry always starts at the beginning of the block's memory
-    std::int32_t AssetID{ BackgroundTileAsset::ID_INVALID };
+    std::int32_t AssetID{ Assets::ID_INVALID };
     bool IsValid{ true }; //TODO: set these flags based on mode (see the chart at the top of the file)
 
-    bool IsAvailable() const { return IsValid && AssetID == BackgroundTileAsset::ID_INVALID; }
+    bool IsAvailable() const { return IsValid && AssetID == Assets::ID_INVALID; }
 };
 
 struct BackgroundTileMapEntryData
 {
-    std::int32_t AssetID{ BackgroundMapAsset::ID_INVALID };
+    std::int32_t AssetID{ Assets::ID_INVALID };
     std::int32_t BeginIndex{ 0 };
     //std::int32_t Length{ 0 };
 };

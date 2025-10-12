@@ -44,7 +44,7 @@ void BackgroundManager::UnloadTiles(std::int32_t Index)
 {
 	auto& ToClear{ LoadedTileBlocks[Index] };
 	auto& Block{ TileBlocks[Index] };
-	ToClear.AssetID = BackgroundTileAsset::ID_INVALID;
+	ToClear.AssetID = Assets::ID_INVALID;
 	ToClear.NextAvailable = Block.begin();
 	Block.fill(0); //TODO: this is also stomping map data. maybe this isn't the right move. is it even worth doing?
 }
@@ -79,7 +79,7 @@ std::int32_t BackgroundManager::LoadMap(const BackgroundMapAsset& ToAdd, std::in
 void BackgroundManager::UnloadMap(std::int32_t TileBlockIndex)
 {
 	auto& TileMapData{ LoadedTileMaps[TileBlockIndex] };
-	TileMapData.AssetID = BackgroundTileAsset::ID_INVALID;
+	TileMapData.AssetID = Assets::ID_INVALID;
 	TileMapData.BeginIndex = 0;
 	//TODO: should we even bother clearing out the VRAM?
 }

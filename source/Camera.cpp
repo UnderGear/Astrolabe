@@ -1,4 +1,4 @@
-#include "Display/Camera.hpp"
+#include "GameFramework/Camera.hpp"
 
 void Camera::Tick()
 {

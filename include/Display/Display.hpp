@@ -8,9 +8,9 @@
 #include <span>
 
 #include "BackgroundManager.hpp"
-#include "BIOS.hpp"
 #include "DisplayRegisters.hpp"
-#include "MemoryMap.hpp"
+#include "Hardware/BIOS.hpp"
+#include "Hardware/MemoryMap.hpp"
 #include "Palette.hpp"
 #include "Sprite.hpp"
 #include "SpriteManager.hpp"

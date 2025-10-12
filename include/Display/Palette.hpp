@@ -25,9 +25,9 @@ private:
     struct PaletteBankDatum
     {
         std::int32_t ReferenceCount{ 0 };
-        std::int32_t AssetID{ PaletteBankAsset::ID_INVALID };
+        std::int32_t AssetID{ Assets::ID_INVALID };
 
-        bool IsValid() const { return AssetID != PaletteBankAsset::ID_INVALID; }
+        bool IsValid() const { return AssetID != Assets::ID_INVALID; }
     };
 
     // Palette bookkeeping. We only have up to 16 banks, so I'll just linear search through this until it becomes a problem

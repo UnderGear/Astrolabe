@@ -1,4 +1,4 @@
-#include "Input.hpp"
+#include "Hardware/Input.hpp"
 #include "Math/Fixed.hpp"
 
 void Input::Tick()

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "Actor.hpp"
+#include "GameFramework/Actor.hpp"
 #include "Math/Box.hpp"
 #include "Math/Point.hpp"
 

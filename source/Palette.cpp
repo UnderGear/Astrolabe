@@ -50,7 +50,7 @@ void PaletteManager::RemoveFromPalette(std::int32_t Index)
     FoundBank.ReferenceCount--;
     if (FoundBank.ReferenceCount <= 0)
     {
-        FoundBank.AssetID = PaletteBankAsset::ID_INVALID;
+        FoundBank.AssetID = Assets::ID_INVALID;
         (*PaletteBanks)[Index] = {}; //TODO: what's the down side of leaving this in here and stomping it later?
     }
 }

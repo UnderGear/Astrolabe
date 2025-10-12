@@ -1,7 +1,7 @@
 #include "Display/Background.hpp"
 #include "Display/Display.hpp"
 #include "Display/DisplayRegisters.hpp"
-#include "Interrupt.hpp"
+#include "Hardware/Interrupt.hpp"
 
 Display::Display()
 {
@@ -37,6 +37,7 @@ Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteAsset&
     return Sprite{ Sprites, *OAM, Animations, PaletteManager::INDEX_INVALID };
 }
 
+//TODO: move to level manager
 Background Display::LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset)
 {
     auto BackgroundIndex{ Backgrounds.LoadTiles(BackgroundAsset) };

@@ -2,24 +2,24 @@
 #include <array>
 #include <cstdint>
 
-#include "Actor.hpp"
 #include "Assets/brin.hpp"
 #include "Assets/brin_palette.hpp"
 #include "Assets/isaac.hpp"
 #include "Assets/isaac_palette.hpp"
-#include "BIOS.hpp"
 #include "Display/Background.hpp"
-#include "Display/Camera.hpp"
 #include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
-#include "Input.hpp"
-#include "Interrupt.hpp"
-#include "Level.hpp"
+#include "GameFramework/Actor.hpp"
+#include "GameFramework/Camera.hpp"
+#include "GameFramework/Level.hpp"
+#include "Hardware/BIOS.hpp"
+#include "Hardware/Input.hpp"
+#include "Hardware/Interrupt.hpp"
 #include "Math/Box.hpp"
 #include "Math/Fixed.hpp"
 #include "Math/Point.hpp"
+#include "Math/Random.hpp"
 #include "Math/Vector.hpp"
-#include "Random.hpp"
 
 int main()
 {
