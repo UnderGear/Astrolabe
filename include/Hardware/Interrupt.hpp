@@ -12,7 +12,7 @@ namespace Interrupts
 {
 	struct InterruptMasterEnableRegister
 	{
-		std::uint16_t Enabled: 1; // set 0 to disable all
+		std::uint16_t Enabled : 1; // set 0 to disable all
 	};
 
 	// It seems a bit easier to do it this way than with a bit field struct

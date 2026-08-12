@@ -73,14 +73,13 @@ public:
 		auto& Y{ Input.Y };
 		auto& X{ Input.X };
 
-		constexpr i24f8_t Zero{ 0 };
-		if (Y < Zero)
+		if (Y < 0)
 		{
-			if (X > Zero)
+			if (X > 0)
 			{
 				Facing = FacingDirection::NorthEast;
 			}
-			else if (X < Zero)
+			else if (X < 0)
 			{
 				Facing = FacingDirection::NorthWest;
 			}
@@ -89,13 +88,13 @@ public:
 				Facing = FacingDirection::North;
 			}
 		}
-		else if (Y > Zero)
+		else if (Y > 0)
 		{
-			if (X > Zero)
+			if (X > 0)
 			{
 				Facing = FacingDirection::SouthEast;
 			}
-			else if (X < Zero)
+			else if (X < 0)
 			{
 				Facing = FacingDirection::SouthWest;
 			}
@@ -106,11 +105,11 @@ public:
 		}
 		else
 		{
-			if (X > Zero)
+			if (X > 0)
 			{
 				Facing = FacingDirection::East;
 			}
-			else if (X < Zero)
+			else if (X < 0)
 			{
 				Facing = FacingDirection::West;
 			}

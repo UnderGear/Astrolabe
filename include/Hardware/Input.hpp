@@ -26,19 +26,19 @@ using InputRegister = std::uint16_t;
 
 struct InputInterruptRegister
 {
-    std::uint16_t A : 1;
-    std::uint16_t B : 1;
-    std::uint16_t Select : 1;
-    std::uint16_t Start : 1;
-    std::uint16_t Right : 1;
-    std::uint16_t Left : 1;
-    std::uint16_t Up : 1;
-    std::uint16_t Down : 1;
-    std::uint16_t RB : 1;
-    std::uint16_t LB : 1;
-    std::uint16_t : 4;
-    std::uint16_t IRQEnable : 1;
-    std::uint16_t Comparitor : 1; // 0 OR, 1 AND comparison of all set keys required to raise the interrupt
+    std::uint16_t A : 1 = 0;
+    std::uint16_t B : 1 = 0;
+    std::uint16_t Select : 1 = 0;
+    std::uint16_t Start : 1 = 0;
+    std::uint16_t Right : 1 = 0;
+    std::uint16_t Left : 1 = 0;
+    std::uint16_t Up : 1 = 0;
+    std::uint16_t Down : 1 = 0;
+    std::uint16_t RB : 1 = 0;
+    std::uint16_t LB : 1 = 0;
+    std::uint16_t _PADDING : 4 = 0;
+    std::uint16_t IRQEnable : 1 = 0;
+    std::uint16_t Comparitor : 1 = 0; // 0 OR, 1 AND comparison of all set keys required to raise the interrupt
 };
 
 class Input
@@ -53,6 +53,7 @@ class Input
         new(reinterpret_cast<void*>(INPUT_INTERRUPT_ADDRESS)) InputInterruptRegister{ }
     };
 
+    //TODO: use an InputKey backing type?
     std::uint32_t CurrentInput{ 0 };
     std::uint32_t PreviousInput{ 0 };
 
@@ -66,5 +67,5 @@ public:
 
     bool IsKeyUp(InputKey Key) const;
 
-    const Vector2D& GetDPadInput() const;
+    Vector2D GetDPadInput() const;
 };

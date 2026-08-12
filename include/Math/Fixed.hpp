@@ -38,10 +38,38 @@ struct Fixed
 		return Result;
 	}
 
-	Fixed& operator +=(Fixed Other)
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr Fixed operator +(IntegralT Other) const
+	{
+		Fixed Result;
+		Result.Data = Data + (Other << FractionalBitCount);
+		return Result;
+	}
+
+	constexpr Fixed& operator +=(Fixed Other)
 	{
 		Data += Other.Data;
 		return *this;
+	}
+
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr Fixed& operator +=(IntegralT Other)
+	{
+		Data += (Other << FractionalBitCount);
+		return *this;
+	}
+
+	constexpr Fixed& operator ++()
+	{
+		Data += (1 << FractionalBitCount);
+		return *this;
+	}
+
+	constexpr Fixed operator ++(int)
+	{
+		Fixed Result = *this;
+		++(*this);
+		return Result;
 	}
 
 	constexpr Fixed operator -() const
@@ -58,10 +86,38 @@ struct Fixed
 		return Result;
 	}
 
-	Fixed& operator -=(Fixed Other)
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr Fixed operator -(IntegralT Other) const
+	{
+		Fixed Result;
+		Result.Data = Data - (Other << FractionalBitCount);
+		return Result;
+	}
+
+	constexpr Fixed& operator -=(Fixed Other)
 	{
 		Data -= Other.Data;
 		return *this;
+	}
+
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr Fixed& operator -=(IntegralT Other)
+	{
+		Data -= (Other << FractionalBitCount);
+		return *this;
+	}
+
+	constexpr Fixed& operator --()
+	{
+		Data -= (1 << FractionalBitCount);
+		return *this;
+	}
+
+	constexpr Fixed operator --(int)
+	{
+		Fixed Result = *this;
+		--(*this);
+		return Result;
 	}
 
 	constexpr Fixed operator *(Fixed Other) const
@@ -71,9 +127,25 @@ struct Fixed
 		return Result;
 	}
 
-	Fixed& operator *=(Fixed Other)
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr Fixed operator *(IntegralT Other) const
+	{
+		Fixed Result;
+		Result.Data = (Data * (Other << FractionalBitCount)) >> FractionalBitCount;
+		return Result;
+	}
+
+	constexpr Fixed& operator *=(Fixed Other)
 	{
 		Data *= Other.Data;
+		Data >>= FractionalBitCount;
+		return *this;
+	}
+
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr Fixed& operator *=(IntegralT Other)
+	{
+		Data *= Other << FractionalBitCount;
 		Data >>= FractionalBitCount;
 		return *this;
 	}
@@ -84,17 +156,41 @@ struct Fixed
 		Result.Data = (Data * (1 << FractionalBitCount)) / Other.Data;
 		return Result;
 	}
+	
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr Fixed operator /(IntegralT Other) const
+	{
+		Fixed Result;
+		Result.Data = (Data * (1 << FractionalBitCount)) / (Other << FractionalBitCount);
+		return Result;
+	}
 
-	Fixed& operator /=(Fixed Other)
+	constexpr Fixed& operator /=(Fixed Other)
 	{
 		Data *= (1 << FractionalBitCount);
 		Data /= Other.Data;
 		return *this;
 	}
 
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr Fixed& operator /=(IntegralT Other)
+	{
+		Data *= (1 << FractionalBitCount);
+		Data /= (Other << FractionalBitCount);
+		return *this;
+	}
+
+	constexpr auto operator <=>(const Fixed& Other) const = default;
+
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr auto operator <=>(const IntegralT& Other) const
+	{
+		return Data <=> (Other << FractionalBitCount);
+	}
+
 	//TOOD: make a LUT? try a different iteration count? weigh expense vs needed precision vs memory footprint on gba
 	// maybe that decision can be made down the line
-	constexpr friend Fixed sqrt(Fixed Value)
+	constexpr friend Fixed Sqrt(Fixed Value)
 	{
 		Fixed X{ Value };
 		Fixed Root;
@@ -102,17 +198,17 @@ struct Fixed
 		constexpr auto Iterations{ 20 };
 		for (auto i{ 0 }; i < Iterations; ++i)
 		{
-			Root = (X + (Value / X)) / Fixed{ 2 };
+			Root = (X + (Value / X)) / 2;
 			X = Root;
 		}
 
 		return Root;
 	}
-
-	auto operator<=>(const Fixed& Other) const = default;
 };
 
-//TODO: looks like we'll need some functions. transcendentals, sqrt, etc
+//TODO: looks like we'll need some functions. transcendentals
+
+//TODO: concept to represent integral types and fixed point types
 
 //TODO: is this the name we're going with?
 using i24f8_t = Fixed<std::int32_t, 8>;

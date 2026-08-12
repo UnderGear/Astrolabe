@@ -66,7 +66,7 @@ CFLAGS		+= -Wall -Wextra -pedantic-errors
 CFLAGS		+= $(INCLUDE)
 CFLAGS		+= -ffast-math -fno-strict-aliasing
 
-CXXFLAGS	:= $(CFLAGS) $(ARCH) -fno-rtti -fno-exceptions -std=c++20 -fmodules-ts
+CXXFLAGS	:= $(CFLAGS) $(ARCH) -fno-rtti -fno-exceptions -std=c++23 -fmodules-ts
 
 ASFLAGS		:= $(ARCH) $(INCLUDE)
 LDFLAGS 	:= $(ARCH) -Wl,-Map,$(PROJ).map

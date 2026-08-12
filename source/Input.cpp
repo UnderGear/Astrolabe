@@ -11,20 +11,22 @@ void Input::Tick()
     //TODO: note that I've flipped the Y axis inputs for screen space
     if (IsKeyDown(InputKey::Up))
     {
-        DPadInput.Y -= i24f8_t{ 1 };
+        --DPadInput.Y;
     }
     if (IsKeyDown(InputKey::Down))
     {
-        DPadInput.Y += i24f8_t{ 1 };
+        ++DPadInput.Y;
     }
     if (IsKeyDown(InputKey::Left))
     {
-        DPadInput.X -= i24f8_t{ 1 };
+        --DPadInput.X;
     }
     if (IsKeyDown(InputKey::Right))
     {
-        DPadInput.X += i24f8_t{ 1 };
+        ++DPadInput.X;
     }
+
+    DPadInput.Normalize();
 
     //TODO: callbacks for state change?
 }
@@ -39,7 +41,7 @@ bool Input::IsKeyUp(InputKey Key) const
     return (CurrentInput & static_cast<std::uint32_t>(Key)) == 0;
 }
 
-const Vector2D& Input::GetDPadInput() const
+Vector2D Input::GetDPadInput() const
 {
     return DPadInput;
 }

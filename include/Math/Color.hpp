@@ -6,9 +6,9 @@
 struct Color
 {
 	std::uint16_t Padding : 1{ 0 };
-	std::uint16_t Red : 5;
-	std::uint16_t Green : 5;
-	std::uint16_t Blue : 5;
+	std::uint16_t Red : 5{ 0 };
+	std::uint16_t Green : 5{ 0 };
+	std::uint16_t Blue : 5{ 0 };
 
 	constexpr explicit Color() noexcept = default;
 	
@@ -21,12 +21,12 @@ struct Color
 
 namespace Colors
 {
-	constexpr inline Color RED{ 0xF, 0x0, 0x0 };
-	constexpr inline Color GREEN{ 0x0, 0xF, 0x0 };
-	constexpr inline Color BLUE{ 0x0, 0x0, 0xF };
-	constexpr inline Color WHITE{ 0xF, 0xF, 0xF };
-	constexpr inline Color BLACK{ 0x0, 0x0, 0x0 };
-	constexpr inline Color YELLOW{ 0xF, 0xF, 0x0 };
-	constexpr inline Color CYAN{ 0x0, 0xF, 0xF };
-	constexpr inline Color MAGENTA{ 0xF, 0x0, 0xF };
+	constexpr inline Color RED{ 0b11111, 0, 0 };
+	constexpr inline Color GREEN{ 0, 0b11111, 0 };
+	constexpr inline Color BLUE{ 0, 0, 0b11111 };
+	constexpr inline Color WHITE{ 0b11111, 0b11111, 0b11111 };
+	constexpr inline Color BLACK{ 0, 0, 0 };
+	constexpr inline Color YELLOW{ 0b11111, 0b11111, 0 };
+	constexpr inline Color CYAN{ 0, 0b11111, 0b11111 };
+	constexpr inline Color MAGENTA{ 0b11111, 0, 0b11111 };
 }

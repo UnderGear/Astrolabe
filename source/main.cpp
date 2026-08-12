@@ -12,6 +12,7 @@
 #include "GameFramework/Actor.hpp"
 #include "GameFramework/Camera.hpp"
 #include "GameFramework/Level.hpp"
+#include "GameFramework/World.hpp"
 #include "Hardware/BIOS.hpp"
 #include "Hardware/Input.hpp"
 #include "Hardware/Interrupt.hpp"
@@ -27,12 +28,13 @@ int main()
 
 	// Enable interrupts
 	Interrupts::MasterEnable();
+	World TestWorld;
 
 	Input MyInput;
 	Random<std::int32_t> MyRandom{ 5, -1, 1 };
 	std::uint32_t CurrentFrame{ 0 };
 
-	constexpr Point2D ScreenCenter{ static_cast<i24f8_t>((SCREEN_WIDTH / 2)), static_cast<i24f8_t>((SCREEN_HEIGHT / 2)) };
+	constexpr Point2D ScreenCenter{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
 	Actor TestActor{ DisplayMode, isaac_animsuite, isaac_palette, ScreenCenter };
 
 
@@ -40,11 +42,10 @@ int main()
 
 	//TODO: bundle the background, level bounds, and level together a little tighter, along the lines of Actor. that should also call the appropriate dtor/tear down logic
 	auto TestBG{ DisplayMode.LoadBackground(brin_tiles, brin_palette, brin_map) };
-	//auto TestBG{ DisplayMode.LoadBackground(TestBackgroundAsset, TestBackgroundPaletteAsset, TestBackgroundMapAsset) };
 
 	auto [LevelWidthTiles, LevelHeightTiles]{ TestBG.GetDimensions() };
-	constexpr int TileDimension{ 8 }; //TODO: this will depend on the BackgroundControlRegister::BackgroundSize used and may not even be square
-	Box LevelBounds{ Point::Origin, Point2D{ static_cast<i24f8_t>(LevelWidthTiles * TileDimension), static_cast<i24f8_t>(LevelHeightTiles * TileDimension) } };
+	constexpr std::int32_t TileDimension{ 8 }; //TODO: this will depend on the BackgroundControlRegister::BackgroundSize used and may not even be square
+	Box LevelBounds{ Point::Origin, Point2D{ LevelWidthTiles * TileDimension, LevelHeightTiles * TileDimension } };
 	Level TestLevel{ LevelBounds, std::move(TestBG) };
 
 	Camera Cam{ LevelBounds, SCREEN_WIDTH, SCREEN_HEIGHT, &TestActor };
@@ -59,10 +60,12 @@ int main()
 		//TODO: this kind of input logic handling needs to live in some dedicated controller or something
 		static constexpr i24f8_t RunMultiplier{ 2.f };
 
-		auto DPadInput{ MyInput.GetDPadInput().GetNormalized() };
+		auto DPadInput{ MyInput.GetDPadInput() };
 		auto IsBDown{ MyInput.IsKeyDown(InputKey::B) };
 		if (IsBDown)
+		{
 			DPadInput *= RunMultiplier;
+		}
 
 		TestActor.Velocity = DPadInput;
 		TestActor.UpdateInput(DPadInput, IsBDown);
