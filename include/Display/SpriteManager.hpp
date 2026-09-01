@@ -84,7 +84,8 @@ private:
     static constexpr std::uint32_t MaxOAMs{ 128 };
 	using OAMT = std::array<ObjectAttributes, MaxOAMs>;
 	OAMT* OAMMemory{ nullptr };
-	using OAMAffineT = std::array<ObjectAttributesAffine, 32>;
+    static constexpr std::int32_t MaxAffineOAMs{ 32 };
+	using OAMAffineT = std::array<ObjectAttributesAffine, MaxAffineOAMs>;
 	OAMAffineT* OAMAffineMemory{ nullptr };
 
 	// in the example https://www.coranac.com/tonc/text/regobj.htm 8.4.5 he creates a double buffer
@@ -94,6 +95,7 @@ private:
 	OAMAffineT* ObjectBufferAffine{ std::bit_cast<OAMAffineT*>(&ObjectBuffer) };
 
     std::stack<ObjectAttributes*, std::vector<ObjectAttributes*>> AvailableObjectAttributes;
+    std::stack<std::int32_t , std::vector<std::int32_t>> AvailableAffineObjectAttributes;
 
 public:
     explicit SpriteManager(void* TileMemoryAddress);
@@ -111,4 +113,8 @@ public:
     
     ObjectAttributes* RequestOAM();
     void ReleaseOAM(ObjectAttributes& OAM);
+
+    std::int32_t RequestAffineOAM();
+    void ReleaseAffineOAM(std::int32_t Index);
+    ObjectAttributesAffine* GetAffineOAMByIndex(std::int32_t Index);
 };

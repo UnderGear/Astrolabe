@@ -2,7 +2,7 @@
 #include "Display/Sprite.hpp"
 #include "Math/Point.hpp"
 
-Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex)
+Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex, Attribute0ObjectMode ObjectMode, std::int32_t AffineOAMIndex)
         : Owner(InOwner), Attributes(InAttributes), Animations(InAnimations), PaletteAssetIndex(InPaletteAssetIndex)
 {
 	CurrentSpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex].Asset;
@@ -11,7 +11,7 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const Ani
 
 	//TODO: get size/shape params from the actual asset
     //TODO: pass in params. modes, intial position
-	Attributes.Attribute0.ObjectMode = static_cast<std::uint16_t>(Attribute0ObjectMode::Normal);
+	Attributes.Attribute0.ObjectMode = static_cast<std::uint16_t>(ObjectMode);
 	Attributes.Attribute0.GraphicsMode = static_cast<std::uint16_t>(Attribute0GraphicsMode::Normal);
 	Attributes.Attribute0.SpriteShape = static_cast<std::uint16_t>(Attribute0SpriteShape::Square);
 	Attributes.Attribute0.ColorMode = 1; //TODO: another param to pass in
@@ -20,7 +20,11 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const Ani
 	//TODO: assert that these indices fit into their registers
 
 	Attributes.Attribute2.Priority = 0; //TODO: add a parameter.
-	Attributes.Attribute2.PaletteBank = PaletteAssetIndex; //TODO: this only makes sense for 4bpp sprites
+
+	if (PaletteAssetIndex != PaletteManager::INDEX_INVALID)
+	{
+		Attributes.Attribute2.PaletteBank = PaletteAssetIndex; //TODO: this only makes sense for 4bpp sprites
+	}
 	Attributes.Attribute2.TileIndex = LoadedTileIndex;
 
 	auto [SpriteWidth, SpriteHeight]{ GetSpriteDimensions(Attribute0SpriteShape::Square, Attribute1SpriteSize::S32) };
@@ -29,11 +33,25 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const Ani
 
 	Attributes.Attribute1.Standard.XCoordinate = HalfWidth;
 	Attributes.Attribute0.YCoordinate = HalfHeight;
+
+	if (AffineOAMIndex != SpriteManager::INDEX_INVALID)
+	{
+		Attributes.Attribute1.Affine.AffineIndex = static_cast<std::int16_t>(AffineOAMIndex);
+		auto* Affine = Owner.GetAffineOAMByIndex(Attributes.Attribute1.Affine.AffineIndex);
+		if (Affine != nullptr)
+		{
+			Affine->Pa = 1;
+			Affine->Pb = 0;
+			Affine->Pc = 0;
+			Affine->Pd = 1;
+		}
+	}
 }
 
 Sprite::~Sprite()
 {
     Owner.ReleaseOAM(Attributes);
+	Owner.ReleaseAffineOAM(Attributes.Attribute1.Affine.AffineIndex);
 	Owner.UnloadTiles(Attributes.Attribute2.TileIndex);
     Owner.RemoveFromPalette(PaletteAssetIndex);
 	//TODO: depending on how we loaded our palette, look to unload it. more bookkeeping in palette, I guess
@@ -49,7 +67,9 @@ void Sprite::SetPosition(const Point2D& Position)
 void Sprite::SetSpriteAnimationIndex(std::int32_t AnimationIndex)
 {
 	if (CurrentAnimationIndex == AnimationIndex)
+	{
 		return;
+	}
 
 	CurrentAnimationIndex = AnimationIndex;
 	CurrentFrameIndex = 0;
@@ -59,10 +79,26 @@ void Sprite::SetSpriteAnimationIndex(std::int32_t AnimationIndex)
 void Sprite::SetShouldFlipHorizontal(bool InShouldFlipHorizontal)
 {
 	if (ShouldFlipHorizontal == InShouldFlipHorizontal)
+	{
 		return;
+	}
 
 	ShouldFlipHorizontal = InShouldFlipHorizontal;
-	Attributes.Attribute1.Standard.HorizontalFlip = static_cast<std::uint16_t>(InShouldFlipHorizontal);
+
+	auto ObjectMode = static_cast<Attribute0ObjectMode>(Attributes.Attribute0.ObjectMode);
+	if (ObjectMode == Attribute0ObjectMode::Normal)
+	{
+		Attributes.Attribute1.Standard.HorizontalFlip = static_cast<std::uint16_t>(InShouldFlipHorizontal);
+	}
+	else
+	{
+		auto* Affine = Owner.GetAffineOAMByIndex(Attributes.Attribute1.Affine.AffineIndex);
+		if (Affine != nullptr)
+		{
+			Affine->Pa = ShouldFlipHorizontal ? -1 : 1;
+			Affine->Pd = 1;
+		}
+	}
 }
 
 void Sprite::Tick()

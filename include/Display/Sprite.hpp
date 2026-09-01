@@ -46,7 +46,7 @@ class Sprite
 public:
     //TODO: pass in position and other OAM params
     //TODO: only allow the display to hand these out?
-    explicit Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex);
+    explicit Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex, Attribute0ObjectMode ObjectMode, std::int32_t AffineOAMIndex);
 
     Sprite(Sprite&&) = default;
     Sprite& operator =(Sprite&&) = default;

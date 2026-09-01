@@ -48,8 +48,8 @@ private:
 public:
 	explicit Display();
 
-	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset);
-	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset);
+	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0ObjectMode ObjectMode);
+	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0ObjectMode ObjectMode);
 	Background LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset);
 
 	void VSync()

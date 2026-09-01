@@ -16,7 +16,7 @@ Display::Display()
     Interrupts::EnableInterrupt(Interrupts::InterruptType::VBlank);
 }
 
-Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset)
+Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0ObjectMode ObjectMode)
 {
     auto* OAM{ Sprites.RequestOAM() };
     assert(OAM != nullptr);
@@ -24,17 +24,31 @@ Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAs
     auto LoadedPaletteIndex{ Sprites.AddToPalette(PaletteAsset) };
     assert(LoadedPaletteIndex != PaletteManager::INDEX_INVALID);
 
-    return Sprite{ Sprites, *OAM, Animations, LoadedPaletteIndex };
+    std::int32_t AffineOAMIndex = SpriteManager::INDEX_INVALID;
+    if (ObjectMode == Attribute0ObjectMode::Affine)
+    {
+        AffineOAMIndex = Sprites.RequestAffineOAM();
+        assert(AffineOAMIndex != SpriteManager::INDEX_INVALID);
+    }
+
+    return Sprite{ Sprites, *OAM, Animations, LoadedPaletteIndex, ObjectMode, AffineOAMIndex };
 }
 
-Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset)
+Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0ObjectMode ObjectMode)
 {
     auto* OAM{ Sprites.RequestOAM() };
     assert(OAM != nullptr);
 
     Sprites.SetPalette(PaletteAsset);
 
-    return Sprite{ Sprites, *OAM, Animations, PaletteManager::INDEX_INVALID };
+    std::int32_t AffineOAMIndex = SpriteManager::INDEX_INVALID;
+    if (ObjectMode == Attribute0ObjectMode::Affine)
+    {
+        AffineOAMIndex = Sprites.RequestAffineOAM();
+        assert(AffineOAMIndex != SpriteManager::INDEX_INVALID);
+    }
+
+    return Sprite{ Sprites, *OAM, Animations, PaletteManager::INDEX_INVALID, ObjectMode, AffineOAMIndex };
 }
 
 //TODO: move to level manager

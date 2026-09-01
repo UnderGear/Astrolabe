@@ -19,6 +19,13 @@ struct Fixed
 		Data = Value << FractionalBitCount;
 	}
 
+	template <typename IntegralT> requires std::is_integral_v<IntegralT>
+	constexpr Fixed& operator=(IntegralT Value)
+	{
+		Data = Value << FractionalBitCount;
+		return *this;
+	}
+
 	// GBA doesn't support floating point operations, but we can initialize fixed at compile time
 	consteval explicit Fixed(float Value)
 	{

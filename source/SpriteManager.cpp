@@ -18,6 +18,11 @@ SpriteManager::SpriteManager(void* TileMemoryAddress)
     {
         AvailableObjectAttributes.push(&ObjectBuffer[i]);
     }
+
+    for (std::int32_t i{ 0 }; i < MaxAffineOAMs; ++i)
+    {
+        AvailableAffineObjectAttributes.push(i);
+    }
 }
 
 void SpriteManager::Tick()
@@ -174,7 +179,9 @@ void SpriteManager::UnloadTiles(std::int32_t Index)
 ObjectAttributes* SpriteManager::RequestOAM()
 {
     if (AvailableObjectAttributes.size() == 0)
+    {
         return nullptr;
+    }
 
     ObjectAttributes* Result{ AvailableObjectAttributes.top() };
     AvailableObjectAttributes.pop();
@@ -187,4 +194,32 @@ void SpriteManager::ReleaseOAM(ObjectAttributes& OAM)
     // Hide the object
     OAM.Attribute0.ObjectMode = static_cast<std::uint16_t>(Attribute0ObjectMode::Hidden);
     AvailableObjectAttributes.push(&OAM);
+}
+
+std::int32_t SpriteManager::RequestAffineOAM()
+{
+    if (AvailableAffineObjectAttributes.size() == 0)
+    {
+        return INDEX_INVALID;
+    }
+
+    std::int32_t Result{ AvailableAffineObjectAttributes.top() };
+    AvailableAffineObjectAttributes.pop();
+    return Result;
+}
+
+void SpriteManager::ReleaseAffineOAM(std::int32_t Index)
+{
+    if (Index == INDEX_INVALID)
+    {
+        return;
+    }
+
+    //TODO: should we clear out anything?
+    AvailableAffineObjectAttributes.push(Index);
+}
+
+ObjectAttributesAffine* SpriteManager::GetAffineOAMByIndex(std::int32_t Index)
+{
+    return &(*ObjectBufferAffine)[Index];
 }

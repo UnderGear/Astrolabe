@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <utility>
 
+#include "Math/Fixed.hpp"
+
 enum class DisplayMode
 {
 	Mode0,
@@ -183,13 +185,13 @@ struct alignas(std::uint32_t) ObjectAttributes
 struct alignas(std::uint32_t) ObjectAttributesAffine
 {
 	volatile std::array<std::uint16_t, 3> Fill0;
-	std::int16_t Pa;
+	i8f8_t Pa;
 	volatile std::array<std::uint16_t, 3> Fill1;
-	std::int16_t Pb;
+	i8f8_t Pb;
 	volatile std::array<std::uint16_t, 3> Fill2;
-	std::int16_t Pc;
+	i8f8_t Pc;
 	volatile std::array<std::uint16_t, 3> Fill3;
-	std::int16_t Pd;
+	i8f8_t Pd;
 };
 
 // One register per background, so 4 total
