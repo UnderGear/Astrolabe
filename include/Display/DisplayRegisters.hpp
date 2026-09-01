@@ -145,9 +145,9 @@ struct Attribute1RegisterStandard
 
 struct Attribute1RegisterAffine
 {
-	std::uint16_t : 9;
+	std::uint16_t XCoordinate : 9;
 	std::uint16_t AffineIndex : 5;
-	std::uint16_t : 2;
+	std::uint16_t SpriteSize : 2;
 };
 
 struct Attribute1Register

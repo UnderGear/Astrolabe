@@ -5,7 +5,8 @@
 #include "Assets/brin.hpp"
 #include "Assets/brin_palette.hpp"
 #include "Assets/isaac.hpp"
-#include "Assets/isaac_palette.hpp"
+#include "Assets/jenna.hpp"
+#include "Assets/sprite_palette_palette.hpp"
 #include "Display/Background.hpp"
 #include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
@@ -34,11 +35,8 @@ int main()
 	Random<std::int32_t> MyRandom{ 5, -1, 1 };
 	std::uint32_t CurrentFrame{ 0 };
 
-	constexpr Point2D ScreenCenter{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
-	Actor TestActor{ DisplayMode, isaac_animsuite, isaac_palette, ScreenCenter };
-
-
-
+	Actor TestStationary{ DisplayMode, isaac_animsuite, sprite_palette_palette, Display::SCREEN_CENTER };
+	Actor TestActor{ DisplayMode, jenna_animsuite, sprite_palette_palette, Display::SCREEN_CENTER };
 
 	//TODO: bundle the background, level bounds, and level together a little tighter, along the lines of Actor. that should also call the appropriate dtor/tear down logic
 	auto TestBG{ DisplayMode.LoadBackground(brin_tiles, brin_palette, brin_map) };
@@ -46,9 +44,9 @@ int main()
 	auto [LevelWidthTiles, LevelHeightTiles]{ TestBG.GetDimensions() };
 	constexpr std::int32_t TileDimension{ 8 }; //TODO: this will depend on the BackgroundControlRegister::BackgroundSize used and may not even be square
 	Box LevelBounds{ Point::Origin, Point2D{ LevelWidthTiles * TileDimension, LevelHeightTiles * TileDimension } };
-	Level TestLevel{ LevelBounds, std::move(TestBG) };
+	Level TestLevel{ LevelBounds, std::move(TestBG) }; //TODO: this constructor should be rethought to avoid move semantics
 
-	Camera Cam{ LevelBounds, SCREEN_WIDTH, SCREEN_HEIGHT, &TestActor };
+	Camera Cam{ LevelBounds, Display::SCREEN_WIDTH, Display::SCREEN_HEIGHT, &TestActor };
 
 	while (true)
 	{
@@ -81,6 +79,7 @@ int main()
 		// Backgrounds and sprites have to operate in different spaces, hence the awkwardly different calculation here
 		// Really, backgrounds are the weird ones.
 		TestActor.UpdateSprite(Cam.GetDrawOffset() + (TestActor.Position - Cam.GetPosition()));
+		TestStationary.UpdateSprite(Cam.GetDrawOffset() + (TestStationary.Position - Cam.GetPosition()));
 
 		DisplayMode.Tick();
 

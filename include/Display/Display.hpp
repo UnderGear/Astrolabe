@@ -18,12 +18,16 @@
 class Sprite;
 class Background;
 
-constexpr inline std::int32_t SCREEN_WIDTH{ 240 };
-constexpr inline std::int32_t SCREEN_HEIGHT{ 160 };
-
 //TODO: and maybe it's time to start using bit_cast instead of these unique pointers to memory
 class Display
 {
+public:
+	static constexpr std::int32_t SCREEN_WIDTH{ 240 };
+	static constexpr std::int32_t SCREEN_HEIGHT{ 160 };
+	
+	static constexpr Point2D SCREEN_CENTER{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
+
+private:
 	std::unique_ptr<volatile DisplayControlRegister> DisplayControl
 	{
 		new(reinterpret_cast<void*>(DISPLAY_CONTROL_ADDRESS))
@@ -31,11 +35,11 @@ class Display
 	};
 	std::unique_ptr<volatile DisplayStatusRegister> DisplayStatus
 	{
-		new(reinterpret_cast<void*>(DISPLAY_STATUS_ADDRESS)) DisplayStatusRegister{ }
+		new(reinterpret_cast<void*>(DISPLAY_STATUS_ADDRESS)) DisplayStatusRegister
 	};
 	std::unique_ptr<volatile VerticalCountRegister> VerticalCount
 	{
-		new(reinterpret_cast<void*>(DISPLAY_SCANLINE_COUNT_ADDRESS)) VerticalCountRegister{ }
+		new(reinterpret_cast<void*>(DISPLAY_SCANLINE_COUNT_ADDRESS)) VerticalCountRegister
 	};
 
 	SpriteManager Sprites{ reinterpret_cast<void*>(SPRITE_LOW_BLOCK_ADDRESS) };

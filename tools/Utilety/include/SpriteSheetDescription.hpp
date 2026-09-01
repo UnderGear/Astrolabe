@@ -8,8 +8,8 @@
 struct SpriteAnimationSetDescription
 {
 	std::filesystem::path FilePath;
-	int AnimFrameCount;
-	int AnimCount;
+	int AnimFrameCount{ 1 };
+	int AnimCount{ 1 };
 	std::vector<std::vector<int>> AnimIndices;
 	std::vector<int> FrameDurations;
 	std::vector<std::string> AnimSuffixes;

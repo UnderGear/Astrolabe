@@ -8,12 +8,12 @@ Background::Background(
 	RegularBackgroundDimensions InDimensions,
 	volatile BackgroundControlRegister& InControlRegister,
 	volatile BackgroundOffset& InOffset)
-	: Owner(InOwner),
-	BackgroundIndex(InBackgroundIndex),
-	MapBlockIndex(InMapBlockIndex),
-	Dimensions(InDimensions),
-	ControlRegister(InControlRegister),
-	Offset(InOffset)
+	: Owner(InOwner)
+	, BackgroundIndex(InBackgroundIndex)
+	, MapBlockIndex(InMapBlockIndex)
+	, Dimensions(InDimensions)
+	, ControlRegister(InControlRegister)
+	, Offset(InOffset)
 {
 	ControlRegister.TileBlockBaseIndex = static_cast<std::uint16_t>(BackgroundIndex);
 	ControlRegister.TileMapBlockBaseIndex = static_cast<std::uint16_t>(MapBlockIndex);

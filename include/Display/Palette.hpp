@@ -37,6 +37,8 @@ private:
     RawPaletteBanks* PaletteBanks;
     RawPalette* Palette;
 
+    const PaletteAsset* LoadedPalette{ nullptr };
+
 public:
 
     explicit PaletteManager(void* PaletteMemoryAddress);

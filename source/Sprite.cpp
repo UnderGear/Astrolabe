@@ -18,7 +18,9 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const Ani
 	Attributes.Attribute1.Standard.SpriteSize = static_cast<std::uint16_t>(Attribute1SpriteSize::S32);
 
 	//TODO: assert that these indices fit into their registers
-	Attributes.Attribute2.PaletteBank = PaletteAssetIndex;
+
+	Attributes.Attribute2.Priority = 0; //TODO: add a parameter.
+	Attributes.Attribute2.PaletteBank = PaletteAssetIndex; //TODO: this only makes sense for 4bpp sprites
 	Attributes.Attribute2.TileIndex = LoadedTileIndex;
 
 	auto [SpriteWidth, SpriteHeight]{ GetSpriteDimensions(Attribute0SpriteShape::Square, Attribute1SpriteSize::S32) };

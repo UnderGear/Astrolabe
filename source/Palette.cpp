@@ -10,13 +10,28 @@ PaletteManager::PaletteManager(void* PaletteMemoryAddress)
 
 void PaletteManager::SetPalette(const PaletteAsset& ToSet)
 {
+    if (LoadedPalette == &ToSet)
+    {
+        return;
+    }
+    
     std::ranges::copy(ToSet.Data, Palette->begin());
+    LoadedPalette = &ToSet;
 }
 
 void PaletteManager::ClearPalette()
 {
-    std::ranges::fill(*Palette, 0);
+    if (LoadedPalette == nullptr)
+    {
+        return;
+    }
+
+    std::ranges::fill_n(Palette->begin(), LoadedPalette->Data.size(), 0);
+    LoadedPalette = nullptr;
 }
+
+//TODO: detect bank stomping
+//TODO: load banks from the back 16 to the front and detect if it'd conflict with a loaded 256 palette
 
 //TODO: keep track of gaps on removal and the last-added one like Sprite?
 std::int32_t PaletteManager::AddToPalette(const PaletteBankAsset& ToAdd)

@@ -53,12 +53,9 @@ struct DeleterFunc
 
 using stbi_image_ptr = std::unique_ptr<unsigned char, DeleterFunc<&stbi_image_free>>;
 
-PaletteDescription LoadPalette(const std::filesystem::directory_entry& Directory, bool AddAlpha)
+PaletteDescription LoadPalette(const std::filesystem::path& PalettePath, bool AddAlpha)
 {
 	//TODO: I'm thinking that we should use palette banks for sprites instead of full palettes
-	static constexpr auto PaletteSuffix{ ".pal" };
-	auto PaletteFileName{ Directory.path().filename().string() + PaletteSuffix };
-	auto PalettePath{ Directory.path() / PaletteFileName };
 	std::vector<PaletteColor> Palette;
 	PaletteIO::LoadPalette(PalettePath, Palette, AddAlpha);
 	std::map<PaletteColor, std::uint16_t> PaletteMapping;
@@ -128,7 +125,7 @@ std::pair<std::vector<std::uint32_t>, bool> UpdatePalette(PaletteDescription& Pa
 	return { PackedIndices, HasPaletteChanged };
 }
 
-void WritePalette(const std::filesystem::directory_entry& Directory, const PaletteDescription& PaletteDesc)
+void WritePalette(const PaletteDescription& PaletteDesc)
 {
 	// Save out the new palette binary file
 	PaletteIO::WritePaletteFile(PaletteDesc.PalettePath, PaletteDesc.Palette);
@@ -155,23 +152,21 @@ void WritePalette(const std::filesystem::directory_entry& Directory, const Palet
 		PackedPalette.push_back(Value);
 	}
 
-	std::filesystem::path HeaderName{ Directory.path().stem().string() + "_palette" };
+	std::filesystem::path HeaderName{ PaletteDesc.PalettePath.stem().string() + "_palette" };
 	Codegen::GeneratePaletteHeader((CogedenPath / HeaderName).string(), HeaderName.string(), PackedPalette);
 }
 
-void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory)
+void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory, PaletteDescription& PaletteDesc, bool& OutHasPaletteChanged)
 {
-	auto PaletteDesc{ LoadPalette(Directory, true) };
-
-	auto ShouldWritePaletteFiles{ false };
 	for (const auto& Entry : std::filesystem::directory_iterator{ Directory })
 	{
 		// If it's not an anim description file, continue
 		if (Entry.path().extension() != ".ad")
+		{
 			continue;
+		}
 
 		SpritesheetDescription Desc;
-		//TODO: parse it from the entry path.
 		std::ifstream DescFile{ Entry.path() };
 		std::string Buffer;
 		std::getline(DescFile, Buffer, ',');
@@ -195,6 +190,8 @@ void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory)
 			AnimDesc.AnimCount = std::stoi(Buffer);
 			Desc.TotalAnimationCount += AnimDesc.AnimCount;
 
+			std::cout << "processing anim file " << AnimDesc.FilePath << ", " << AnimDesc.AnimFrameCount << " frames, " << AnimDesc.AnimCount << " orientations" << std::endl;
+
 			AnimDesc.AnimIndices.reserve(AnimDesc.AnimCount);
 			for (int AnimIndex{ 0 }; AnimIndex < AnimDesc.AnimCount; ++AnimIndex)
 			{
@@ -209,6 +206,13 @@ void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory)
 					std::from_chars(sv.data(), sv.data() + sv.size(), PanelIndex);
 					AnimIndices.push_back(PanelIndex);
 				}
+
+				std::cout << "anim indices ";
+				for (auto Index : AnimIndices)
+				{
+					std::cout << Index << " ";
+				}
+				std::cout << std::endl;
 
 				AnimDesc.AnimIndices.push_back(std::move(AnimIndices));
 			}
@@ -244,6 +248,7 @@ void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory)
 			if (Bytes == nullptr)
 			{
 				//TODO: error messaging
+				std::cout << "Failed to process path: " << FullPath << std::endl;
 				continue;
 			}
 
@@ -253,7 +258,7 @@ void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory)
 
 			static constexpr auto TilesIndicesPerTilePack{ 4 };
 			auto [PackedIndices, HasPaletteChanged] { UpdatePalette(PaletteDesc, Pixels, Width, Height, TilesIndicesPerTilePack) };
-			ShouldWritePaletteFiles = HasPaletteChanged;
+			OutHasPaletteChanged |= HasPaletteChanged;
 
 			auto HorizontalTileCount{ Width / TileWidth };
 			auto VerticalTileCount{ Height / TileHeight };
@@ -315,11 +320,6 @@ void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory)
 			Codegen::GenerateSpriteTileHeader(CogedenPath, HeaderName, SpriteTileIndices, Desc);
 		}
 	}
-
-	if (ShouldWritePaletteFiles)
-	{
-		WritePalette(Directory, PaletteDesc);
-	}
 }
 
 //TODO: consolidate more code with sprite processing
@@ -327,7 +327,10 @@ void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory)
 //TODO: add an option to use a palette bank asset instead of a full fat palette
 void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Directory)
 {
-	auto PaletteDesc{ LoadPalette(Directory, false) };
+	static constexpr auto PaletteSuffix{ ".pal" };
+	auto PaletteFileName{ Directory.path().filename().string() + PaletteSuffix };
+	auto PalettePath{ Directory.path() / PaletteFileName };
+	auto PaletteDesc{ LoadPalette(PalettePath, false) };
 
 	auto ShouldWritePaletteFiles{ true }; //TODO: don't always write the palette?
 	for (const auto& Entry : std::filesystem::directory_iterator{ Directory })
@@ -375,7 +378,7 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 		std::vector<std::vector<TileMapEntry>> TileMaps;
 		constexpr std::size_t TileMapDimension{ 32 };
 		constexpr std::size_t TileMapSize{ TileMapDimension * TileMapDimension }; // Each tile map is 32x32 tiles
-		auto TileMapCount{ TileCount / TileMapSize };
+		auto TileMapCount{ static_cast<int>(TileCount / TileMapSize) };
 		TileMaps.reserve(TileMapCount);
 		//std::cout << "tile count: " << TileCount << ", tile map count: " << TileMapCount << std::endl;
 		for (auto TileMapIndex{ 0 }; TileMapIndex < TileMapCount; ++TileMapIndex)
@@ -461,7 +464,7 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 
 	if (ShouldWritePaletteFiles)
 	{
-		WritePalette(Directory, PaletteDesc);
+		WritePalette(PaletteDesc);
 	}
 	// std::cout << "Palette size: " << PaletteDesc.Palette.size() << std::endl;
 	// for (auto& PaletteColor : PaletteDesc.Palette)
@@ -474,9 +477,16 @@ int main()
 {
 	for (const auto& Entry : std::filesystem::recursive_directory_iterator{ "assets/sprites/" })
 	{
+		std::filesystem::path PalettePath{ "assets/sprites/sprite_palette.pal" };
+		auto PaletteDesc{ LoadPalette(PalettePath, true) };
 		if (Entry.is_directory())
 		{
-			ProcessSpriteDirectory(Entry);
+			bool ShouldWritePaletteFiles;
+			ProcessSpriteDirectory(Entry, PaletteDesc, ShouldWritePaletteFiles);
+			if (ShouldWritePaletteFiles)
+			{
+				WritePalette(PaletteDesc);
+			}
 		}
 	}
 

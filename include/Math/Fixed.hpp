@@ -207,6 +207,7 @@ struct Fixed
 };
 
 //TODO: looks like we'll need some functions. transcendentals
+//TODO: floor, ceil, round, abs, fractional part, integral part
 
 //TODO: concept to represent integral types and fixed point types
 

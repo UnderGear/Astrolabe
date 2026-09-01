@@ -123,6 +123,7 @@ namespace Codegen
 		}
 		File << "};\n";
 
+		std::cout << "anim count: " << Desc.TotalAnimationCount << std::endl;
 		File << "\n";
 		File << "inline const std::array<Animation, " << Desc.TotalAnimationCount << "> " << AssetPath.string() << "_anims\n";
 		File << "{\n";
@@ -130,12 +131,14 @@ namespace Codegen
 		{
 			for (const auto& AnimSet : AnimDesc.AnimIndices)
 			{
-				for (std::size_t i{ 0 }; i < AnimDesc.AnimIndices.size(); i += AnimDesc.AnimFrameCount)
+				std::cout << "set count: " << AnimSet.size() << std::endl;
+				for (std::size_t i{ 0 }; i < AnimSet.size(); i += AnimDesc.AnimFrameCount)
 				{
 					File << "\tAnimation{";
 
 					for (auto j{ 0 }; j < AnimDesc.AnimFrameCount; ++j)
 					{
+						std::cout << "i: " << i << ", j: " << j << ", tiles: " << AnimSet[i + j] << std::endl;
 						File << " { &" << AssetPath.string() << "_tiles[" << AnimSet[i + j] << "], " << AnimDesc.FrameDurations[j] << " },";
 					}
 					
