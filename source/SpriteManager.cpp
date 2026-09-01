@@ -19,7 +19,7 @@ SpriteManager::SpriteManager(void* TileMemoryAddress)
         AvailableObjectAttributes.push(&ObjectBuffer[i]);
     }
 
-    for (std::int32_t i{ 0 }; i < MaxAffineOAMs; ++i)
+    for (std::int32_t i{ MaxAffineOAMs - 1 }; i >= 0; --i)
     {
         AvailableAffineObjectAttributes.push(i);
     }
@@ -27,7 +27,7 @@ SpriteManager::SpriteManager(void* TileMemoryAddress)
 
 void SpriteManager::Tick()
 {
-    // TODO: only copy as much as needed?
+    // TODO: only copy as much as needed based on the size up to the highest OAM or affine OAM
     *OAMMemory = ObjectBuffer;
 }
 

@@ -13,6 +13,7 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const Ani
     //TODO: pass in params. modes, intial position
 	Attributes.Attribute0.ObjectMode = static_cast<std::uint16_t>(ObjectMode);
 	Attributes.Attribute0.GraphicsMode = static_cast<std::uint16_t>(Attribute0GraphicsMode::Normal);
+	Attributes.Attribute0.MosaicEnabled = 0;
 	Attributes.Attribute0.SpriteShape = static_cast<std::uint16_t>(Attribute0SpriteShape::Square);
 	Attributes.Attribute0.ColorMode = 1; //TODO: another param to pass in
 	Attributes.Attribute1.Standard.SpriteSize = static_cast<std::uint16_t>(Attribute1SpriteSize::S32);

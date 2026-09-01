@@ -81,6 +81,10 @@ private:
     std::vector<SpriteManager::TileGap>::iterator FindSuitableGap(std::int32_t Size);
     void MergeGaps();
 
+    // The GBA supports up to 128 sprites at a time. Each sprite is controlled by an OAM (Object Attribute Mapping)
+    // Up to 32 of these sprites can use affine transforms.
+    // The GBA interleaves these two in the same memory. See ObjectAttributes and ObjectAttributesAffine. Those Fill member variables correspond to the data.
+    // 3 registers of ObjectAttributes followed by 1 matrix component of ObjectAttributesAffine
     static constexpr std::uint32_t MaxOAMs{ 128 };
 	using OAMT = std::array<ObjectAttributes, MaxOAMs>;
 	OAMT* OAMMemory{ nullptr };
@@ -89,7 +93,8 @@ private:
 	OAMAffineT* OAMAffineMemory{ nullptr };
 
 	// in the example https://www.coranac.com/tonc/text/regobj.htm 8.4.5 he creates a double buffer
-	//TODO: swap this into OAM during vblanks
+    // - this is because we shouldn't just be writing to screen all the time. we operate on the buffer and copy it in
+	//TODO: swap this into OAM during vblanks?
 	//TODO: does this need to be volatile?
 	OAMT ObjectBuffer;
 	OAMAffineT* ObjectBufferAffine{ std::bit_cast<OAMAffineT*>(&ObjectBuffer) };
