@@ -10,13 +10,13 @@ struct Color
 	std::uint16_t Green : 5{ 0 };
 	std::uint16_t Blue : 5{ 0 };
 
-	constexpr explicit Color() noexcept = default;
+	constexpr explicit Color() = default;
 	
-	constexpr explicit Color(std::uint16_t R, std::uint16_t G, std::uint16_t B) noexcept
+	constexpr explicit Color(std::uint16_t R, std::uint16_t G, std::uint16_t B)
 		: Red(R), Green(G), Blue(B)
 	{ }
 
-	//constexpr operator std::uint16_t() const noexcept { return std::bit_cast<std::uint16_t>(*this); }
+	//constexpr operator std::uint16_t() const { return std::bit_cast<std::uint16_t>(*this); }
 };
 
 namespace Colors

@@ -50,24 +50,42 @@ class BackgroundManager
     static constexpr std::size_t AffineBackgroundCount{ 2 };
 
     //TODO: make sure that only sensible combinations of backgrounds can be used concurrently
-    std::array<volatile BackgroundControlRegister, BackgroundCount>& ControlRegisters{ *reinterpret_cast<std::array<volatile BackgroundControlRegister, BackgroundCount>*>(BG_CONTROL_ADDRESS) };
-    std::array<volatile BackgroundOffset, BackgroundCount>& OffsetRegisters{ *reinterpret_cast<std::array<volatile BackgroundOffset, BackgroundCount>*>(BG_OFFSET_ADDRESS) };
-    std::array<volatile BackgroundAffineParams, AffineBackgroundCount>& AffineRegisters{ *reinterpret_cast<std::array<volatile BackgroundAffineParams, AffineBackgroundCount>*>(BG_AFFINE_ADDRESS) };
+    std::array<volatile BackgroundControlRegister, BackgroundCount>& ControlRegisters
+    {
+        *reinterpret_cast<std::array<volatile BackgroundControlRegister, BackgroundCount>*>(BG_CONTROL_ADDRESS)
+    };
+    std::array<volatile BackgroundOffset, BackgroundCount>& OffsetRegisters
+    {
+        *reinterpret_cast<std::array<volatile BackgroundOffset, BackgroundCount>*>(BG_OFFSET_ADDRESS)
+    };
+    std::array<volatile BackgroundAffineParams, AffineBackgroundCount>& AffineRegisters
+    {
+        *reinterpret_cast<std::array<volatile BackgroundAffineParams, AffineBackgroundCount>*>(BG_AFFINE_ADDRESS)
+    };
 
-	PaletteManager BackgroundPaletteManager{ reinterpret_cast<void*>(BACKGROUND_PALETTE_ADDRESS) };
+	PaletteManager BackgroundPaletteManager
+    {
+        reinterpret_cast<void*>(BACKGROUND_PALETTE_ADDRESS)
+    };
 
     // DANGER ZONE
     // TileMapEntries and TileBlocks are overlapping memory. We need to be VERY careful about what we allow access to
     
     // 4 blocks of raw tile data
-    std::array<BackgroundTileBlock, BackgroundCount>& TileBlocks{ *reinterpret_cast<std::array<BackgroundTileBlock, BackgroundCount>*>(VRAM_ADDRESS) };
+    std::array<BackgroundTileBlock, BackgroundCount>& TileBlocks
+    {
+        *reinterpret_cast<std::array<BackgroundTileBlock, BackgroundCount>*>(VRAM_ADDRESS)
+    };
 
     // 32 allowable tile map blocks, 2048 bytes each = 1024 entries per map block
     static constexpr std::int32_t TileMapBlockCount{ 32 };
     static constexpr std::int32_t TileMapEntriesPerBlock{ 1024 };
     static constexpr std::int32_t MaxTileMapEntries{ TileMapBlockCount * TileMapEntriesPerBlock };
     //TODO: should this just be backed with a std::uint16_t instead? or maybe even 32 for loading speed?
-    std::array<std::uint16_t, MaxTileMapEntries>& TileMapEntries{ *reinterpret_cast<std::array<std::uint16_t, MaxTileMapEntries>*>(VRAM_ADDRESS) };
+    std::array<std::uint16_t, MaxTileMapEntries>& TileMapEntries
+    {
+        *reinterpret_cast<std::array<std::uint16_t, MaxTileMapEntries>*>(VRAM_ADDRESS)
+    };
     
     std::array<BackgroundTileBlockData, BackgroundCount> LoadedTileBlocks;
     std::array<BackgroundTileMapEntryData, BackgroundCount> LoadedTileMaps;

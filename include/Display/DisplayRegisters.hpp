@@ -45,7 +45,7 @@ struct DisplayControlRegister
 	std::uint16_t BackgroundFlags : 5; // BackgroundLayerFlags
 	std::uint16_t WindowFlags : 3; // WindowDisplayFlags
 
-	constexpr explicit DisplayControlRegister(DisplayMode InMode, BackgroundLayerFlags InBackgroundFlags, WindowDisplayFlags InWindowFlags = WindowDisplayFlags::None) noexcept
+	constexpr explicit DisplayControlRegister(DisplayMode InMode, BackgroundLayerFlags InBackgroundFlags, WindowDisplayFlags InWindowFlags = WindowDisplayFlags::None)
 		: Mode(static_cast<std::uint16_t>(InMode)), DisplayPageSelect(0), HBlankIntervalFree(0)
 		, OBJCharacterVRAMMapping(0), BackgroundFlags(static_cast<std::uint16_t>(InBackgroundFlags))
 		, WindowFlags(static_cast<std::uint16_t>(InWindowFlags))

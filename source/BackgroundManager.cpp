@@ -26,9 +26,10 @@ std::int32_t BackgroundManager::LoadTiles(const BackgroundTileAsset& ToAdd)
 {
 	//TODO: check if the asset is already loaded elsewhere?
 	auto EmptyBlockEntry{ std::ranges::find(LoadedTileBlocks, true, &BackgroundTileBlockData::IsAvailable) };
-
 	if (EmptyBlockEntry == LoadedTileBlocks.end())
+	{
 		return INDEX_INVALID;
+	}
 
 	// Calculate the index of our tile block from the iterator
 	auto Index{ std::distance(LoadedTileBlocks.begin(), EmptyBlockEntry) };
