@@ -31,7 +31,7 @@ namespace Interrupts
 	__attribute__((section(".iwram"), long_call))
 	void AddHandler(InterruptType Type, IRQHandler Handler)
 	{
-		auto& Bundle = Handlers[static_cast<std::uint16_t>(Type)].push_back(Handler);
+		Handlers[static_cast<std::uint16_t>(Type)].push_back(Handler);
 	}
 
 	__attribute__((section(".iwram"), long_call))

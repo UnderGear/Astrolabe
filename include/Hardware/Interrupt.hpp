@@ -64,9 +64,8 @@ namespace Interrupts
 	{
 		new(reinterpret_cast<IRQHandler*>(INTERRUPT_MAIN_REGISTER_ADDRESS)) IRQHandler{ MainInterrupt }
 	};
-	__attribute__((section(".ewram")))
+	
 	static constexpr std::uint16_t HandlerCount{ 14 };
-
 	static std::array<std::vector<IRQHandler>, HandlerCount> Handlers;
 
 	inline void MainEnable()
