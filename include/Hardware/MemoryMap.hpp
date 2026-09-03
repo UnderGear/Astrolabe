@@ -28,6 +28,10 @@ constexpr inline std::uint32_t DISPLAY_SCANLINE_COUNT_ADDRESS{ 0x04000006 };
 constexpr inline std::uint32_t BG_CONTROL_ADDRESS{ 0x04000008 };
 constexpr inline std::uint32_t BG_OFFSET_ADDRESS{ 0x04000010 };
 constexpr inline std::uint32_t BG_AFFINE_ADDRESS{ 0x04000020 };
+constexpr inline std::uint32_t DMA_0_ADDRESS{ 0x040000B0 };
+constexpr inline std::uint32_t DMA_1_ADDRESS{ 0x040000BC };
+constexpr inline std::uint32_t DMA_2_ADDRESS{ 0x040000C8 };
+constexpr inline std::uint32_t DMA_3_ADDRESS{ 0x040000D4 };
 constexpr inline std::uint32_t TIMER_0_COUNTER_ADDRESS{ 0x04000100 };
 constexpr inline std::uint32_t TIMER_0_CONTROL_ADDRESS{ 0x04000102 };
 constexpr inline std::uint32_t TIMER_1_COUNTER_ADDRESS{ 0x04000104 };
@@ -40,7 +44,7 @@ constexpr inline std::uint32_t INPUT_ADDRESS{ 0x04000130 };
 constexpr inline std::uint32_t INPUT_INTERRUPT_ADDRESS{ 0x04000132 };
 constexpr inline std::uint32_t INTERRUPT_ENABLE_ADDRESS{ 0x04000200 };
 constexpr inline std::uint32_t INTERRUPT_REQUEST_FLAGS_ADDRESS{ 0x04000202 };
-constexpr inline std::uint32_t INTERRUPT_MASTER_ENABLE_ADDRESS{ 0x04000208 };
+constexpr inline std::uint32_t INTERRUPT_MAIN_ENABLE_ADDRESS{ 0x04000208 };
 
 
 // Palette RAM (background and sprite palette memory)

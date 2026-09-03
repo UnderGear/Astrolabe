@@ -31,6 +31,8 @@ using WideTileBlock = std::array<WideTile, 256>; // 256 blocks of wide tiles
 
 using SpriteTileAsset = Asset<std::span<const std::uint32_t>>;
 
+extern void* OAMBufferAddress;
+
 //TODO: template on storage type (for raw data array size) and tile type for indexing?
 class SpriteManager
 {
@@ -94,8 +96,6 @@ private:
 
 	// in the example https://www.coranac.com/tonc/text/regobj.htm 8.4.5 he creates a double buffer
     // - this is because we shouldn't just be writing to screen all the time. we operate on the buffer and copy it in
-	//TODO: swap this into OAM during vblanks?
-	//TODO: does this need to be volatile?
 	OAMT ObjectBuffer;
 	OAMAffineT* ObjectBufferAffine{ std::bit_cast<OAMAffineT*>(&ObjectBuffer) };
 
@@ -105,7 +105,8 @@ private:
 public:
     explicit SpriteManager(void* TileMemoryAddress);
 
-    void Tick();
+    __attribute__((section(".iwram"), long_call))
+    static void WriteOAM();
 
     void SetPalette(const PaletteAsset& ToSet);
     void ClearPalette();

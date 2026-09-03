@@ -28,7 +28,7 @@ int main()
 	Display DisplayMode;
 
 	// Enable interrupts
-	Interrupts::MasterEnable();
+	Interrupts::MainEnable();
 	World TestWorld;
 
 	Input MyInput;
@@ -80,8 +80,6 @@ int main()
 		// Really, backgrounds are the weird ones.
 		TestActor.UpdateSprite(Cam.GetDrawOffset() + (TestActor.Position - Cam.GetPosition()));
 		TestStationary.UpdateSprite(Cam.GetDrawOffset() + (TestStationary.Position - Cam.GetPosition()));
-
-		DisplayMode.Tick();
 
 		++CurrentFrame;
 	}

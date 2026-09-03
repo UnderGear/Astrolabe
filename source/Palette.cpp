@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "Display/Palette.hpp"
+#include "Hardware/DMA.hpp"
 
 PaletteManager::PaletteManager(void* PaletteMemoryAddress)
 {
@@ -15,7 +16,7 @@ void PaletteManager::SetPalette(const PaletteAsset& ToSet)
         return;
     }
     
-    std::ranges::copy(ToSet.Data, Palette->begin());
+    DMA::Copy(ToSet.Data.data(), Palette->begin(), DMAChannel::DMA3, ToSet.Data.size());
     LoadedPalette = &ToSet;
 }
 

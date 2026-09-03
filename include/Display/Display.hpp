@@ -18,6 +18,9 @@
 class Sprite;
 class Background;
 
+__attribute__((section(".iwram"), long_call))
+void OnVBlank();
+
 //TODO: and maybe it's time to start using bit_cast instead of these unique pointers to memory
 class Display
 {
@@ -46,21 +49,13 @@ private:
 	BackgroundManager Backgrounds;
 
 public:
+
 	explicit Display();
+	void VSync();
 
 	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0ObjectMode ObjectMode);
 	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0ObjectMode ObjectMode);
 	Background LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset);
-
-	void VSync()
-	{
-		BIOS::VBlankWait();
-	}
-
-	void Tick()
-	{
-		Sprites.Tick();
-	}
 };
 
 

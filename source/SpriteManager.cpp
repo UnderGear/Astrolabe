@@ -1,12 +1,16 @@
 #include <algorithm>
 
 #include "Display/SpriteManager.hpp"
+#include "Hardware/DMA.hpp"
+
+
+void* OAMBufferAddress{ nullptr };
 
 SpriteManager::SpriteManager(void* TileMemoryAddress)
 {
     SpriteBlock = std::unique_ptr<DoubleTileBlockRaw>
     {
-        new(TileMemoryAddress) DoubleTileBlockRaw{ }
+        new(TileMemoryAddress) DoubleTileBlockRaw
     };
     SpriteBlockIterator = SpriteBlock->begin();
 
@@ -23,12 +27,8 @@ SpriteManager::SpriteManager(void* TileMemoryAddress)
     {
         AvailableAffineObjectAttributes.push(i);
     }
-}
 
-void SpriteManager::Tick()
-{
-    // TODO: only copy as much as needed based on the size up to the highest OAM or affine OAM
-    *OAMMemory = ObjectBuffer;
+    OAMBufferAddress = &ObjectBuffer;
 }
 
 std::vector<SpriteManager::TileGap>::iterator SpriteManager::FindSuitableGap(std::int32_t Size)

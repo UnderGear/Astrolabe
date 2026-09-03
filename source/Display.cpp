@@ -14,6 +14,12 @@ Display::Display()
     DisplayStatus->VBlankInterruptRequest = static_cast<std::uint16_t>(true);
     // enable the vblank interrupt
     Interrupts::EnableInterrupt(Interrupts::InterruptType::VBlank);
+	Interrupts::AddHandler(Interrupts::InterruptType::VBlank, OnVBlank);
+}
+
+void Display::VSync()
+{
+    BIOS::VBlankWait();
 }
 
 Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0ObjectMode ObjectMode)
