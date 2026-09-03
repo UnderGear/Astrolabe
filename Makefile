@@ -61,7 +61,7 @@ IARCH   := -mthumb-interwork -marm -mlong-calls
 
 # --- Main flags ---
 
-CFLAGS		:= -mcpu=arm7tdmi -mtune=arm7tdmi -O2
+CFLAGS		:= -mcpu=arm7tdmi -mtune=arm7tdmi
 CFLAGS		+= -Wall -Wextra -pedantic-errors
 CFLAGS		+= $(INCLUDE)
 CFLAGS		+= -ffast-math -fno-strict-aliasing
@@ -89,13 +89,13 @@ endif
 # --- Debug info ? ---
 
 ifeq ($(strip $(bDEBUG)), 1)
-	CFLAGS		+= -DDEBUG -Og -g
-	CXXFLAGS	+= -DDEBUG -Og -g
-	ASFLAGS		+= -DDEBUG -Og -g
+	CFLAGS		+= -DDEBUG -O0 -g
+	CXXFLAGS	+= -DDEBUG -O0 -g
+	ASFLAGS		+= -DDEBUG -O0 -g
 	LDFLAGS		+= -g
 else
-	CFLAGS		+= -DNDEBUG
-	CXXFLAGS	+= -DNDEBUG
+	CFLAGS		+= -DNDEBUG -O2
+	CXXFLAGS	+= -DNDEBUG -O2
 	ASFLAGS		+= -DNDEBUG
 endif
 
