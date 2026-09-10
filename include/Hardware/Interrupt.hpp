@@ -6,17 +6,21 @@
 #include <memory>
 #include <vector>
 
+#include "Hardware/Register.hpp"
 #include "MemoryMap.hpp"
 
 namespace Interrupts
 {
-	struct InterruptMainEnableRegister
+
+	struct InterruptMainEnableRegister : Register<std::uint16_t>
 	{
-		std::uint16_t Enabled : 1; // set 0 to disable all
+		using Enabled = RegisterAccess<std::uint16_t, bool, 0b00000000'00000001>; // set 0 to disable all
 	};
 
-	// It seems a bit easier to do it this way than with a bit field struct
-	using InterruptRegister = std::uint16_t;
+	// Also just using raw access on this register
+	struct InterruptRegister : Register<std::uint16_t>
+	{
+	};
 
 	enum class InterruptType
 	{
@@ -70,22 +74,22 @@ namespace Interrupts
 
 	inline void MainEnable()
 	{
-		InterruptMainEnabledRegister->Enabled = 1;
+		InterruptMainEnabledRegister->Set<InterruptMainEnableRegister::Enabled>(true);
 	}
 
 	inline void MainDisable()
 	{
-		InterruptMainEnabledRegister->Enabled = 0;
+		InterruptMainEnabledRegister->Set<InterruptMainEnableRegister::Enabled>(false);
 	}
 
 	inline void EnableInterrupt(InterruptType Type)
 	{
-		*Interrupts::InterruptEnableRegister |= (1 << static_cast<std::uint16_t>(Type));
+		Interrupts::InterruptEnableRegister->GetMutableRaw() |= (1 << static_cast<std::uint16_t>(Type));
 	}
 
 	inline void DisableInterrupt(InterruptType Type)
 	{
-		*Interrupts::InterruptEnableRegister &= ~(1 << static_cast<std::uint16_t>(Type));
+		Interrupts::InterruptEnableRegister->GetMutableRaw() &= ~(1 << static_cast<std::uint16_t>(Type));
 	}
 
 	__attribute__((section(".iwram"), long_call))

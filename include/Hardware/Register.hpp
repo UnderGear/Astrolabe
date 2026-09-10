@@ -57,6 +57,11 @@ struct Register
 		return Data;
 	}
 
+	auto& GetMutableRaw() volatile requires (AccessType == RegisterAccessType::ReadWrite)
+	{
+		return Data;
+	}
+
 	template<typename RegisterAccessT>
 	auto Get() const volatile requires (AccessType != RegisterAccessType::WriteOnly)
 	{
