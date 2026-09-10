@@ -52,6 +52,11 @@ struct Register
 {
 	BackingT Data;
 
+	auto GetRaw() const volatile requires (AccessType != RegisterAccessType::WriteOnly)
+	{
+		return Data;
+	}
+
 	template<typename RegisterAccessT>
 	auto Get() const volatile requires (AccessType != RegisterAccessType::WriteOnly)
 	{

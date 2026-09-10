@@ -3,42 +3,46 @@
 #include <cstdint>
 #include <memory>
 
+#include "Hardware/Register.hpp"
 #include "MemoryMap.hpp"
 #include "Math/Vector.hpp"
 
-enum class InputKey : std::uint32_t
+enum class InputKey : std::uint16_t
 {
-    A =         0b0000000000000001,
-    B =         0b0000000000000010,
-    Select =    0b0000000000000100,
-    Start =     0b0000000000001000,
-    Right =     0b0000000000010000,
-    Left =      0b0000000000100000,
-    Up =        0b0000000001000000,
-    Down =      0b0000000010000000,
-    RB =        0b0000000100000000,
-    LB =        0b0000001000000000,
+    A =      0b00000000'00000001,
+    B =      0b00000000'00000010,
+    Select = 0b00000000'00000100,
+    Start =  0b00000000'00001000,
+    Right =  0b00000000'00010000,
+    Left =   0b00000000'00100000,
+    Up =     0b00000000'01000000,
+    Down =   0b00000000'10000000,
+    RB =     0b00000001'00000000,
+    LB =     0b00000010'00000000,
 };
 
-constexpr inline std::uint32_t KeyMask{ 0b0000001111111111 };
+constexpr inline std::uint16_t KeyMask{ 0b00000011'11111111 };
 
-using InputRegister = std::uint16_t;
-
-struct InputInterruptRegister
+struct InputRegister : Register<std::uint16_t, RegisterAccessType::ReadOnly>
 {
-    std::uint16_t A : 1 = 0;
-    std::uint16_t B : 1 = 0;
-    std::uint16_t Select : 1 = 0;
-    std::uint16_t Start : 1 = 0;
-    std::uint16_t Right : 1 = 0;
-    std::uint16_t Left : 1 = 0;
-    std::uint16_t Up : 1 = 0;
-    std::uint16_t Down : 1 = 0;
-    std::uint16_t RB : 1 = 0;
-    std::uint16_t LB : 1 = 0;
-    std::uint16_t _PADDING : 4 = 0;
-    std::uint16_t IRQEnable : 1 = 0;
-    std::uint16_t Comparitor : 1 = 0; // 0 OR, 1 AND comparison of all set keys required to raise the interrupt
+    // relying on GetRaw() from the base class instead of specifying individual accesses
+};
+
+struct InputInterruptRegister : Register<std::uint16_t>
+{
+    using A = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::A)>;
+    using B = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::B)>;
+    using Select = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::Select)>;
+    using Start = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::Start)>;
+    using Right = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::Right)>;
+    using Left = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::Left)>;
+    using Up = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::Up)>;
+    using Down = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::Down)>;
+    using RB = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::RB)>;
+    using LB = RegisterAccess<std::uint16_t, bool, static_cast<std::uint16_t>(InputKey::LB)>;
+
+    using IRQEnable = RegisterAccess<std::uint16_t, bool, 0b01000000'00000000>;
+    using Comparitor = RegisterAccess<std::uint16_t, bool, 0b10000000'00000000>; // 0 OR, 1 AND comparison of all set keys required to raise the interrupt
 };
 
 class Input
@@ -58,14 +62,18 @@ class Input
     std::uint16_t PreviousInput{ 0 };
 
     Vector2D DPadInput{ Vector::Zero };
+    Vector2D PreviousDPadInput{ Vector::Zero };
 
 public:
 
     void Tick();
 
     bool IsKeyDown(InputKey Key) const;
-
     bool IsKeyUp(InputKey Key) const;
 
+    bool WasKeyDown(InputKey Key) const;
+    bool WasKeyUp(InputKey Key) const;
+
     Vector2D GetDPadInput() const;
+    Vector2D GetPreviousDPadInput() const;
 };

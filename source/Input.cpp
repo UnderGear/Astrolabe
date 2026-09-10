@@ -4,8 +4,10 @@
 void Input::Tick()
 {
     PreviousInput = CurrentInput;
+    PreviousDPadInput = DPadInput;
+
     // Invert the raw value from the register because 0 is down and 1 is up
-    CurrentInput = ~(*InputValues) & KeyMask;
+    CurrentInput = ~(InputValues->GetRaw()) & KeyMask;
 
     DPadInput = Vector::Zero;
     //TODO: note that I've flipped the Y axis inputs for screen space
@@ -33,15 +35,30 @@ void Input::Tick()
 
 bool Input::IsKeyDown(InputKey Key) const
 {
-    return (CurrentInput & static_cast<std::uint32_t>(Key)) != 0;
+    return (CurrentInput & static_cast<std::uint16_t>(Key)) != 0;
 }
 
 bool Input::IsKeyUp(InputKey Key) const
 {
-    return (CurrentInput & static_cast<std::uint32_t>(Key)) == 0;
+    return (CurrentInput & static_cast<std::uint16_t>(Key)) == 0;
+}
+
+bool Input::WasKeyDown(InputKey Key) const
+{
+    return (PreviousInput & static_cast<std::uint16_t>(Key)) != 0;
+}
+
+bool Input::WasKeyUp(InputKey Key) const
+{
+    return (PreviousInput & static_cast<std::uint16_t>(Key)) == 0;
 }
 
 Vector2D Input::GetDPadInput() const
 {
     return DPadInput;
+}
+
+Vector2D Input::GetPreviousDPadInput() const
+{
+    return PreviousDPadInput;
 }
