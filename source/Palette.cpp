@@ -16,7 +16,7 @@ void PaletteManager::SetPalette(const PaletteAsset& ToSet)
         return;
     }
     
-    DMA::Copy(ToSet.Data.data(), Palette->begin(), DMAChannel::DMA3, ToSet.Data.size());
+    DMA::Copy(ToSet.Data.data(), Palette->begin(), DMA::Channel::DMA3, ToSet.Data.size());
     LoadedPalette = &ToSet;
 }
 

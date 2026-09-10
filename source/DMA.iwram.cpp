@@ -3,31 +3,32 @@
 #include "Hardware/DMA.hpp"
 
 __attribute__((section(".iwram"), long_call))
-void DMA::Copy(const void* SourceAddress, void* DestinationAddress, DMAChannel Channel, std::uint32_t Count)
+void DMA::Copy(const void* SourceAddress, void* DestinationAddress, Channel Channel, std::uint16_t Count)
 {
-    DMAControlRegister ControlRegister
+    ControlRegister Control
     {
         Count,
-        DMADestinationAdjustmentMode::Increment,
-        DMASourceAdjustmentMode::Increment,
+        DestinationAdjustmentMode::Increment,
+        SourceAdjustmentMode::Increment,
         false,
-        DMAChunkSize::Word,
-        DMATimingMode::Immediate,
+        ChunkSizeMode::Word,
+        TimingMode::Immediate,
         false,
         true
     };
 
-    Transfer(SourceAddress, DestinationAddress, Channel, ControlRegister);
+    Transfer(SourceAddress, DestinationAddress, Channel, Control);
 }
 
 __attribute__((section(".iwram"), long_call))
-void DMA::Transfer(const void* SourceAddress, void* DestinationAddress, DMAChannel Channel, const DMAControlRegister& ControlParams)
+void DMA::Transfer(const void* SourceAddress, void* DestinationAddress, Channel Channel, const ControlRegister& ControlParams)
 {
-    auto& Registers = (*DMA::DMARegisters)[static_cast<std::size_t>(Channel)];
-    Registers.ControlRegister.ChunkCount = 0; // Clear out any ongoing transfers
+    auto& Registers = (*DMA::Registers)[static_cast<std::size_t>(Channel)];
+    Registers.Control.Set<ControlRegister::ChunkCount>(0); // Clear out any ongoing transfers
     Registers.SourceAddress = SourceAddress;
     Registers.DestinationAddress = DestinationAddress;
 
+    //TODO:
     // Now we need to stomp the entire register in one instruction. I'd like to know if there's a cleaner way
-    *const_cast<DMAControlRegister*>(&Registers.ControlRegister) = ControlParams;
+    *const_cast<ControlRegister*>(&Registers.Control) = ControlParams;
 }
