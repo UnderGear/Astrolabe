@@ -14,6 +14,7 @@ enum class RegisterAccessType
 template<std::unsigned_integral BackingT, typename ValueT, BackingT MaskValue, RegisterAccessType AccessType = RegisterAccessType::ReadWrite>
 struct RegisterAccess
 {
+	using ValueType = ValueT;
 	static constexpr BackingT Mask{ MaskValue };
 	static constexpr auto Shift{ std::countr_zero(Mask) };
 
@@ -64,7 +65,8 @@ struct Register
 	}
 
 	template<typename... RegisterAccessTs, typename... ValueTs>
-	void SetBatch(ValueTs... Values) volatile requires (AccessType != RegisterAccessType::ReadOnly)
+	void SetBatch(ValueTs... Values) volatile
+		requires (AccessType != RegisterAccessType::ReadOnly && (std::convertible_to<ValueTs, typename RegisterAccessTs::ValueType> && ...))
 	{
 		BackingT ToSet{ 0 };
 		(RegisterAccessTs::Set(ToSet, Values), ...);
