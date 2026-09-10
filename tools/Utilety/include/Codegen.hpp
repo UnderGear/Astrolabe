@@ -195,7 +195,7 @@ namespace Codegen
 		File << "{\n";
 		File << "\tstd::span<const std::uint32_t>(" << AssetPath.string() << "_tiles_raw.begin(), " << AssetPath.string() << "_tiles_raw.end()),\n";
 		File << "\t" << TileIndex << ",\n";
-		File << "\t" << "RegularBackgroundDimensions::t" << WidthTiles << "xt" << HeightTiles << "\n";
+		File << "\t" << "BackgroundControlRegister::RegularBackgroundDimensions::t" << WidthTiles << "xt" << HeightTiles << "\n";
 		File << "};\n";
 		File << "\n";
 		WriteLastUsedAssetIndex(TileIndex);

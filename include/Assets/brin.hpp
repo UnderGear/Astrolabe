@@ -318,7 +318,7 @@ inline constexpr BackgroundTileAsset brin_tiles
 {
 	std::span<const std::uint32_t>(brin_tiles_raw.begin(), brin_tiles_raw.end()),
 	155,
-	RegularBackgroundDimensions::t64xt32
+	BackgroundControlRegister::RegularBackgroundDimensions::t64xt32
 };
 
 inline constexpr BackgroundMapAsset brin_map

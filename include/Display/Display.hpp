@@ -34,7 +34,10 @@ private:
 	std::unique_ptr<volatile DisplayControlRegister> DisplayControl
 	{
 		new(reinterpret_cast<void*>(DISPLAY_CONTROL_ADDRESS))
-			DisplayControlRegister{ DisplayMode::Mode0, BackgroundLayerFlags::None, WindowDisplayFlags::None }
+			DisplayControlRegister
+			{
+				DisplayControlRegister::DisplayModeOptions::Mode0, true, false, false, false, true, false, false, false
+			}
 	};
 	std::unique_ptr<volatile DisplayStatusRegister> DisplayStatus
 	{
@@ -53,8 +56,8 @@ public:
 	explicit Display();
 	void VSync();
 
-	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0ObjectMode ObjectMode);
-	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0ObjectMode ObjectMode);
+	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode);
+	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode);
 	Background LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset);
 };
 

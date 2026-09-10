@@ -6,12 +6,12 @@
 Display::Display()
 {
     // TODO: set these in the DisplayControl ctor?
-    DisplayControl->OBJCharacterVRAMMapping = 1; // 1D object mode
-    DisplayControl->BackgroundFlags = static_cast<std::uint16_t>(BackgroundLayerFlags::Object)
-        | static_cast<std::uint16_t>(BackgroundLayerFlags::Background0);
+    DisplayControl->Set<DisplayControlRegister::OBJCharacterVRAMMapping>(DisplayControlRegister::OBJCharacterVRAMMappingOptions::Mapping1D);
+    DisplayControl->Set<DisplayControlRegister::Background0>(true);
+    DisplayControl->Set<DisplayControlRegister::ObjectLayer>(true);
 
     // request vblank interrupts
-    DisplayStatus->VBlankInterruptRequest = static_cast<std::uint16_t>(true);
+    DisplayStatus->Set<DisplayStatusRegister::VBlankInterruptRequest>(true);
     // enable the vblank interrupt
     Interrupts::EnableInterrupt(Interrupts::InterruptType::VBlank);
 	Interrupts::AddHandler(Interrupts::InterruptType::VBlank, OnVBlank);
@@ -22,7 +22,7 @@ void Display::VSync()
     BIOS::VBlankWait();
 }
 
-Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0ObjectMode ObjectMode)
+Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode)
 {
     auto* OAM{ Sprites.RequestOAM() };
     assert(OAM != nullptr);
@@ -31,7 +31,7 @@ Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAs
     assert(LoadedPaletteIndex != PaletteManager::INDEX_INVALID);
 
     std::int32_t AffineOAMIndex = SpriteManager::INDEX_INVALID;
-    if (ObjectMode == Attribute0ObjectMode::Affine)
+    if (ObjectMode == Attribute0Register::ObjectModeOptions::Affine)
     {
         AffineOAMIndex = Sprites.RequestAffineOAM();
         assert(AffineOAMIndex != SpriteManager::INDEX_INVALID);
@@ -40,7 +40,7 @@ Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAs
     return Sprite{ Sprites, *OAM, Animations, LoadedPaletteIndex, ObjectMode, AffineOAMIndex };
 }
 
-Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0ObjectMode ObjectMode)
+Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode)
 {
     auto* OAM{ Sprites.RequestOAM() };
     assert(OAM != nullptr);
@@ -48,7 +48,7 @@ Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteAsset&
     Sprites.SetPalette(PaletteAsset);
 
     std::int32_t AffineOAMIndex = SpriteManager::INDEX_INVALID;
-    if (ObjectMode == Attribute0ObjectMode::Affine)
+    if (ObjectMode == Attribute0Register::ObjectModeOptions::Affine)
     {
         AffineOAMIndex = Sprites.RequestAffineOAM();
         assert(AffineOAMIndex != SpriteManager::INDEX_INVALID);

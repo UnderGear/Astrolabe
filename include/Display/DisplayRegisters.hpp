@@ -1,110 +1,195 @@
 #pragma once
 
 #include <array>
+#include <bit>
 #include <cstdint>
 #include <utility>
 
+#include "Hardware/Register.hpp"
 #include "Math/Fixed.hpp"
 
-enum class DisplayMode
+struct DisplayControlRegister : Register<std::uint16_t>
 {
-	Mode0,
-	Mode1,
-	Mode2,
-	Mode3,
-	Mode4,
-	Mode5,
+	enum class DisplayModeOptions
+	{
+		Mode0,
+		Mode1,
+		Mode2,
+		Mode3,
+		Mode4,
+		Mode5,
+	};
+	using DisplayMode = RegisterAccess<std::uint16_t, DisplayModeOptions, 0b00000000'00000111>;
+
+	// true if there is a GBC cartridge inserted
+	using GBC = RegisterAccess<std::uint16_t, bool, 0b00000000'00001000, RegisterAccessType::ReadOnly>; 
+
+	enum class DisplayPageSelectOptions
+	{
+		Page0,
+		Page1,
+	};
+	using DisplayPageSelect = RegisterAccess<std::uint16_t, DisplayPageSelectOptions, 0b00000000'00010000>;
+
+	using HBlankIntervalFree = RegisterAccess<std::uint16_t, bool, 0b00000000'00100000>; // allow access to OAM during H-Blank
+
+	enum class OBJCharacterVRAMMappingOptions
+	{
+		Mapping2D,
+		Mapping1D,
+	};
+	using OBJCharacterVRAMMapping = RegisterAccess<std::uint16_t, OBJCharacterVRAMMappingOptions, 0b00000000'01000000>;
+
+	using ForcedBlank = RegisterAccess<std::uint16_t, bool, 0b00000000'10000000>;
+	
+	using Background0 = RegisterAccess<std::uint16_t, bool, 0b00000001'00000000>;
+	using Background1 = RegisterAccess<std::uint16_t, bool, 0b00000010'00000000>;
+	using Background2 = RegisterAccess<std::uint16_t, bool, 0b00000100'00000000>;
+	using Background3 = RegisterAccess<std::uint16_t, bool, 0b00001000'00000000>;
+	using ObjectLayer = RegisterAccess<std::uint16_t, bool, 0b00010000'00000000>;
+
+	using Window0 = RegisterAccess<std::uint16_t, bool, 0b00100000'00000000>;	
+	using Window1 = RegisterAccess<std::uint16_t, bool, 0b01000000'00000000>;
+	using ObjectWindow = RegisterAccess<std::uint16_t, bool, 0b10000000'00000000>;
+
+	constexpr explicit DisplayControlRegister(
+		DisplayModeOptions ModeValue,
+		bool Background0Value,
+		bool Background1Value,
+		bool Background2Value,
+		bool Background3Value,
+		bool ObjectLayerValue,
+		bool Window0Value,
+		bool Window1Value,
+		bool ObjectWindowValue)
+	{
+		SetBatch<
+			DisplayMode,
+			DisplayPageSelect,
+			HBlankIntervalFree,
+			OBJCharacterVRAMMapping,
+			Background0,
+			Background1,
+			Background2,
+			Background3,
+			ObjectLayer,
+			Window0,
+			Window1,
+			ObjectWindow>(
+				ModeValue,
+				DisplayPageSelectOptions::Page0,
+				false,
+				OBJCharacterVRAMMappingOptions::Mapping2D,
+				Background0Value,
+				Background1Value,
+				Background2Value,
+				Background3Value,
+				ObjectLayerValue,
+				Window0Value,
+				Window1Value,
+				ObjectWindowValue
+			);
+	}
 };
 
-enum class BackgroundLayerFlags
+struct DisplayStatusRegister : Register<std::uint16_t>
 {
-	None		= 0b00000,
-	Background0 = 0b00001,
-	Background1 = 0b00010,
-	Background2 = 0b00100,
-	Background3 = 0b01000,
-	Object 		= 0b10000,
+	using VBlankStatus = RegisterAccess<std::uint16_t, bool, 0b00000000'00000001, RegisterAccessType::ReadOnly>;
+	using HBlankStatus = RegisterAccess<std::uint16_t, bool, 0b00000000'00000010, RegisterAccessType::ReadOnly>;
+	using VCountTriggerStatus = RegisterAccess<std::uint16_t, bool, 0b00000000'00000100, RegisterAccessType::ReadOnly>;
+	using VBlankInterruptRequest = RegisterAccess<std::uint16_t, bool, 0b00000000'00001000>;
+	using HBlankInterruptRequest = RegisterAccess<std::uint16_t, bool, 0b00000000'00010000>;
+	using VCountInterruptRequest = RegisterAccess<std::uint16_t, bool, 0b00000000'00100000>;
+	using VCountTriggerValue = RegisterAccess<std::uint16_t, std::uint16_t, 0b11111111'00000000, RegisterAccessType::ReadOnly>;
 };
 
-enum class WindowDisplayFlags
+struct VerticalCountRegister : Register<std::uint16_t>
 {
-	None 	= 0b000,
-	Window0 = 0b001,
-	Window1 = 0b010,
-	OBJ		= 0b100,
-};
-
-struct DisplayControlRegister
-{
-	std::uint16_t Mode : 3; // DisplayMode
-	std::uint16_t Reserved : 1{ 0 };
-	std::uint16_t DisplayPageSelect : 1; // for modes 4, 5 only. toggle between pages at runtime to switch out the screen
-	std::uint16_t HBlankIntervalFree : 1; // 1: allow access to OAM during H-Blank
-	std::uint16_t OBJCharacterVRAMMapping : 1; // 0 2D, 1 1D
-	std::uint16_t ForcedBlank : 1{ 0 };
-	std::uint16_t BackgroundFlags : 5; // BackgroundLayerFlags
-	std::uint16_t WindowFlags : 3; // WindowDisplayFlags
-
-	constexpr explicit DisplayControlRegister(DisplayMode InMode, BackgroundLayerFlags InBackgroundFlags, WindowDisplayFlags InWindowFlags = WindowDisplayFlags::None)
-		: Mode(static_cast<std::uint16_t>(InMode)), DisplayPageSelect(0), HBlankIntervalFree(0)
-		, OBJCharacterVRAMMapping(0), BackgroundFlags(static_cast<std::uint16_t>(InBackgroundFlags))
-		, WindowFlags(static_cast<std::uint16_t>(InWindowFlags))
-	{ }
-};
-
-struct DisplayStatusRegister
-{
-	std::uint16_t VBlankStatus : 1;
-	std::uint16_t HBlankStatus : 1;
-	std::uint16_t VCountTriggerStatus : 1;
-	std::uint16_t VBlankInterruptRequest : 1;
-	std::uint16_t HBlankInterruptRequest : 1;
-	std::uint16_t VCountInterruptRequest : 1;
-	std::uint16_t : 2;
-	std::uint16_t VCountTriggerValue : 8;
-};
-
-struct VerticalCountRegister
-{
-	std::uint16_t VerticalCount : 8;
-	std::uint16_t : 8;
+	using VerticalCount = RegisterAccess<std::uint16_t, std::uint8_t, 0b00000000'00000000, RegisterAccessType::ReadOnly>;
 };
 
 
 // These live in OAM_ADDRESS
 // note that these things overlay one another in memory. 4 ObjectAttributes interleave in 1 ObjectAttributesAffine
-// we have space for 128 ObjectAttributes and 32 ObjectAttributesAffine
+// we have space for 128 ObjectAttributes and 32 ObjectAttributesAffine, meaning that out of our 128 sprites, 32 may be affine at a time
 
-
-enum class Attribute0ObjectMode
+struct Attribute0Register : Register<std::uint16_t>
 {
-	Normal,
-	Affine,
-	Hidden,
-	AffineDoubleArea
+	using Y = RegisterAccess<std::uint16_t, std::uint16_t, 0b00000000'11111111>;
+
+	enum class ObjectModeOptions
+	{
+		Normal,
+		Affine,
+		Hidden,
+		AffineDoubleArea
+	};
+	using ObjectMode = RegisterAccess<std::uint16_t, ObjectModeOptions, 0b00000011'00000000>;
+
+	enum class GraphicsModeOptions
+	{
+		Normal,
+		Alpha,
+		ObjectWindow, // serves as a mask for BGs and sprites?
+		Forbidden
+	};
+	using GraphicsMode = RegisterAccess<std::uint16_t, GraphicsModeOptions, 0b00001100'00000000>;
+
+	using MosaicMode = RegisterAccess<std::uint16_t, bool, 0b00010000'00000000>;
+
+	enum class ColorModeOptions
+	{
+		PaletteBank, // 16 colors per bank, this mode addresses a single bank
+		WholePalette // 256 total colors can fit in palette memory, this mode can address them all
+	};
+	using ColorMode = RegisterAccess<std::uint16_t, ColorModeOptions, 0b00100000'00000000>;
+
+	enum class SpriteShapeOptions
+	{
+		Square,
+		Wide, //TODO: do I have wide/tall mixed up?
+		Tall,
+	};
+	using SpriteShape = RegisterAccess<std::uint16_t, SpriteShapeOptions, 0b11000000'00000000>;
+
+	void SetData(std::uint16_t YValue, ObjectModeOptions ObjectModeValue, GraphicsModeOptions GraphicsModeValue, bool MosaicEnabledValue, ColorModeOptions ColorModeValue, SpriteShapeOptions SpriteShapeValue) volatile
+	{
+		SetBatch<Y, ObjectMode, GraphicsMode, MosaicMode, ColorMode, SpriteShape>(YValue, ObjectModeValue, GraphicsModeValue, MosaicEnabledValue, ColorModeValue, SpriteShapeValue);
+	}
 };
 
-enum class Attribute0GraphicsMode
+struct Attribute1Register : Register<std::uint16_t>
 {
-	Normal,
-	Alpha,
-	ObjectWindow, // serves as a mask for BGs and sprites?
-	Forbidden
-};
+	using X = RegisterAccess<std::uint16_t, std::uint16_t, 0b00000001'11111111>;
 
-enum class Attribute0SpriteShape
-{
-	Square,
-	Wide, //TODO: do I have wide/tall mixed up?
-	Tall,
-};
+	// Depending on the selected ObjectMode in register 0, this register can take a couple different forms
+	// Normal:
+	using HorizontalFlip = RegisterAccess<std::uint16_t, bool, 0b00010000'00000000>;
+	using VerticalFlip = RegisterAccess<std::uint16_t, bool, 0b00100000'00000000>;
 
-enum class Attribute1SpriteSize
-{
-	S8,
-	S16,
-	S32,
-	S64,
+	// Affine/AffineDoubleArea:
+	using AffineIndex = RegisterAccess<std::uint16_t, std::uint16_t, 0b00111110'00000000>;
+
+	enum class SpriteSizeOptions
+	{
+		S8,
+		S16,
+		S32,
+		S64,
+	};
+	using SpriteSize = RegisterAccess<std::uint16_t, SpriteSizeOptions, 0b11000000'00000000>;
+
+	// Normal Mode
+	void SetData(std::uint16_t XValue, bool HorizontalFlipValue, bool VerticalFlipValue, SpriteSizeOptions SpriteSizeValue) volatile
+	{
+		SetBatch<X, HorizontalFlip, VerticalFlip, SpriteSize>(XValue, HorizontalFlipValue, VerticalFlipValue, SpriteSizeValue);
+	}
+
+	// Affine Modes
+	void SetData(std::uint16_t XValue, std::uint16_t AffineIndexValue, SpriteSizeOptions SpriteSizeValue) volatile
+	{
+		SetBatch<X, AffineIndex, SpriteSize>(XValue, AffineIndexValue, SpriteSizeValue);
+	}
 };
 
 // Size/shape for non-affine sprites
@@ -114,74 +199,56 @@ enum class Attribute1SpriteSize
 // p | 01 | 16x8 | 32x8  | 32x16 | 64x32 |
 // e | 10 | 8x16 | 8x32  | 16x32 | 32x64 |
 // WOW this compiler really doesn't let you get away with any template argument deduction on these initializers
-inline constexpr std::array<std::array<std::pair<std::int32_t, std::int32_t>, 4>, 3> SpriteDimensions
+inline constexpr std::array<std::array<std::pair<std::uint16_t, std::uint16_t>, 4>, 3> SpriteDimensions
 {
-	std::array<std::pair<std::int32_t, std::int32_t>, 4>{ std::pair<std::int32_t, std::int32_t>{ 8, 8 }, std::pair<std::int32_t, std::int32_t>{ 16, 16 }, std::pair<std::int32_t, std::int32_t>{ 32, 32 }, std::pair<std::int32_t, std::int32_t>{ 64, 64 } },
-	std::array<std::pair<std::int32_t, std::int32_t>, 4>{ std::pair<std::int32_t, std::int32_t>{ 16, 8 }, std::pair<std::int32_t, std::int32_t>{ 32, 8 }, std::pair<std::int32_t, std::int32_t>{ 32, 16 }, std::pair<std::int32_t, std::int32_t>{ 64, 32 } },
-	std::array<std::pair<std::int32_t, std::int32_t>, 4>{ std::pair<std::int32_t, std::int32_t>{ 8, 16 }, std::pair<std::int32_t, std::int32_t>{ 8, 32 }, std::pair<std::int32_t, std::int32_t>{ 16, 32 }, std::pair<std::int32_t, std::int32_t>{ 32, 64 } }
+	std::array<std::pair<std::uint16_t, std::uint16_t>, 4>{ std::pair<std::uint16_t, std::uint16_t>{ 8, 8 }, std::pair<std::uint16_t, std::uint16_t>{ 16, 16 }, std::pair<std::uint16_t, std::uint16_t>{ 32, 32 }, std::pair<std::uint16_t, std::uint16_t>{ 64, 64 } },
+	std::array<std::pair<std::uint16_t, std::uint16_t>, 4>{ std::pair<std::uint16_t, std::uint16_t>{ 16, 8 }, std::pair<std::uint16_t, std::uint16_t>{ 32, 8 }, std::pair<std::uint16_t, std::uint16_t>{ 32, 16 }, std::pair<std::uint16_t, std::uint16_t>{ 64, 32 } },
+	std::array<std::pair<std::uint16_t, std::uint16_t>, 4>{ std::pair<std::uint16_t, std::uint16_t>{ 8, 16 }, std::pair<std::uint16_t, std::uint16_t>{ 8, 32 }, std::pair<std::uint16_t, std::uint16_t>{ 16, 32 }, std::pair<std::uint16_t, std::uint16_t>{ 32, 64 } }
 };
 
-inline constexpr std::pair<std::int32_t, int32_t> GetSpriteDimensions(Attribute0SpriteShape Shape, Attribute1SpriteSize Size)
+inline constexpr std::pair<std::uint16_t, uint16_t> GetSpriteDimensions(Attribute0Register::SpriteShapeOptions Shape, Attribute1Register::SpriteSizeOptions Size)
 {
 	return SpriteDimensions[static_cast<std::size_t>(Shape)][static_cast<std::size_t>(Size)];
 }
 
-struct Attribute0Register
+struct Attribute2Register : Register<std::uint16_t>
 {
-	std::uint16_t YCoordinate : 8; // top of the sprite
-	std::uint16_t ObjectMode : 2;
-	std::uint16_t GraphicsMode : 2;
-	std::uint16_t MosaicEnabled : 1;
-	std::uint16_t ColorMode : 1; // 0: 16 colors, 1: 256 colors
-	std::uint16_t SpriteShape : 2; // Attribute0SpriteShape
-};
+	// Index into tile memory
+	using TileIndex = RegisterAccess<std::uint16_t, std::uint16_t, 0b00000011'11111111>;
 
-struct Attribute1RegisterStandard
-{
-	std::uint16_t XCoordinate : 9; // left edge of sprite
-	std::uint16_t : 3;
-	std::uint16_t HorizontalFlip : 1;
-	std::uint16_t VerticalFlip : 1;
-	std::uint16_t SpriteSize : 2;
-};
-
-struct Attribute1RegisterAffine
-{
-	std::uint16_t XCoordinate : 9;
-	std::uint16_t AffineIndex : 5;
-	std::uint16_t SpriteSize : 2;
-};
-
-struct Attribute1Register
-{
-	// variant does extra bookkeeping, so we can't plop one of those in this register. maybe we should just bit_cast if we want to avoid union
-	union
+	// Higher priority sprites draw first and can get overdrawn. Sprites draw over backgrounds of equal priority.
+	enum class PriorityOptions
 	{
-		Attribute1RegisterStandard Standard;
-		Attribute1RegisterAffine Affine;
+		VeryLow,
+		Low,
+		Medium,
+		High
 	};
-};
+	using Priority = RegisterAccess<std::uint16_t, PriorityOptions, 0b00001100'00000000>;
 
-struct Attribute2Register
-{
-	std::uint16_t TileIndex : 10;
-	std::uint16_t Priority : 2; // higher priority sprites draw first and can get overdrawn. sprites draw over backgrounds of equal priority.
-	std::uint16_t PaletteBank : 4; // when using 16 color mode only
+	// Only used when in 16 color mode
+	using PaletteBank = RegisterAccess<std::uint16_t, std::uint16_t, 0b11110000'00000000>;
+
+	void SetData(std::uint16_t TileIndexValue, PriorityOptions PriorityValue, std::uint16_t PaletteBankValue) volatile
+	{
+		SetBatch<TileIndex, Priority, PaletteBank>(TileIndexValue, PriorityValue, PaletteBankValue);
+	}
 };
 
 struct alignas(std::uint32_t) ObjectAttributes
 {
-	Attribute0Register Attribute0;
-	Attribute1Register Attribute1;
-	Attribute2Register Attribute2;
-	volatile std::int16_t Fill;
+	volatile Attribute0Register Attribute0;
+	volatile Attribute1Register Attribute1;
+	volatile Attribute2Register Attribute2;
+	volatile std::uint16_t Fill;
 
 	ObjectAttributes()
 	{
-		Attribute0.ObjectMode = static_cast<std::uint16_t>(Attribute0ObjectMode::Hidden);
+		Attribute0.Set<Attribute0Register::ObjectMode>(Attribute0Register::ObjectModeOptions::Hidden);
 	}
 };
 
+//TODO: make this a register that spans multiple std::uint16_ts?
 struct alignas(std::uint32_t) ObjectAttributesAffine
 {
 	volatile std::array<std::uint16_t, 3> Fill0;
@@ -194,51 +261,76 @@ struct alignas(std::uint32_t) ObjectAttributesAffine
 	i8f8_t Pd;
 };
 
+//TODO:
 // One register per background, so 4 total
-struct BackgroundControlRegister
+struct BackgroundControlRegister : Register<std::uint16_t>
 {
-    std::uint16_t Priority : 2;
-    std::uint16_t TileBlockBaseIndex : 2;
-    std::uint16_t : 2;
-    std::uint16_t MosaicEnabled : 1;
-    std::uint16_t ColorMode : 1;
-    std::uint16_t TileMapBlockBaseIndex : 5;
-    std::uint16_t AffineWrappingEnabled : 1;
-    std::uint16_t BackgroundSize : 2;
+	// Higher priority backgrounds draw first and can get overdrawn. Sprites draw over backgrounds of equal priority.
+	enum class PriorityOptions
+	{
+		VeryLow,
+		Low,
+		Medium,
+		High
+	};
+	using Priority = RegisterAccess<std::uint16_t, PriorityOptions, 0b00000000'00000011>;
+
+	using TileBlockBaseIndex = RegisterAccess<std::uint16_t, std::uint16_t, 0b00000000'00001100>;
+	
+	using MosaicEnabled = RegisterAccess<std::uint16_t, bool, 0b00000000'01000000>;
+
+	enum class ColorModeOptions
+	{
+		PaletteBank, // 16 colors per bank, this mode addresses a single bank
+		WholePalette // 256 total colors can fit in palette memory, this mode can address them all
+	};
+	using ColorMode = RegisterAccess<std::uint16_t, ColorModeOptions, 0b00000000'10000000>;
+
+	using TileMapBlockBaseIndex = RegisterAccess<std::uint16_t, std::uint16_t, 0b00011111'00000000>;
+	
+	using AffineWrappingEnabled = RegisterAccess<std::uint16_t, bool, 0b00100000'00000000>;
+
+	// Regular vs Affine backgrounds have different dimensions
+	// BackgroundSize (regular backgrounds)
+	//    | tiles | pixels  |
+	// 00 | 32x32 | 256x256 |
+	// 01 | 64x32 | 512x256 |
+	// 10 | 32x64 | 512x256 |
+	// 11 | 64x64 | 512x512 |
+	enum class RegularBackgroundDimensions
+	{
+		t32xt32,
+		t64xt32,
+		t32xt64,
+		t64xt64,
+	};
+	// BackgroundSize (affine backgrounds)
+	//    |  tiles  |  pixels   |
+	// 00 |  16x16  |  128x128  |
+	// 01 |  32x32  |  256x256  |
+	// 10 |  64x64  |  512x512  |
+	// 11 | 128x128 | 1024x1024 |
+	enum class AffineBackgroundDimensions
+	{
+		t16x16,
+		t32x32,
+		t64x64,
+		t128x128
+	};
+
+	using RegularBackgroundSize = RegisterAccess<std::uint16_t, RegularBackgroundDimensions, 0b11000000'00000000>;
+	using AffineBackgroundSize = RegisterAccess<std::uint16_t, AffineBackgroundDimensions, 0b11000000'00000000>;
 };
 
-enum class RegularBackgroundDimensions
-{
-	t32xt32 = 0b00,
-	t64xt32 = 0b01,
-	t32xt64 = 0b10,
-	t64xt64 = 0b11,
-};
-
-// BackgroundSize (regular backgrounds)
-//    | tiles | pixels  |
-// 00 | 32x32 | 256x256 |
-// 01 | 64x32 | 512x256 |
-// 10 | 32x64 | 512x256 |
-// 11 | 64x64 | 512x512 |
-
-// BackgroundSize (affine backgrounds)
-//    |  tiles  |  pixels   |
-// 00 |  16x16  |  128x128  |
-// 01 |  32x32  |  256x256  |
-// 10 |  64x64  |  512x512  |
-// 11 | 128x128 | 1024x1024 |
-
-//TODO: I don't think I actually need this struct in the code base. let's just use raw 32 bit entries
 // These live in our background VRAM interspersed with actual tile data
 // Use the BG's control register to configure where to look for the two in the layout
 // Apparently it's customary to put tile maps at the end and tile data up front
-struct BackgroundTileMapEntry
+struct BackgroundTileMapEntry : Register<std::uint16_t>
 {
-    std::uint16_t TileIndex : 10;
-    std::uint16_t HorizontalFlip : 1;
-    std::uint16_t VerticalFlip : 1;
-    std::uint16_t PaletteBank : 4;
+	using TileIndex = RegisterAccess<std::uint16_t, std::uint16_t, 0b00000011'11111111>;
+	using HorizontalFlip = RegisterAccess<std::uint16_t, bool, 0b00000100'00000000>;
+	using VerticalFlip = RegisterAccess<std::uint16_t, bool, 0b00001000'00000000>;
+	using PaletteBank = RegisterAccess<std::uint16_t, std::uint16_t, 0b11110000'00000000>;
 };
 
 // a background tile is 8x8 pixels, so the screen is 30 tiles wide and 20 tiles tall
@@ -249,10 +341,10 @@ struct BackgroundTileMapEntry
 
 // array of background offsets
 // write only
-struct alignas(std::int32_t) BackgroundOffset
+struct BackgroundOffset : Register<std::uint32_t, RegisterAccessType::WriteOnly>
 {
-    std::int16_t X{ 0 };
-    std::int16_t Y{ 0 };
+	using X = RegisterAccess<std::uint32_t, std::int16_t, 0b00000000'00000000'11111111'11111111, RegisterAccessType::WriteOnly>;
+	using Y = RegisterAccess<std::uint32_t, std::int16_t, 0b11111111'11111111'00000000'00000000, RegisterAccessType::WriteOnly>;
 };
 
 // TODO: worry about affine backgrounds later

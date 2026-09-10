@@ -19,7 +19,10 @@
 
 struct BackgroundTileAsset : public Asset<std::span<const std::uint32_t>>
 {
-    RegularBackgroundDimensions Dimensions{ RegularBackgroundDimensions::t32xt32 };
+    BackgroundControlRegister::RegularBackgroundDimensions Dimensions
+    {
+        BackgroundControlRegister::RegularBackgroundDimensions::t32xt32
+    };
 };
 
 //TODO: is this the right shape for these?

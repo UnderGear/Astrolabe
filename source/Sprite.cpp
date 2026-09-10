@@ -2,58 +2,46 @@
 #include "Display/Sprite.hpp"
 #include "Math/Point.hpp"
 
-Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex, Attribute0ObjectMode ObjectMode, std::int32_t AffineOAMIndex)
+Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex, Attribute0Register::ObjectModeOptions ObjectMode, std::int32_t AffineOAMIndex)
         : Owner(InOwner), Attributes(InAttributes), Animations(InAnimations), PaletteAssetIndex(InPaletteAssetIndex)
 {
 	CurrentSpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex].Asset;
 	auto LoadedTileIndex{ Owner.LoadTiles(*CurrentSpriteAsset) };
 	assert(LoadedTileIndex != SpriteManager::INDEX_INVALID);
 
-	//TODO: get size/shape params from the actual asset
-    //TODO: pass in params. modes, intial position
-	Attributes.Attribute0.ObjectMode = static_cast<std::uint16_t>(ObjectMode);
-	Attributes.Attribute0.GraphicsMode = static_cast<std::uint16_t>(Attribute0GraphicsMode::Normal);
-	Attributes.Attribute0.MosaicEnabled = 0;
-	Attributes.Attribute0.SpriteShape = static_cast<std::uint16_t>(Attribute0SpriteShape::Square);
-	Attributes.Attribute0.ColorMode = 1; //TODO: another param to pass in
-	Attributes.Attribute1.Standard.SpriteSize = static_cast<std::uint16_t>(Attribute1SpriteSize::S32);
 
-	//TODO: assert that these indices fit into their registers
-
-	Attributes.Attribute2.Priority = 0; //TODO: add a parameter.
-
-	if (PaletteAssetIndex != PaletteManager::INDEX_INVALID)
-	{
-		Attributes.Attribute2.PaletteBank = PaletteAssetIndex; //TODO: this only makes sense for 4bpp sprites
-	}
-	Attributes.Attribute2.TileIndex = LoadedTileIndex;
-
-	auto [SpriteWidth, SpriteHeight]{ GetSpriteDimensions(Attribute0SpriteShape::Square, Attribute1SpriteSize::S32) };
+	auto [SpriteWidth, SpriteHeight]{ GetSpriteDimensions(Attribute0Register::SpriteShapeOptions::Square, Attribute1Register::SpriteSizeOptions::S32) };
 	HalfWidth = SpriteWidth / 2;
 	HalfHeight = SpriteHeight / 2;
 
-	Attributes.Attribute1.Standard.XCoordinate = HalfWidth;
-	Attributes.Attribute0.YCoordinate = HalfHeight;
+	//TODO: get size/shape params from the actual asset
+    //TODO: pass in params. modes, intial position
 
-	if (AffineOAMIndex != SpriteManager::INDEX_INVALID)
+	Attributes.Attribute0.SetData(0, ObjectMode, Attribute0Register::GraphicsModeOptions::Normal, false, Attribute0Register::ColorModeOptions::WholePalette, Attribute0Register::SpriteShapeOptions::Square);
+
+	//TODO: assert that these indices fit into their registers
+	if (auto* AffineAttributes = Owner.GetAffineOAMByIndex(AffineOAMIndex))
 	{
-		Attributes.Attribute1.Affine.AffineIndex = static_cast<std::int16_t>(AffineOAMIndex);
-		auto* Affine = Owner.GetAffineOAMByIndex(Attributes.Attribute1.Affine.AffineIndex);
-		if (Affine != nullptr)
-		{
-			Affine->Pa = 1;
-			Affine->Pb = 0;
-			Affine->Pc = 0;
-			Affine->Pd = 1;
-		}
+		Attributes.Attribute1.SetData(0, AffineOAMIndex, Attribute1Register::SpriteSizeOptions::S32);
+		AffineAttributes->Pa = 1;
+		AffineAttributes->Pb = 0;
+		AffineAttributes->Pc = 0;
+		AffineAttributes->Pd = 1;
 	}
+	else
+	{	
+		Attributes.Attribute1.SetData(0, false, false, Attribute1Register::SpriteSizeOptions::S32);
+	}
+
+	//TODO: make priority a param
+	Attributes.Attribute2.SetData(LoadedTileIndex, Attribute2Register::PriorityOptions::VeryLow, PaletteAssetIndex != PaletteManager::INDEX_INVALID ? PaletteAssetIndex : 0);
 }
 
 Sprite::~Sprite()
 {
     Owner.ReleaseOAM(Attributes);
-	Owner.ReleaseAffineOAM(Attributes.Attribute1.Affine.AffineIndex);
-	Owner.UnloadTiles(Attributes.Attribute2.TileIndex);
+	Owner.ReleaseAffineOAM(Attributes.Attribute1.Get<Attribute1Register::AffineIndex>());
+	Owner.UnloadTiles(static_cast<std::int32_t>(Attributes.Attribute2.Get<Attribute2Register::TileIndex>()));
     Owner.RemoveFromPalette(PaletteAssetIndex);
 	//TODO: depending on how we loaded our palette, look to unload it. more bookkeeping in palette, I guess
 	// note: I was thinking about palette banks vs full palette loads
@@ -61,8 +49,8 @@ Sprite::~Sprite()
 
 void Sprite::SetPosition(const Point2D& Position)
 {
-	Attributes.Attribute0.YCoordinate = Position.Y - HalfWidth;
-	Attributes.Attribute1.Standard.XCoordinate = Position.X - HalfHeight;
+	Attributes.Attribute0.Set<Attribute0Register::Y>(Position.Y - HalfHeight);
+	Attributes.Attribute1.Set<Attribute1Register::X>(Position.X - HalfWidth);
 }
 
 void Sprite::SetSpriteAnimationIndex(std::int32_t AnimationIndex)
@@ -86,19 +74,15 @@ void Sprite::SetShouldFlipHorizontal(bool InShouldFlipHorizontal)
 
 	ShouldFlipHorizontal = InShouldFlipHorizontal;
 
-	auto ObjectMode = static_cast<Attribute0ObjectMode>(Attributes.Attribute0.ObjectMode);
-	if (ObjectMode == Attribute0ObjectMode::Normal)
+	auto ObjectMode = Attributes.Attribute0.Get<Attribute0Register::ObjectMode>();
+	if (ObjectMode == Attribute0Register::ObjectModeOptions::Normal)
 	{
-		Attributes.Attribute1.Standard.HorizontalFlip = static_cast<std::uint16_t>(InShouldFlipHorizontal);
+		Attributes.Attribute1.Set<Attribute1Register::HorizontalFlip>(ShouldFlipHorizontal);
 	}
-	else
+	else if (auto* Affine = Owner.GetAffineOAMByIndex(Attributes.Attribute1.Get<Attribute1Register::AffineIndex>()))
 	{
-		auto* Affine = Owner.GetAffineOAMByIndex(Attributes.Attribute1.Affine.AffineIndex);
-		if (Affine != nullptr)
-		{
-			Affine->Pa = ShouldFlipHorizontal ? -1 : 1;
-			Affine->Pd = 1;
-		}
+		Affine->Pa = ShouldFlipHorizontal ? -1 : 1;
+		Affine->Pd = 1;
 	}
 }
 
@@ -116,18 +100,20 @@ void Sprite::Tick()
 
 		// If we're back at the first frame, restart the counter
 		if (CurrentFrameIndex == 0)
+		{
 			CurrentFrameCounter = 0;
+		}
 	}
 
 	auto* SpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex].Asset;
 	if (SpriteAsset != CurrentSpriteAsset)
 	{
-		Owner.UnloadTiles(Attributes.Attribute2.TileIndex);
+		Owner.UnloadTiles(Attributes.Attribute2.Get<Attribute2Register::TileIndex>());
 
 		CurrentSpriteAsset = SpriteAsset;
 
 		auto LoadedTileIndex{ Owner.LoadTiles(*CurrentSpriteAsset) };
 		assert(LoadedTileIndex != SpriteManager::INDEX_INVALID);
-		Attributes.Attribute2.TileIndex = LoadedTileIndex;
+		Attributes.Attribute2.Set<Attribute2Register::TileIndex>(LoadedTileIndex);
 	}
 }

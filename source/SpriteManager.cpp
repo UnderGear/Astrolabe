@@ -121,7 +121,9 @@ std::int32_t SpriteManager::LoadTiles(const SpriteTileAsset& ToAdd)
 
     // Check that it'll fit at the end of our vram
     if (std::distance(SpriteBlockIterator, SpriteBlock->end()) < static_cast<std::int32_t>(ToAddSize))
+    {
         return {};
+    }
 
     // Copy the data into vram
     auto [LastCopied, Next]{ std::ranges::copy(ToAdd.Data, SpriteBlockIterator) };
@@ -140,12 +142,16 @@ void SpriteManager::UnloadTiles(std::int32_t Index)
     // Check to see that the asset is actually loaded
     auto Found{ std::ranges::find(LoadedTiles, Index, &SpriteTileData::GetTileIndex) };
     if (Found == LoadedTiles.end())
+    {
         return;
+    }
 
     // Decrement reference count, bail if we still need it loaded
     Found->ReferenceCount--;
     if (Found->ReferenceCount > 0)
+    {
         return;
+    }
 
     // TODO: Do we even need to do this fill?
     // Clear associated blocks of VRAM
@@ -192,7 +198,7 @@ void SpriteManager::ReleaseOAM(ObjectAttributes& OAM)
 {
     //TODO: do we need to clear out any of the other stuff? we definitely DON'T want to touch the padding section
     // Hide the object
-    OAM.Attribute0.ObjectMode = static_cast<std::uint16_t>(Attribute0ObjectMode::Hidden);
+    OAM.Attribute0.Set<Attribute0Register::ObjectMode>(Attribute0Register::ObjectModeOptions::Hidden);
     AvailableObjectAttributes.push(&OAM);
 }
 

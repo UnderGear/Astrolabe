@@ -56,7 +56,7 @@ private:
         std::int32_t BeginIndex{ 0 };
         std::int32_t Length{ 0 };
 
-        std::int32_t GetTileIndex() const { return BeginIndex / CountPerTile; }
+        std::uint16_t GetTileIndex() const { return BeginIndex / CountPerTile; }
     };
 
     // All current loaded tile data by asset

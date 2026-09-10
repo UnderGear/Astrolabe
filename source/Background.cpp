@@ -5,7 +5,7 @@ Background::Background(
 	BackgroundManager& InOwner,
 	std::int32_t InBackgroundIndex,
 	std::int32_t InMapBlockIndex,
-	RegularBackgroundDimensions InDimensions,
+	BackgroundControlRegister::RegularBackgroundDimensions InDimensions,
 	volatile BackgroundControlRegister& InControlRegister,
 	volatile BackgroundOffset& InOffset)
 	: Owner(InOwner)
@@ -15,10 +15,10 @@ Background::Background(
 	, ControlRegister(InControlRegister)
 	, Offset(InOffset)
 {
-	ControlRegister.TileBlockBaseIndex = static_cast<std::uint16_t>(BackgroundIndex);
-	ControlRegister.TileMapBlockBaseIndex = static_cast<std::uint16_t>(MapBlockIndex);
-	ControlRegister.BackgroundSize = static_cast<std::uint16_t>(Dimensions);
-	ControlRegister.ColorMode = 0;
+	ControlRegister.Set<BackgroundControlRegister::TileBlockBaseIndex>(static_cast<std::uint16_t>(BackgroundIndex));
+	ControlRegister.Set<BackgroundControlRegister::TileMapBlockBaseIndex>(static_cast<std::uint16_t>(MapBlockIndex));
+	ControlRegister.Set<BackgroundControlRegister::RegularBackgroundSize>(Dimensions);
+	ControlRegister.Set<BackgroundControlRegister::ColorMode>(BackgroundControlRegister::ColorModeOptions::PaletteBank);
 }
 
 Background::~Background()
@@ -31,26 +31,24 @@ Background::~Background()
 void Background::MoveOffset(const Vector2D& MoveAmount)
 {
 	ScreenOffset += MoveAmount;
-	Offset.X = static_cast<std::uint32_t>(ScreenOffset.X);
-	Offset.Y = static_cast<std::uint32_t>(ScreenOffset.Y);
+	Offset.SetBatch<BackgroundOffset::X, BackgroundOffset::Y>(static_cast<std::int16_t>(ScreenOffset.X), static_cast<std::int16_t>(ScreenOffset.Y));
 }
 
 void Background::SetOffset(const Point2D& NewScreenOffset)
 {
 	ScreenOffset = NewScreenOffset;
-	Offset.X = static_cast<std::uint32_t>(ScreenOffset.X);
-	Offset.Y = static_cast<std::uint32_t>(ScreenOffset.Y);
+	Offset.SetBatch<BackgroundOffset::X, BackgroundOffset::Y>(static_cast<std::int16_t>(ScreenOffset.X), static_cast<std::int16_t>(ScreenOffset.Y));
 }
 
 [[nodiscard]] std::pair<int, int> Background::GetDimensions() const
 {
 	switch (Dimensions)
 	{
-	case RegularBackgroundDimensions::t32xt32:
+	case BackgroundControlRegister::RegularBackgroundDimensions::t32xt32:
 		return { 32, 32 };
-	case RegularBackgroundDimensions::t32xt64:
+	case BackgroundControlRegister::RegularBackgroundDimensions::t32xt64:
 		return { 32, 64 };
-	case RegularBackgroundDimensions::t64xt32:
+	case BackgroundControlRegister::RegularBackgroundDimensions::t64xt32:
 		return { 64, 32 };
 	default:
 		return { 64, 64 };

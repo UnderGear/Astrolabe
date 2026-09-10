@@ -45,17 +45,17 @@ class Input
 {
     std::unique_ptr<const volatile InputRegister> InputValues
     {
-        new(reinterpret_cast<void*>(INPUT_ADDRESS)) InputRegister{ }
+        new(reinterpret_cast<void*>(INPUT_ADDRESS)) InputRegister
     };
 
     std::unique_ptr<volatile InputInterruptRegister> InputInterruptControl
     {
-        new(reinterpret_cast<void*>(INPUT_INTERRUPT_ADDRESS)) InputInterruptRegister{ }
+        new(reinterpret_cast<void*>(INPUT_INTERRUPT_ADDRESS)) InputInterruptRegister
     };
 
     //TODO: use an InputKey backing type?
-    std::uint32_t CurrentInput{ 0 };
-    std::uint32_t PreviousInput{ 0 };
+    std::uint16_t CurrentInput{ 0 };
+    std::uint16_t PreviousInput{ 0 };
 
     Vector2D DPadInput{ Vector::Zero };
 

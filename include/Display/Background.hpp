@@ -14,7 +14,7 @@ class Background
 	std::int32_t BackgroundIndex;
 	std::int32_t MapBlockIndex;
 
-	RegularBackgroundDimensions Dimensions;
+	BackgroundControlRegister::RegularBackgroundDimensions Dimensions;
 
 	volatile BackgroundControlRegister& ControlRegister;
 	volatile BackgroundOffset& Offset;
@@ -25,7 +25,7 @@ public:
 	explicit Background(BackgroundManager& InOwner,
 		std::int32_t InBackgroundIndex,
 		std::int32_t InMapBlockIndex,
-		RegularBackgroundDimensions InDimensions,
+		BackgroundControlRegister::RegularBackgroundDimensions InDimensions,
 		volatile BackgroundControlRegister& InControlRegister,
 		volatile BackgroundOffset& InOffset);
 
