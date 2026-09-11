@@ -55,20 +55,20 @@ class BackgroundManager
     //TODO: make sure that only sensible combinations of backgrounds can be used concurrently
     std::array<volatile BackgroundControlRegister, BackgroundCount>& ControlRegisters
     {
-        *reinterpret_cast<std::array<volatile BackgroundControlRegister, BackgroundCount>*>(BG_CONTROL_ADDRESS)
+        *reinterpret_cast<std::array<volatile BackgroundControlRegister, BackgroundCount>*>(MemoryMap::BG_CONTROL_ADDRESS)
     };
     std::array<volatile BackgroundOffset, BackgroundCount>& OffsetRegisters
     {
-        *reinterpret_cast<std::array<volatile BackgroundOffset, BackgroundCount>*>(BG_OFFSET_ADDRESS)
+        *reinterpret_cast<std::array<volatile BackgroundOffset, BackgroundCount>*>(MemoryMap::BG_OFFSET_ADDRESS)
     };
     std::array<volatile BackgroundAffineParams, AffineBackgroundCount>& AffineRegisters
     {
-        *reinterpret_cast<std::array<volatile BackgroundAffineParams, AffineBackgroundCount>*>(BG_AFFINE_ADDRESS)
+        *reinterpret_cast<std::array<volatile BackgroundAffineParams, AffineBackgroundCount>*>(MemoryMap::BG_AFFINE_ADDRESS)
     };
 
 	PaletteManager BackgroundPaletteManager
     {
-        reinterpret_cast<void*>(BACKGROUND_PALETTE_ADDRESS)
+        reinterpret_cast<void*>(MemoryMap::BACKGROUND_PALETTE_ADDRESS)
     };
 
     // DANGER ZONE
@@ -77,7 +77,7 @@ class BackgroundManager
     // 4 blocks of raw tile data
     std::array<BackgroundTileBlock, BackgroundCount>& TileBlocks
     {
-        *reinterpret_cast<std::array<BackgroundTileBlock, BackgroundCount>*>(VRAM_ADDRESS)
+        *reinterpret_cast<std::array<BackgroundTileBlock, BackgroundCount>*>(MemoryMap::VRAM_ADDRESS)
     };
 
     // 32 allowable tile map blocks, 2048 bytes each = 1024 entries per map block
@@ -87,7 +87,7 @@ class BackgroundManager
     //TODO: should this just be backed with a std::uint16_t instead? or maybe even 32 for loading speed?
     std::array<std::uint16_t, MaxTileMapEntries>& TileMapEntries
     {
-        *reinterpret_cast<std::array<std::uint16_t, MaxTileMapEntries>*>(VRAM_ADDRESS)
+        *reinterpret_cast<std::array<std::uint16_t, MaxTileMapEntries>*>(MemoryMap::VRAM_ADDRESS)
     };
     
     std::array<BackgroundTileBlockData, BackgroundCount> LoadedTileBlocks;

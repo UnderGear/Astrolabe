@@ -5,5 +5,5 @@ __attribute__((section(".iwram"), long_call))
 void SpriteManager::WriteOAM()
 {
     // TODO: only copy as much as needed based on the size up to the highest OAM or affine OAM
-    DMA::Copy(OAMBufferAddress, reinterpret_cast<void*>(OAM_ADDRESS), DMA::Channel::DMA3, 256);
+    DMA::Copy(OAMBufferAddress, reinterpret_cast<void*>(MemoryMap::OAM_ADDRESS), DMA::Channel::DMA3, 256);
 }

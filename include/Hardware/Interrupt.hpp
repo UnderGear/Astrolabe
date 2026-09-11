@@ -42,22 +42,22 @@ namespace Interrupts
 
 	static inline std::unique_ptr<volatile InterruptRegister> InterruptEnableRegister
 	{
-		new(reinterpret_cast<void*>(INTERRUPT_ENABLE_ADDRESS)) InterruptRegister
+		new(reinterpret_cast<void*>(MemoryMap::INTERRUPT_ENABLE_ADDRESS)) InterruptRegister
 	};
 
 	static inline std::unique_ptr<volatile InterruptRegister> InterruptRequestFlagsRegister
 	{
-		new(reinterpret_cast<void*>(INTERRUPT_REQUEST_FLAGS_ADDRESS)) InterruptRegister
+		new(reinterpret_cast<void*>(MemoryMap::INTERRUPT_REQUEST_FLAGS_ADDRESS)) InterruptRegister
 	};
 
 	static inline std::unique_ptr<volatile InterruptRegister> BIOSFlagsRegister
 	{
-		new(reinterpret_cast<void*>(INTERRUPT_BIOS_FLAGS_ADDRESS)) InterruptRegister
+		new(reinterpret_cast<void*>(MemoryMap::INTERRUPT_BIOS_FLAGS_ADDRESS)) InterruptRegister
 	};
 
 	static std::unique_ptr<volatile InterruptMainEnableRegister> InterruptMainEnabledRegister
 	{
-		new(reinterpret_cast<void*>(INTERRUPT_MAIN_ENABLE_ADDRESS)) InterruptMainEnableRegister
+		new(reinterpret_cast<void*>(MemoryMap::INTERRUPT_MAIN_ENABLE_ADDRESS)) InterruptMainEnableRegister
 	};
 
 	__attribute__((section(".iwram"), long_call))
@@ -66,7 +66,7 @@ namespace Interrupts
 	using IRQHandler = void(*)();
 	static inline IRQHandler* MainHandler
 	{
-		new(reinterpret_cast<IRQHandler*>(INTERRUPT_MAIN_REGISTER_ADDRESS)) IRQHandler{ MainInterrupt }
+		new(reinterpret_cast<IRQHandler*>(MemoryMap::INTERRUPT_MAIN_REGISTER_ADDRESS)) IRQHandler{ MainInterrupt }
 	};
 	
 	static constexpr std::uint16_t HandlerCount{ 14 };

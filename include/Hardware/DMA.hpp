@@ -90,7 +90,7 @@ namespace DMA
 
     static inline std::unique_ptr<std::array<volatile ChannelRegister, ChannelCount>> Registers
 	{
-		new(reinterpret_cast<void*>(DMA_0_ADDRESS)) std::array<volatile ChannelRegister, ChannelCount>
+		new(reinterpret_cast<void*>(MemoryMap::DMA_0_ADDRESS)) std::array<volatile ChannelRegister, ChannelCount>
 	};
 
     __attribute__((section(".iwram"), long_call))

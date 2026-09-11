@@ -33,7 +33,7 @@ public:
 private:
 	std::unique_ptr<volatile DisplayControlRegister> DisplayControl
 	{
-		new(reinterpret_cast<void*>(DISPLAY_CONTROL_ADDRESS))
+		new(reinterpret_cast<void*>(MemoryMap::DISPLAY_CONTROL_ADDRESS))
 			DisplayControlRegister
 			{
 				DisplayControlRegister::DisplayModeOptions::Mode0, true, false, false, false, true, false, false, false
@@ -41,14 +41,14 @@ private:
 	};
 	std::unique_ptr<volatile DisplayStatusRegister> DisplayStatus
 	{
-		new(reinterpret_cast<void*>(DISPLAY_STATUS_ADDRESS)) DisplayStatusRegister
+		new(reinterpret_cast<void*>(MemoryMap::DISPLAY_STATUS_ADDRESS)) DisplayStatusRegister
 	};
 	std::unique_ptr<volatile VerticalCountRegister> VerticalCount
 	{
-		new(reinterpret_cast<void*>(DISPLAY_SCANLINE_COUNT_ADDRESS)) VerticalCountRegister
+		new(reinterpret_cast<void*>(MemoryMap::DISPLAY_SCANLINE_COUNT_ADDRESS)) VerticalCountRegister
 	};
 
-	SpriteManager Sprites{ reinterpret_cast<void*>(SPRITE_LOW_BLOCK_ADDRESS) };
+	SpriteManager Sprites{ reinterpret_cast<void*>(MemoryMap::SPRITE_LOW_BLOCK_ADDRESS) };
 	BackgroundManager Backgrounds;
 
 public:

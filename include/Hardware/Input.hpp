@@ -49,12 +49,12 @@ class Input
 {
     std::unique_ptr<const volatile InputRegister> InputValues
     {
-        new(reinterpret_cast<void*>(INPUT_ADDRESS)) InputRegister
+        new(reinterpret_cast<void*>(MemoryMap::INPUT_ADDRESS)) InputRegister
     };
 
     std::unique_ptr<volatile InputInterruptRegister> InputInterruptControl
     {
-        new(reinterpret_cast<void*>(INPUT_INTERRUPT_ADDRESS)) InputInterruptRegister
+        new(reinterpret_cast<void*>(MemoryMap::INPUT_INTERRUPT_ADDRESS)) InputInterruptRegister
     };
 
     //TODO: use an InputKey backing type?

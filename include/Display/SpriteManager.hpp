@@ -41,7 +41,7 @@ public:
 
 private:
 
-	PaletteManager SpritePaletteManager{ reinterpret_cast<void*>(SPRITE_PALETTE_ADDRESS) };
+	PaletteManager SpritePaletteManager{ reinterpret_cast<void*>(MemoryMap::SPRITE_PALETTE_ADDRESS) };
 
     // Pointer to our raw data in VRAM
     std::unique_ptr<DoubleTileBlockRaw> SpriteBlock;
