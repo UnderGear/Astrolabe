@@ -28,7 +28,5 @@ void DMA::Transfer(const void* SourceAddress, void* DestinationAddress, Channel 
     Registers.SourceAddress = SourceAddress;
     Registers.DestinationAddress = DestinationAddress;
 
-    //TODO:
-    // Now we need to stomp the entire register in one instruction. I'd like to know if there's a cleaner way
-    *const_cast<ControlRegister*>(&Registers.Control) = ControlParams;
+    Registers.Control.SetRaw(ControlParams.GetRaw());
 }

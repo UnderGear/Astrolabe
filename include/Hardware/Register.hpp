@@ -62,6 +62,12 @@ struct Register
 		return Data;
 	}
 
+	// do we need this?
+	void SetRaw(BackingT Value) volatile requires (AccessType != RegisterAccessType::ReadOnly)
+	{
+		Data = Value;
+	}
+
 	template<typename RegisterAccessT>
 	auto Get() const volatile requires (AccessType != RegisterAccessType::WriteOnly)
 	{
