@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 
 #include "Display/Sprite.hpp"
@@ -67,74 +68,9 @@ public:
 
 	explicit Actor(Display& TargetDisplay, const AnimationSuite& AnimSuite, const PaletteAsset& Pal, Point2D InPosition = Point::Origin);
 
-	void UpdateInput(const Vector2D& Input, bool InIsRunPressed)
-	{
-		IsRunPressed = InIsRunPressed;
-		auto& Y{ Input.Y };
-		auto& X{ Input.X };
+	void UpdateInput(const Vector2D& Input, bool InIsRunPressed);
 
-		if (Y < 0)
-		{
-			if (X > 0)
-			{
-				Facing = FacingDirection::NorthEast;
-			}
-			else if (X < 0)
-			{
-				Facing = FacingDirection::NorthWest;
-			}
-			else
-			{
-				Facing = FacingDirection::North;
-			}
-		}
-		else if (Y > 0)
-		{
-			if (X > 0)
-			{
-				Facing = FacingDirection::SouthEast;
-			}
-			else if (X < 0)
-			{
-				Facing = FacingDirection::SouthWest;
-			}
-			else
-			{
-				Facing = FacingDirection::South;
-			}
-		}
-		else
-		{
-			if (X > 0)
-			{
-				Facing = FacingDirection::East;
-			}
-			else if (X < 0)
-			{
-				Facing = FacingDirection::West;
-			}
-		}
-	}
+	void Tick();
 
-	void Tick()
-	{
-		Position += Velocity; //TODO: worry about delta time later
-
-		//TODO: determine if movement is blocked. adjust velocity and position accordingly
-		//TODO: maybe a pending move to handle?
-	}
-
-	void UpdateSprite(const Point2D& RelativePosition)
-	{
-		CurrentAnimationSuite = Velocity == Vector::Zero ? AnimationSuiteType::Idle : (IsRunPressed ? AnimationSuiteType::Run : AnimationSuiteType::Walk);
-
-		auto& FacingInfo{ FacingArrayIndexing[static_cast<std::size_t>(Facing)] };
-		auto Index{ AnimationSuiteIndexOffsets[static_cast<std::size_t>(CurrentAnimationSuite)] + FacingInfo.BaseIndex };
-
-		Appearance.SetShouldFlipHorizontal(FacingInfo.ShouldFlipHorizontal);
-		Appearance.SetSpriteAnimationIndex(Index);
-
-		Appearance.SetPosition(RelativePosition);
-		Appearance.Tick();
-	}
+	void UpdateSprite(const Point2D& RelativePosition);
 };
