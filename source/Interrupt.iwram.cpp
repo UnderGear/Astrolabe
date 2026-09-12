@@ -7,14 +7,14 @@ namespace Interrupts
 	__attribute__((section(".iwram"), long_call))
 	void MainInterrupt()
 	{
-		auto EnabledMask{ *Interrupts::InterruptEnableRegister };
-		auto FlagMask{ *Interrupts::InterruptRequestFlagsRegister };
+		auto EnabledMask{ Interrupts::InterruptEnableRegister->GetRaw() };
+		auto FlagMask{ Interrupts::InterruptRequestFlagsRegister->GetRaw() };
 
 		auto TriggeredMask{ EnabledMask & FlagMask };
 
 		// Set our interrupts as handled
-		*Interrupts::InterruptRequestFlagsRegister = FlagMask;
-		*Interrupts::BIOSFlagsRegister |= FlagMask;
+		Interrupts::InterruptRequestFlagsRegister->SetRaw(FlagMask);
+		Interrupts::BIOSFlagsRegister->GetMutableRaw() |= FlagMask;
 
 		for (std::uint16_t i{ 0 }; i < HandlerCount; ++i)
 		{
