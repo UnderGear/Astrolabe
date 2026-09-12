@@ -5,7 +5,7 @@
 #include <memory>
 #include <span>
 
-#include "Assets/Asset.hpp"
+#include "GameFramework/Asset.hpp"
 #include "DisplayRegisters.hpp"
 #include "GameFramework/Camera.hpp"
 #include "Hardware/MemoryMap.hpp"

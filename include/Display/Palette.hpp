@@ -5,7 +5,7 @@
 #include <memory>
 #include <span>
 
-#include "Assets/Asset.hpp"
+#include "GameFramework/Asset.hpp"
 
 inline constexpr std::int32_t MaxPaletteBanks{ 16 };
 using RawPaletteBank = std::array<std::uint32_t, 8>;

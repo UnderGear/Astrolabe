@@ -9,7 +9,7 @@
 #include "DisplayRegisters.hpp"
 #include "Hardware/MemoryMap.hpp"
 #include "Palette.hpp"
-#include "Assets/Asset.hpp"
+#include "GameFramework/Asset.hpp"
 
 // these are for our current color mode with 16 palettes
 constexpr inline std::uint32_t CountPerTile{ 8 };
