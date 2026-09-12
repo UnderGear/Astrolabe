@@ -48,6 +48,12 @@
 			"args": [""],
 			"problemMatcher": [],
 			"dependsOn": ["make tools"],
+		},
+		{
+			"type": "shell",
+			"label": "clean assets",
+			"command": "del 'game/include/assets/*', 'game/source/assets/*', 'game/assets/asset_indexing', 'game/assets/sprites/*.pal', 'game/assets/backgrounds/*/*.pal'",
+			"problemMatcher": [],
 		}
 	],
 	"version": "2.0.0"

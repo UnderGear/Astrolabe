@@ -2,11 +2,6 @@
 #include <array>
 #include <cstdint>
 
-#include "Assets/brin.hpp"
-#include "Assets/brin_palette.hpp"
-#include "Assets/isaac.hpp"
-#include "Assets/jenna.hpp"
-#include "Assets/sprite_palette_palette.hpp"
 #include "Display/Background.hpp"
 #include "Display/Display.hpp"
 #include "Display/Sprite.hpp"
@@ -23,6 +18,12 @@
 #include "Math/Random.hpp"
 #include "Math/Vector.hpp"
 
+#include "assets/brin.hpp"
+#include "assets/brin_palette.hpp"
+#include "assets/isaac.hpp"
+#include "assets/jenna.hpp"
+#include "assets/sprite_palette_palette.hpp"
+
 int main()
 {
 	Display DisplayMode;
@@ -33,7 +34,7 @@ int main()
 
 	Input MyInput;
 	Random<std::int32_t> MyRandom{ 5, -1, 1 };
-	std::uint32_t CurrentFrame{ 0 };
+	[[maybe_unused]]std::uint32_t CurrentFrame{ 0 };
 
 	Actor TestStationary{ DisplayMode, isaac_animsuite, sprite_palette_palette, Display::SCREEN_CENTER };
 	Actor TestActor{ DisplayMode, jenna_animsuite, sprite_palette_palette, Display::SCREEN_CENTER };

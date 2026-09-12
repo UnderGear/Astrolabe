@@ -13,6 +13,11 @@
 			"tooltip": "Make Tools"
 		},
 		{
+			"label": "$(notebook-delete-cell)$(zap) Clean Assets",
+			"task": "clean assets",
+			"tooltip": "Clean Assets"
+		},
+		{
 			"label": "$(zap) Cook Assets",
 			"task": "cook assets",
 			"tooltip": "Cook Assets"

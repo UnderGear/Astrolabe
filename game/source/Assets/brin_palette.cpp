@@ -1,6 +1,6 @@
 // GENERATED CODE. DO NOT MANUALLY MODIFY THIS FILE.
 
-#include "Assets/brin_palette.hpp"
+#include "assets/brin_palette.hpp"
 
 extern const std::array<std::uint32_t, 128> __attribute__((section(".rodata"), aligned(2))) brin_palette_raw
 {

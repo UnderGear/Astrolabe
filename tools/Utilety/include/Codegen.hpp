@@ -16,11 +16,11 @@
 namespace Codegen
 {
 	// Utilities for asset index tracking
-	inline constexpr auto AssetIndexingFileName{ "game/assets/AssetIndexing" };
+	inline constexpr auto AssetIndexingFileName{ "game/assets/asset_indexing" };
 	
 	inline constexpr std::string_view CodegenHeaderPath{ "game/include/" };
-	inline constexpr std::string_view CodegenHeaderSubPath{ "Assets/" };
-	inline constexpr std::string_view CodegenSourcePath{ "game/source/Assets/" };
+	inline constexpr std::string_view CodegenHeaderSubPath{ "assets/" };
+	inline constexpr std::string_view CodegenSourcePath{ "game/source/assets/" };
 	inline constexpr std::string_view HeaderSuffix{ ".hpp" };
 	inline constexpr std::string_view SourceSuffix{ ".cpp" };
 

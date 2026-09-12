@@ -1,6 +1,6 @@
 // GENERATED CODE. DO NOT MANUALLY MODIFY THIS FILE.
 
-#include "Assets/brin.hpp"
+#include "assets/brin.hpp"
 
 extern const std::array<std::uint32_t, 328> __attribute__((section(".rodata"), aligned(2))) brin_tiles_raw
 {
