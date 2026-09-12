@@ -460,7 +460,6 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 		}
 	}
 
-	std::cout << "should write palette: " << std::boolalpha << ShouldWritePaletteFiles << std::endl;
 	if (ShouldWritePaletteFiles)
 	{
 		WritePalette(PaletteDesc);
@@ -474,16 +473,16 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 
 int main()
 {
-	for (const auto& Entry : std::filesystem::recursive_directory_iterator{ "assets/sprites/" })
+	std::filesystem::path AssetsDirectory{ "game/assets/" };
+	for (const auto& Entry : std::filesystem::recursive_directory_iterator{ AssetsDirectory / std::filesystem::path{ "sprites/" } })
 	{
-		std::filesystem::path PalettePath{ "assets/sprites/sprite_palette.pal" };
+		std::filesystem::path PalettePath{ "game/assets/sprites/sprite_palette.pal" };
 		auto PaletteDesc{ LoadPalette(PalettePath, true) };
 		if (Entry.is_directory())
 		{
 			bool ShouldWritePaletteFiles;
 			ProcessSpriteDirectory(Entry, PaletteDesc, ShouldWritePaletteFiles);
 			
-			std::cout << "should write palette: " << std::boolalpha << ShouldWritePaletteFiles << std::endl;
 			if (ShouldWritePaletteFiles)
 			{
 				WritePalette(PaletteDesc);
@@ -491,7 +490,7 @@ int main()
 		}
 	}
 
-	for (const auto& Entry : std::filesystem::recursive_directory_iterator{ "assets/backgrounds/" })
+	for (const auto& Entry : std::filesystem::recursive_directory_iterator{ AssetsDirectory / std::filesystem::path{ "backgrounds/" } })
 	{
 		if (Entry.is_directory())
 		{

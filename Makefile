@@ -35,9 +35,9 @@ export PROJ	?= $(notdir $(CURDIR))
 TITLE		:= $(PROJ)
 
 BUILD		:= build
-SRCDIRS		:= source source/Assets
-DATADIRS	:= data
-INCDIRS		:= include
+SRCDIRS		:= engine/source game/source game/source/Assets
+DATADIRS	:= game/data
+INCDIRS		:= engine/include game/include
 LIBDIRS		:= $(ROOT)/lib
 
 # --- switches ---
