@@ -10,12 +10,12 @@
 class LevelManager
 {
 
-    //TODO: dependencies:
-    //TODO: background manager&
-    //TODO: sprite manager&
-    //TODO: camera&
+	//TODO: dependencies:
+	//TODO: background manager&
+	//TODO: sprite manager&
+	//TODO: camera&
 
-    
+	
 
 };
 

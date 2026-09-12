@@ -3,7 +3,7 @@
 #include "Math/Point.hpp"
 
 Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex, Attribute0Register::ObjectModeOptions ObjectMode, std::int32_t AffineOAMIndex)
-        : Owner(InOwner), Attributes(InAttributes), Animations(InAnimations), PaletteAssetIndex(InPaletteAssetIndex)
+		: Owner(InOwner), Attributes(InAttributes), Animations(InAnimations), PaletteAssetIndex(InPaletteAssetIndex)
 {
 	CurrentSpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex].Asset;
 	auto LoadedTileIndex{ Owner.LoadTiles(*CurrentSpriteAsset) };
@@ -15,7 +15,7 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const Ani
 	HalfHeight = SpriteHeight / 2;
 
 	//TODO: get size/shape params from the actual asset
-    //TODO: pass in params. modes, intial position
+	//TODO: pass in params. modes, intial position
 
 	Attributes.Attribute0.SetData(0, ObjectMode, Attribute0Register::GraphicsModeOptions::Normal, false, Attribute0Register::ColorModeOptions::WholePalette, Attribute0Register::SpriteShapeOptions::Square);
 
@@ -39,10 +39,10 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const Ani
 
 Sprite::~Sprite()
 {
-    Owner.ReleaseOAM(Attributes);
+	Owner.ReleaseOAM(Attributes);
 	Owner.ReleaseAffineOAM(Attributes.Attribute1.Get<Attribute1Register::AffineIndex>());
 	Owner.UnloadTiles(static_cast<std::int32_t>(Attributes.Attribute2.Get<Attribute2Register::TileIndex>()));
-    Owner.RemoveFromPalette(PaletteAssetIndex);
+	Owner.RemoveFromPalette(PaletteAssetIndex);
 	//TODO: depending on how we loaded our palette, look to unload it. more bookkeeping in palette, I guess
 	// note: I was thinking about palette banks vs full palette loads
 }

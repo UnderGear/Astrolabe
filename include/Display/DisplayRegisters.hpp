@@ -193,8 +193,8 @@ struct Attribute1Register : Register<std::uint16_t>
 };
 
 // Size/shape for non-affine sprites
-// S i z e    
-// h |    |   00 |  01   |  10   |  11   |
+// S i z e	
+// h |	|   00 |  01   |  10   |  11   |
 // a | 00 |  8x8 | 16x16 | 32x32 | 64x64 |
 // p | 01 | 16x8 | 32x8  | 32x16 | 64x32 |
 // e | 10 | 8x16 | 8x32  | 16x32 | 32x64 |
@@ -292,7 +292,7 @@ struct BackgroundControlRegister : Register<std::uint16_t>
 
 	// Regular vs Affine backgrounds have different dimensions
 	// BackgroundSize (regular backgrounds)
-	//    | tiles | pixels  |
+	//	| tiles | pixels  |
 	// 00 | 32x32 | 256x256 |
 	// 01 | 64x32 | 512x256 |
 	// 10 | 32x64 | 512x256 |
@@ -305,7 +305,7 @@ struct BackgroundControlRegister : Register<std::uint16_t>
 		t64xt64,
 	};
 	// BackgroundSize (affine backgrounds)
-	//    |  tiles  |  pixels   |
+	//	|  tiles  |  pixels   |
 	// 00 |  16x16  |  128x128  |
 	// 01 |  32x32  |  256x256  |
 	// 10 |  64x64  |  512x512  |
@@ -336,7 +336,7 @@ struct BackgroundTileMapEntry : Register<std::uint16_t>
 // a background tile is 8x8 pixels, so the screen is 30 tiles wide and 20 tiles tall
 // a background tile map is 16x16-128x128 tiles
 // Memory | 0x6000000 | 0x6004000 | 0x6008000 | 0x600C000 |
-// Tiles  |     0     |     1     |     2     |     3     |
+// Tiles  |	 0	 |	 1	 |	 2	 |	 3	 |
 //  Maps  |   0 - 7   |  8 - 15   |  16 - 23  |  24 - 31  |
 
 // array of background offsets
@@ -351,10 +351,10 @@ struct BackgroundOffset : Register<std::uint32_t, RegisterAccessType::WriteOnly>
 // write only
 struct alignas(std::int32_t) BackgroundAffineParams
 {
-    std::int16_t A{ 0 };
-    std::int16_t B{ 0 };
-    std::int16_t C{ 0 };
-    std::int16_t D{ 0 };
-    std::int32_t X{ 0 };
-    std::int32_t Y{ 0 };
+	std::int16_t A{ 0 };
+	std::int16_t B{ 0 };
+	std::int16_t C{ 0 };
+	std::int16_t D{ 0 };
+	std::int32_t X{ 0 };
+	std::int32_t Y{ 0 };
 };

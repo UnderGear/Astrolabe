@@ -420,9 +420,9 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 			// 32x32 - 0
 			// 64x32 - 0, 1
 			// 32x64 - 0
-			//         1
+			//		 1
 			// 64x64 - 0, 1
-			//         2, 3
+			//		 2, 3
 			TileMapEntry MapEntry;
 			MapEntry.TileIndex = static_cast<std::uint16_t>(std::distance(Tiles.begin(), TileIter));
 			MapEntry.HorizontalFlip = 0;

@@ -19,36 +19,36 @@ using PaletteAsset = Asset<std::span<const std::uint32_t>>;
 class PaletteManager
 {
 public:
-    static constexpr std::int32_t INDEX_INVALID{ -1 };
+	static constexpr std::int32_t INDEX_INVALID{ -1 };
 
 private:
-    struct PaletteBankDatum
-    {
-        std::int32_t ReferenceCount{ 0 };
-        std::int32_t AssetID{ Assets::ID_INVALID };
+	struct PaletteBankDatum
+	{
+		std::int32_t ReferenceCount{ 0 };
+		std::int32_t AssetID{ Assets::ID_INVALID };
 
-        bool IsValid() const { return AssetID != Assets::ID_INVALID; }
-    };
+		bool IsValid() const { return AssetID != Assets::ID_INVALID; }
+	};
 
-    // Palette bookkeeping. We only have up to 16 banks, so I'll just linear search through this until it becomes a problem
-    std::array<PaletteBankDatum, MaxPaletteBanks> PaletteBankData;
+	// Palette bookkeeping. We only have up to 16 banks, so I'll just linear search through this until it becomes a problem
+	std::array<PaletteBankDatum, MaxPaletteBanks> PaletteBankData;
 
-    // hardware memory buffer for palettes
-    RawPaletteBanks* PaletteBanks;
-    RawPalette* Palette;
+	// hardware memory buffer for palettes
+	RawPaletteBanks* PaletteBanks;
+	RawPalette* Palette;
 
-    const PaletteAsset* LoadedPalette{ nullptr };
+	const PaletteAsset* LoadedPalette{ nullptr };
 
 public:
 
-    explicit PaletteManager(void* PaletteMemoryAddress);
+	explicit PaletteManager(void* PaletteMemoryAddress);
 
-    void SetPalette(const PaletteAsset& ToSet);
-    void ClearPalette();
+	void SetPalette(const PaletteAsset& ToSet);
+	void ClearPalette();
 
-    // Loads the asset into one of our 16 available palette banks
-    // Returns the palette bank ID for use in OAM
-    std::int32_t AddToPalette(const PaletteBankAsset& ToAdd);
+	// Loads the asset into one of our 16 available palette banks
+	// Returns the palette bank ID for use in OAM
+	std::int32_t AddToPalette(const PaletteBankAsset& ToAdd);
 
-    void RemoveFromPalette(std::int32_t Index);
+	void RemoveFromPalette(std::int32_t Index);
 };
