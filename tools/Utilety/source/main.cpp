@@ -36,6 +36,7 @@
 // 
 // Leaf subfolders of Sprites or Backgrounds share a palette
 
+
 inline constexpr auto TileWidth{ 8 };
 inline constexpr auto TileHeight{ 8 };
 
@@ -66,8 +67,6 @@ PaletteDescription LoadPalette(const std::filesystem::path& PalettePath, bool Ad
 
 	return PaletteDescription{ PalettePath, PaletteMapping, Palette };
 }
-
-static const std::filesystem::path CogedenPath{ "include/Assets/" };
 
 template<typename PixelT>
 std::pair<std::vector<std::uint32_t>, bool> UpdatePalette(PaletteDescription& PaletteDesc,
@@ -127,6 +126,7 @@ std::pair<std::vector<std::uint32_t>, bool> UpdatePalette(PaletteDescription& Pa
 
 void WritePalette(const PaletteDescription& PaletteDesc)
 {
+	std::cout << "write palette: " << PaletteDesc.PalettePath << std::endl;
 	// Save out the new palette binary file
 	PaletteIO::WritePaletteFile(PaletteDesc.PalettePath, PaletteDesc.Palette);
 
@@ -151,9 +151,7 @@ void WritePalette(const PaletteDescription& PaletteDesc)
 
 		PackedPalette.push_back(Value);
 	}
-
-	std::filesystem::path HeaderName{ PaletteDesc.PalettePath.stem().string() + "_palette" };
-	Codegen::GeneratePaletteHeader((CogedenPath / HeaderName).string(), HeaderName.string(), PackedPalette);
+	Codegen::GeneratePaletteSource(PaletteDesc.PalettePath.stem().string() + "_palette", PackedPalette);
 }
 
 void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory, PaletteDescription& PaletteDesc, bool& OutHasPaletteChanged)
@@ -190,7 +188,7 @@ void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory, P
 			AnimDesc.AnimCount = std::stoi(Buffer);
 			Desc.TotalAnimationCount += AnimDesc.AnimCount;
 
-			std::cout << "processing anim file " << AnimDesc.FilePath << ", " << AnimDesc.AnimFrameCount << " frames, " << AnimDesc.AnimCount << " orientations" << std::endl;
+			//std::cout << "processing anim file " << AnimDesc.FilePath << ", " << AnimDesc.AnimFrameCount << " frames, " << AnimDesc.AnimCount << " orientations" << std::endl;
 
 			AnimDesc.AnimIndices.reserve(AnimDesc.AnimCount);
 			for (int AnimIndex{ 0 }; AnimIndex < AnimDesc.AnimCount; ++AnimIndex)
@@ -207,12 +205,12 @@ void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory, P
 					AnimIndices.push_back(PanelIndex);
 				}
 
-				std::cout << "anim indices ";
+				/*std::cout << "anim indices ";
 				for (auto Index : AnimIndices)
 				{
 					std::cout << Index << " ";
 				}
-				std::cout << std::endl;
+				std::cout << std::endl;*/
 
 				AnimDesc.AnimIndices.push_back(std::move(AnimIndices));
 			}
@@ -314,10 +312,9 @@ void ProcessSpriteDirectory(const std::filesystem::directory_entry& Directory, P
 			}
 		}
 
-		std::filesystem::path HeaderName{ Directory.path().stem() };
 		if (SpriteTileIndices.size() > 0)
 		{
-			Codegen::GenerateSpriteTileHeader(CogedenPath, HeaderName, SpriteTileIndices, Desc);
+			Codegen::GenerateSpriteTileSource(Directory.path().stem().string(), SpriteTileIndices, Desc);
 		}
 	}
 }
@@ -337,7 +334,9 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 	{
 		// If it's not a background description file, continue
 		if (Entry.path().extension() != ".bg")
+		{
 			continue;
+		}
 
 		BackgroundDescription Desc;
 		std::ifstream DescFile{ Entry.path() };
@@ -436,7 +435,6 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 		// The current Brin bg has 41, (should be 31 when we handle flips)
 		//std::cout << '\n' << "unique tile count: " << Tiles.size() << std::endl;
 
-		std::filesystem::path HeaderName{ Directory.path().stem() };
 		if (Tiles.size() > 0)
 		{
 			std::vector<std::uint32_t> FlattenedTiles;
@@ -458,10 +456,11 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 				}
 			}
 
-			Codegen::GenerateBackgroundHeader(CogedenPath, HeaderName, FlattenedTiles, AdjustedTileMap, HorizontalTileCount, VerticalTileCount);
+			Codegen::GenerateBackgroundSource(Directory.path().stem().string(), FlattenedTiles, AdjustedTileMap, HorizontalTileCount, VerticalTileCount);
 		}
 	}
 
+	std::cout << "should write palette: " << std::boolalpha << ShouldWritePaletteFiles << std::endl;
 	if (ShouldWritePaletteFiles)
 	{
 		WritePalette(PaletteDesc);
@@ -483,6 +482,8 @@ int main()
 		{
 			bool ShouldWritePaletteFiles;
 			ProcessSpriteDirectory(Entry, PaletteDesc, ShouldWritePaletteFiles);
+			
+			std::cout << "should write palette: " << std::boolalpha << ShouldWritePaletteFiles << std::endl;
 			if (ShouldWritePaletteFiles)
 			{
 				WritePalette(PaletteDesc);

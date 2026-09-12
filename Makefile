@@ -35,7 +35,7 @@ export PROJ	?= $(notdir $(CURDIR))
 TITLE		:= $(PROJ)
 
 BUILD		:= build
-SRCDIRS		:= source
+SRCDIRS		:= source source/Assets
 DATADIRS	:= data
 INCDIRS		:= include
 LIBDIRS		:= $(ROOT)/lib

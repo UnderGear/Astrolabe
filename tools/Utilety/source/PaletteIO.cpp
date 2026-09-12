@@ -7,7 +7,7 @@
 
 #include "PaletteColor.hpp"
 
-void PaletteIO::LoadPalette(std::filesystem::path FileName, std::vector<PaletteColor> &Palette, bool AddAlpha)
+void PaletteIO::LoadPalette(std::filesystem::path FileName, std::vector<PaletteColor>& Palette, bool AddAlpha)
 {
 	std::ifstream PaletteFile{ FileName, std::ios::binary | std::ios::ate };
 	auto Position{ PaletteFile.tellg() };
@@ -36,7 +36,7 @@ void PaletteIO::LoadPalette(std::filesystem::path FileName, std::vector<PaletteC
 	}
 }
 
-void PaletteIO::WritePaletteFile(std::filesystem::path FileName, const std::vector<PaletteColor> &Palette)
+void PaletteIO::WritePaletteFile(std::filesystem::path FileName, const std::vector<PaletteColor>& Palette)
 {
 	std::ofstream PaletteFile{ FileName, std::ios::binary };
 	
