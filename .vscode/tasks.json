@@ -16,6 +16,13 @@
 		},
 		{
 			"type": "shell",
+			"label": "make clean",
+			"command": "make",
+			"args": ["clean"],
+			"problemMatcher": [],
+		},
+		{
+			"type": "shell",
 			"label": "make tools",
 			"command": "make",
 			"options": {
@@ -26,7 +33,17 @@
 		},
 		{
 			"type": "shell",
-			"label": "bake sprites",
+			"label": "clean tools",
+			"command": "make",
+			"options": {
+				"cwd": "tools/Utilety/"
+			},
+			"args": ["clean"],
+			"problemMatcher": [],
+		},
+		{
+			"type": "shell",
+			"label": "cook assets",
 			"command": "tools/Utilety/build/Utilety.exe",
 			"args": [""],
 			"problemMatcher": [],

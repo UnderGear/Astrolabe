@@ -1,6 +1,41 @@
 {
+	"VsCodeTaskButtons.showCounter": true,
+	"VsCodeTaskButtons.tasks":
+	[
+		{
+			"label": "$(notebook-delete-cell)$(tools) Clean Tools",
+			"task": "clean tools",
+			"tooltip": "Clean Tools"
+		},
+		{
+			"label": "$(check)$(tools) Make Tools",
+			"task": "make tools",
+			"tooltip": "Make Tools"
+		},
+		{
+			"label": "$(zap) Cook Assets",
+			"task": "cook assets",
+			"tooltip": "Cook Assets"
+		},
+		{
+			"label": "$(notebook-delete-cell)$(project) Clean",
+			"task": "make clean",
+			"tooltip": "Clean Astrolabe"
+		},
+		{
+			"label": "$(debug)$(project) Make Debug",
+			"task": "make debug",
+			"tooltip": "Make Astrolabe Debug"
+		},
+		{
+			"label": "$(check)$(project) Make",
+			"task": "make",
+			"tooltip": "Make Astrolabe"
+		}
+	],
 	"C_Cpp.errorSquiggles": "disabled",
-	"files.associations": {
+	"files.associations":
+	{
 		"memory": "cpp",
 		"array": "cpp",
 		"atomic": "cpp",
