@@ -14,8 +14,8 @@ SpriteManager::SpriteManager(void* TileMemoryAddress)
     };
     SpriteBlockIterator = SpriteBlock->begin();
 
-    OAMMemory = reinterpret_cast<OAMT*>(OAM_ADDRESS);
-    OAMAffineMemory = reinterpret_cast<OAMAffineT*>(OAM_ADDRESS);
+    OAMMemory = reinterpret_cast<OAMT*>(MemoryMap::OAM_ADDRESS);
+    OAMAffineMemory = reinterpret_cast<OAMAffineT*>(MemoryMap::OAM_ADDRESS);
 
     //TODO: do this with an algo
     for (std::int32_t i{ MaxOAMs - 1 }; i >= 0; --i)
