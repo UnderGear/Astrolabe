@@ -52,7 +52,14 @@
 		{
 			"type": "shell",
 			"label": "clean assets",
-			"command": "del 'game/include/assets/*', 'game/source/assets/*', 'game/assets/asset_indexing', 'game/assets/sprites/*.pal', 'game/assets/backgrounds/*/*.pal'",
+			"windows":
+			{
+				"command": "del 'game/include/assets/*', 'game/source/assets/*', 'game/assets/asset_indexing', 'game/assets/sprites/*.pal', 'game/assets/backgrounds/*/*.pal'"
+			},
+			"linux":
+			{
+				"command": "rm 'game/include/assets/*', 'game/source/assets/*', 'game/assets/asset_indexing', 'game/assets/sprites/*.pal', 'game/assets/backgrounds/*/*.pal'"
+			},
 			"problemMatcher": [],
 		},
 		{
