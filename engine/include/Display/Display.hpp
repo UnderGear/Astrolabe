@@ -54,7 +54,6 @@ private:
 public:
 
 	explicit Display();
-	void VSync();
 
 	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode);
 	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode);

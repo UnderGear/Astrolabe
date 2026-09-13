@@ -17,11 +17,6 @@ Display::Display()
 	Interrupts::AddHandler(Interrupts::InterruptType::VBlank, OnVBlank);
 }
 
-void Display::VSync()
-{
-	BIOS::VBlankWait();
-}
-
 Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode)
 {
 	auto* OAM{ Sprites.RequestOAM() };

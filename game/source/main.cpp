@@ -51,7 +51,7 @@ int main()
 
 	while (true)
 	{
-		DisplayMode.VSync();
+		BIOS::VBlankWait();
 
 		MyInput.Tick();
 		//TODO: update actors or whatever we're going to call them
