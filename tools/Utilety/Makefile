@@ -10,7 +10,7 @@ DATADIRS	:= data
 INCDIRS		:= include
 EXE			:= $(CURDIR)/$(EXE_NAME)
 
-CXXFLAGS	:= -O2 $(INCLUDE) -Wall -Wextra -pedantic-errors -std=c++2a
+CXXFLAGS	:= -O2 $(INCLUDE) -Wall -Wextra -pedantic-errors -std=c++2a -MMD -MP
 
 
 ifneq ($(BUILD),$(notdir $(CURDIR)))
@@ -33,6 +33,7 @@ export LD	:= $(CXX)
 export OFILES	:=	$(addsuffix .o, $(BINFILES))					\
 					$(CFILES:.c=.o) $(CPPFILES:.cpp=.o)				\
 					$(SFILES:.s=.o)
+DEPENDS	:=	$(OFILES:.o=.d)
 
 # --- Create include and library search paths ---
 export INCLUDE	:=	$(foreach dir,$(INCDIRS),-I$(CURDIR)/$(dir))	\
@@ -65,5 +66,6 @@ $(TARGET)	:	$(CXX) $(CXXFLAGS) -o $(TARGET).exe $(OFILES)
 $(OUTPUT)	:	$(OFILES)
 	$(CXX) -o $(EXE) $(OFILES)
 
+-include $(DEPENDS)
 
 endif		# End BUILD switch
