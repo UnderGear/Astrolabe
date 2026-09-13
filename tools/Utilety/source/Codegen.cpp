@@ -16,7 +16,13 @@ void Codegen::WriteLastUsedAssetIndex(int Index)
 	File << Index;
 }
 
-void Codegen::GeneratePaletteSource(const std::string& PaletteName, const std::vector<std::uint32_t>& PackedPalette)
+void Codegen::GenerateFolders()
+{
+	std::filesystem::create_directory(std::filesystem::path{ CodegenHeaderPath } / std::filesystem::path{ CodegenHeaderSubPath });
+	std::filesystem::create_directory(std::filesystem::path{ CodegenSourcePath });
+}
+
+void Codegen::GeneratePaletteSource(const std::string &PaletteName, const std::vector<std::uint32_t> &PackedPalette)
 {
 	std::ofstream File;
 	std::filesystem::path HeaderFileName{ std::string{ CodegenHeaderSubPath } + PaletteName + std::string{ HeaderSuffix } };

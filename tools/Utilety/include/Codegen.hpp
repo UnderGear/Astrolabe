@@ -58,6 +58,8 @@ namespace Codegen
 		File.flags(OldFlags);
 	}
 
+	void GenerateFolders();
+
 	void GeneratePaletteSource(const std::string& PaletteName, const std::vector<std::uint32_t>& PackedPalette);
 
 	// array of array of assets

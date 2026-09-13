@@ -473,6 +473,8 @@ void ProcessBackgroundDirectory(const std::filesystem::directory_entry& Director
 
 int main()
 {
+	Codegen::GenerateFolders();
+
 	std::filesystem::path AssetsDirectory{ "game/assets/" };
 	for (const auto& Entry : std::filesystem::recursive_directory_iterator{ AssetsDirectory / std::filesystem::path{ "sprites/" } })
 	{
