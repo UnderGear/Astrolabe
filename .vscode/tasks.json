@@ -54,6 +54,28 @@
 			"label": "clean assets",
 			"command": "del 'game/include/assets/*', 'game/source/assets/*', 'game/assets/asset_indexing', 'game/assets/sprites/*.pal', 'game/assets/backgrounds/*/*.pal'",
 			"problemMatcher": [],
+		},
+		{
+			"type": "shell",
+			"label": "mGBA",
+			"command": "io.mgba.mGBA -g \"${workspaceFolder}/Astrolabe.elf\"",
+			"isBackground": true,
+			"problemMatcher": {
+				"pattern": [{ "regexp": ".", "file": 1, "location": 2, "message": 3 }],
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": ".",
+					"endsPattern": "."
+				}
+			}
+		},
+		{
+			"label": "prep for debug",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"make debug",
+				"mGBA"
+			]
 		}
 	],
 	"version": "2.0.0"

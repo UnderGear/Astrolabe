@@ -31,7 +31,7 @@
 			"preLaunchTask": "make",
 		},
 		{
-			"name": "(gdb) Launch",
+			"name": "Launch (gdb)",
 			"type": "cppdbg",
 			"request": "launch",
 			"targetArchitecture": "arm",
@@ -43,60 +43,16 @@
 			"externalConsole": false,
 			"MIMode": "gdb",
 			"miDebuggerServerAddress": "localhost:2345",
+			"serverLaunchTimeout": 20000,
 			"windows":
 			{
 				"miDebuggerPath": "${env:DEVKITARM}/bin/arm-none-eabi-gdb.exe",
-				"setupCommands":
-				[
-					{
-						"text": "shell start /b \"\" \"${env:ProgramFiles}/mGBA/mGBA.exe\" -g \"${workspaceFolder}/Astrolabe.elf\""
-					}
-				]
 			},
 			"linux":
 			{
 				"miDebuggerPath": "${env:DEVKITARM}/bin/arm-none-eabi-gdb",
-				"setupCommands": [
-					{
-						"text": "shell io.mgba.mGBA ${workspaceFolder}/Astrolabe.elf &"
-					}
-				]
 			},
-			"preLaunchTask": "make"
-		},
-		{
-			"name": "(gdb) Launch Debug",
-			"type": "cppdbg",
-			"request": "launch",
-			"targetArchitecture": "arm",
-			"program": "${workspaceFolder}/Astrolabe.elf",
-			"args": [],
-			"stopAtEntry": false,
-			"cwd": "${fileDirname}",
-			"environment": [],
-			"externalConsole": false,
-			"MIMode": "gdb",
-			"miDebuggerServerAddress": "localhost:2345",
-			"windows":
-			{
-				"miDebuggerPath": "${env:DEVKITARM}/bin/arm-none-eabi-gdb.exe",
-				"setupCommands":
-				[
-					{
-						"text": "shell start /b \"\" \"${env:ProgramFiles}/mGBA/mGBA.exe\" -g \"${workspaceFolder}/Astrolabe.elf\""
-					}
-				]
-			},
-			"linux":
-			{
-				"miDebuggerPath": "${env:DEVKITARM}/bin/arm-none-eabi-gdb",
-				"setupCommands": [
-					{
-						"text": "shell io.mgba.mGBA ${workspaceFolder}/Astrolabe.elf &"
-					}
-				]
-			},
-			"preLaunchTask": "make debug"
+			"preLaunchTask": "prep for debug"
 		}
 	]
 }
