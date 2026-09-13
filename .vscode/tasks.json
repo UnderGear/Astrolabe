@@ -58,7 +58,21 @@
 		{
 			"type": "shell",
 			"label": "mGBA",
-			"command": "io.mgba.mGBA -g \"${workspaceFolder}/Astrolabe.elf\"",
+			"windows":
+			{
+				"command": "Start-Process",
+				"args":
+				[
+					"-FilePath",
+					"${env:ProgramFiles}/mGBA/mGBA.exe",
+					"-ArgumentList",
+					"-g ${workspaceFolder}/Astrolabe.elf"
+				]
+			},
+			"linux":
+			{
+				"command": "io.mgba.mGBA -g \"${workspaceFolder}/Astrolabe.elf\"",
+			},
 			"isBackground": true,
 			"problemMatcher": {
 				"pattern": [{ "regexp": ".", "file": 1, "location": 2, "message": 3 }],
