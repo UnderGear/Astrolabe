@@ -25,7 +25,7 @@
 #include "PaletteIO.hpp"
 #include "Pixel.hpp"
 #include "SpriteDimension.hpp"
-#include "SpritesheetDescription.hpp"
+#include "SpriteSheetDescription.hpp"
 #include "TileMap.hpp"
 
 // Tools
