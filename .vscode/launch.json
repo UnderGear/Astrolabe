@@ -55,7 +55,7 @@
 			},
 			"linux":
 			{
-				"miDebuggerPath": "/opt/devkitpro/devkitARM/bin/arm-none-eabi-gdb",
+				"miDebuggerPath": "${env:DEVKITARM}/bin/arm-none-eabi-gdb",
 				"setupCommands": [
 					{
 						"text": "shell io.mgba.mGBA ${workspaceFolder}/Astrolabe.elf &"
@@ -89,7 +89,7 @@
 			},
 			"linux":
 			{
-				"miDebuggerPath": "/opt/devkitpro/devkitARM/bin/arm-none-eabi-gdb",
+				"miDebuggerPath": "${env:DEVKITARM}/bin/arm-none-eabi-gdb",
 				"setupCommands": [
 					{
 						"text": "shell io.mgba.mGBA ${workspaceFolder}/Astrolabe.elf &"
