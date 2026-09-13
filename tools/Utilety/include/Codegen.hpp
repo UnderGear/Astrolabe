@@ -10,7 +10,7 @@
 #include <string>
 
 #include "PaletteColor.hpp"
-#include "SpritesheetDescription.hpp"
+#include "SpriteSheetDescription.hpp"
 #include "TileMap.hpp"
 
 namespace Codegen
