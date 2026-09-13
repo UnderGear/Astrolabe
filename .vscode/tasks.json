@@ -58,7 +58,7 @@
 			},
 			"linux":
 			{
-				"command": "rm 'game/include/assets/*', 'game/source/assets/*', 'game/assets/asset_indexing', 'game/assets/sprites/*.pal', 'game/assets/backgrounds/*/*.pal'"
+				"command": "rm game/include/assets/* game/source/assets/* game/assets/asset_indexing game/assets/sprites/*.pal game/assets/backgrounds/*/*.pal"
 			},
 			"problemMatcher": [],
 		},
