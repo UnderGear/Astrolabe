@@ -16,7 +16,7 @@
 				"setupCommands":
 				[
 					{
-						"text": "shell start /b \"\" \"${env:ProgramFiles}/mGBA/mGBA.exe\" -g \"${workspaceFolder}/Astrolabe.elf\""
+						"text": "shell start /b \"\" \"${env:ProgramFiles}/mGBA/mGBA.exe\" \"${workspaceFolder}/Astrolabe.elf\""
 					}
 				]
 			},
