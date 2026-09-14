@@ -16,24 +16,36 @@ struct Point2D
 	template <typename IntegralT> requires std::is_integral_v<IntegralT>
 	constexpr Point2D(IntegralT InX, IntegralT InY) : X(InX), Y(InY) {}
 
-	constexpr Point2D operator +(const Vector2D& Other) const
+	constexpr Point2D operator+(const Vector2D& Other) const
 	{
 		return { X + Other.X, Y + Other.Y };
 	}
 
-	Point2D& operator +=(const Vector2D& Other)
+	constexpr Point2D& operator+=(const Vector2D& Other)
 	{
 		X += Other.X;
 		Y += Other.Y;
 		return *this;
 	}
 
-	constexpr Vector2D operator -(const Point2D& Other) const
+	constexpr Vector2D operator-(const Point2D& Other) const
 	{
 		return { X - Other.X, Y - Other.Y };
 	}
 
 	constexpr auto operator<=>(const Point2D& Other) const = default;
+
+	constexpr i24f8_t SquareDistance(const Point2D& Other) const
+	{
+		auto XOffset{ X - Other.X };
+		auto YOffset{ Y - Other.Y };
+		return XOffset * XOffset + YOffset * YOffset;
+	}
+
+	constexpr i24f8_t Distance(const Point2D& Other) const
+	{
+		return Sqrt(SquareDistance(Other));
+	}
 };
 
 namespace Point
