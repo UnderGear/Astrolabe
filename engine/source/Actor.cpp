@@ -1,14 +1,22 @@
 #include "Display/Display.hpp"
 #include "GameFramework/Actor.hpp"
 
-Actor::Actor(Display& TargetDisplay, const AnimationSuite& AnimSuite, const PaletteAsset& Pal, Point2D InPosition)
-	: Appearance(TargetDisplay.LoadSprite(AnimSuite, Pal, Attribute0Register::ObjectModeOptions::Affine)), Position(InPosition)
+Actor::Actor(Display& TargetDisplay, const AnimationSuite& AnimSuite, const PaletteAsset& Pal, Circle InCollision)
+	: Appearance(TargetDisplay.LoadSprite(AnimSuite, Pal, Attribute0Register::ObjectModeOptions::Affine)), Collision(InCollision)
 {
-	Appearance.SetPosition(Position);
+	Appearance.SetPosition(Collision.Center);
 }
 
-void Actor::UpdateInput(const Vector2D &Input, bool InIsRunPressed)
+void Actor::UpdateInput(const Vector2D& Input, bool InIsRunPressed)
 {
+	auto MovementVelocity{ Input * WalkSpeed };
+	if (InIsRunPressed)
+	{
+		MovementVelocity *= RunMultiplier;
+	}
+
+	Velocity = MovementVelocity;
+
 	IsRunPressed = InIsRunPressed;
 	auto& Y{ Input.Y };
 	auto& X{ Input.X };
@@ -58,13 +66,13 @@ void Actor::UpdateInput(const Vector2D &Input, bool InIsRunPressed)
 
 void Actor::Tick()
 {
-	Position += Velocity; //TODO: worry about delta time later
+	Collision.Center += Velocity; //TODO: worry about delta time later
 
 	//TODO: determine if movement is blocked. adjust velocity and position accordingly
 	//TODO: maybe a pending move to handle?
 }
 
-void Actor::UpdateSprite(const Point2D &RelativePosition)
+void Actor::UpdateSprite(const Point2D& RelativePosition)
 {
 	CurrentAnimationSuite = Velocity == Vector::Zero ? AnimationSuiteType::Idle : (IsRunPressed ? AnimationSuiteType::Run : AnimationSuiteType::Walk);
 
@@ -76,4 +84,9 @@ void Actor::UpdateSprite(const Point2D &RelativePosition)
 
 	Appearance.SetPosition(RelativePosition);
 	Appearance.Tick();
+}
+
+Point2D Actor::GetPosition() const
+{
+	return Collision.Center;
 }
