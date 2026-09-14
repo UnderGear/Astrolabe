@@ -7,8 +7,8 @@
 
 struct Point2D
 {
-	i24f8_t X{ 0 };
-	i24f8_t Y{ 0 };
+	i24f8_t X{ 0_i24f8 };
+	i24f8_t Y{ 0_i24f8 };
 
 	constexpr Point2D() = default;
 	constexpr Point2D(i24f8_t InX, i24f8_t InY) : X(InX), Y(InY) {}

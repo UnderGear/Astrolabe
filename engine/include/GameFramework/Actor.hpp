@@ -60,10 +60,10 @@ class Actor
 	Sprite Appearance;
 	FacingDirection Facing{ FacingDirection::South };
 	AnimationSuiteType CurrentAnimationSuite{ AnimationSuiteType::Idle };
-	i24f8_t WalkSpeed{ 1.f };
-	i24f8_t RunMultiplier{ 2.f };
+	i24f8_t WalkSpeed{ 1.0_i24f8 };
+	i24f8_t RunMultiplier{ 2.0_i24f8 };
 	bool IsRunPressed{ false };
-	Circle Collision{ Point::Origin, i24f8_t{ 0 } };
+	Circle Collision{ Point::Origin, 0_i24f8 };
 	Vector2D Velocity{ Vector::Zero };
 
 public:
@@ -76,4 +76,6 @@ public:
 	void UpdateSprite(const Point2D& RelativePosition);
 
 	Point2D GetPosition() const;
+
+	const Circle& GetCollision() const;
 };
