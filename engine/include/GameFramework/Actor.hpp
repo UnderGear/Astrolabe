@@ -60,14 +60,14 @@ class Actor
 	Sprite Appearance;
 	FacingDirection Facing{ FacingDirection::South };
 	AnimationSuiteType CurrentAnimationSuite{ AnimationSuiteType::Idle };
-	i24f8_t WalkSpeed{ 1.0_i24f8 };
-	i24f8_t RunMultiplier{ 2.0_i24f8 };
+	i24f8_t WalkSpeed{ 1_i24f8 };
+	i24f8_t RunMultiplier{ 2_i24f8 };
 	bool IsRunPressed{ false };
 	Circle Collision{ Point::Origin, 0_i24f8 };
 	Vector2D Velocity{ Vector::Zero };
 
 public:
-	explicit Actor(Display& TargetDisplay, const AnimationSuite& AnimSuite, const PaletteAsset& Pal, Circle InCollision);
+	explicit Actor(Display& TargetDisplay, AnimationSuite AnimSuite, const PaletteAsset& Pal, Circle InCollision);
 
 	void UpdateInput(const Vector2D& Input, bool InIsRunPressed);
 

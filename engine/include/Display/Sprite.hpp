@@ -28,8 +28,8 @@ using AnimationSuite = std::span<const Animation>;
 
 class Sprite
 {
-	SpriteManager& Owner;
-	ObjectAttributes& Attributes; // this is the one in the buffer, not directly in vram
+	SpriteManager* Owner;
+	ObjectAttributes* Attributes; // this is the one in the buffer, not directly in vram
 
 	AnimationSuite Animations;
 	const SpriteTileAsset* CurrentSpriteAsset;
@@ -46,13 +46,13 @@ class Sprite
 public:
 	//TODO: pass in position and other OAM params
 	//TODO: only allow the display to hand these out?
-	explicit Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, const AnimationSuite& InAnimations, std::int32_t InPaletteAssetIndex, Attribute0Register::ObjectModeOptions ObjectMode, std::int32_t AffineOAMIndex);
+	explicit Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, AnimationSuite InAnimations, std::int32_t InPaletteAssetIndex, Attribute0Register::ObjectModeOptions ObjectMode, std::int32_t AffineOAMIndex);
 
-	Sprite(Sprite&&) = default;
-	Sprite& operator =(Sprite&&) = default;
+	Sprite(Sprite&&);
+	Sprite& operator=(Sprite&&);
 
 	Sprite(const Sprite&) = delete;
-	Sprite& operator =(const Sprite&) = delete;
+	Sprite& operator=(const Sprite&) = delete;
 
 	~Sprite();
 

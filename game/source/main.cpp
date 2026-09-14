@@ -27,21 +27,19 @@
 
 int main()
 {
-	Display DisplayMode;
-
 	// Enable interrupts
 	Interrupts::MainEnable();
+
 	World TestWorld;
+	auto& TestStationary{ TestWorld.SpawnActor(isaac_animsuite, sprite_palette_palette, Circle{ Display::SCREEN_CENTER, 25_i24f8 }) };
+	auto& TestActor{ TestWorld.SpawnActor(jenna_animsuite, sprite_palette_palette, Circle{ Display::SCREEN_CENTER + Vector2D{ 50_i24f8, 50_i24f8 }, 25_i24f8}) };
 
 	Input MyInput;
 	Random<std::int32_t> MyRandom{ 5, -1, 1 };
 	[[maybe_unused]]std::uint32_t CurrentFrame{ 0 };
 
-	Actor TestStationary{ DisplayMode, isaac_animsuite, sprite_palette_palette, Circle{ Display::SCREEN_CENTER, 25_i24f8 } };
-	Actor TestActor{ DisplayMode, jenna_animsuite, sprite_palette_palette, Circle{ Display::SCREEN_CENTER + Vector2D{ 50_i24f8, 50.0_i24f8 }, 25_i24f8} };
-
 	//TODO: bundle the background, level bounds, and level together a little tighter, along the lines of Actor. that should also call the appropriate dtor/tear down logic
-	auto TestBG{ DisplayMode.LoadBackground(brin_tiles, brin_palette, brin_map) };
+	auto& TestBG{ TestWorld.LoadBackground(brin_tiles, brin_palette, brin_map) };
 
 	auto [LevelWidthTiles, LevelHeightTiles]{ TestBG.GetDimensions() };
 	constexpr std::int32_t TileDimension{ 8 }; //TODO: this will depend on the BackgroundControlRegister::BackgroundSize used and may not even be square
@@ -61,8 +59,8 @@ int main()
 		auto DPadInput{ MyInput.GetDPadInput() };
 		auto IsBDown{ MyInput.IsKeyDown(InputKey::B) };
 		TestActor.UpdateInput(DPadInput, IsBDown);
-		TestActor.Tick();
 
+		TestWorld.Tick();
 		Cam.Tick();
 
 		//TODO: come up with a cleaner way of updating their render locations

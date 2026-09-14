@@ -1,7 +1,7 @@
 #include "Display/Display.hpp"
 #include "GameFramework/Actor.hpp"
 
-Actor::Actor(Display& TargetDisplay, const AnimationSuite& AnimSuite, const PaletteAsset& Pal, Circle InCollision)
+Actor::Actor(Display& TargetDisplay, AnimationSuite AnimSuite, const PaletteAsset& Pal, Circle InCollision)
 	: Appearance(TargetDisplay.LoadSprite(AnimSuite, Pal, Attribute0Register::ObjectModeOptions::Affine)), Collision(InCollision)
 {
 	Appearance.SetPosition(Collision.Center);
