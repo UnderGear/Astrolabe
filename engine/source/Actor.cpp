@@ -21,13 +21,13 @@ void Actor::UpdateInput(const Vector2D& Input, bool InIsRunPressed)
 	auto& Y{ Input.Y };
 	auto& X{ Input.X };
 
-	if (Y < 0)
+	if (Y < 0_i24f8)
 	{
-		if (X > 0)
+		if (X > 0_i24f8)
 		{
 			Facing = FacingDirection::NorthEast;
 		}
-		else if (X < 0)
+		else if (X < 0_i24f8)
 		{
 			Facing = FacingDirection::NorthWest;
 		}
@@ -36,13 +36,13 @@ void Actor::UpdateInput(const Vector2D& Input, bool InIsRunPressed)
 			Facing = FacingDirection::North;
 		}
 	}
-	else if (Y > 0)
+	else if (Y > 0_i24f8)
 	{
-		if (X > 0)
+		if (X > 0_i24f8)
 		{
 			Facing = FacingDirection::SouthEast;
 		}
-		else if (X < 0)
+		else if (X < 0_i24f8)
 		{
 			Facing = FacingDirection::SouthWest;
 		}
@@ -53,11 +53,11 @@ void Actor::UpdateInput(const Vector2D& Input, bool InIsRunPressed)
 	}
 	else
 	{
-		if (X > 0)
+		if (X > 0_i24f8)
 		{
 			Facing = FacingDirection::East;
 		}
-		else if (X < 0)
+		else if (X < 0_i24f8)
 		{
 			Facing = FacingDirection::West;
 		}
@@ -89,4 +89,9 @@ void Actor::UpdateSprite(const Point2D& RelativePosition)
 Point2D Actor::GetPosition() const
 {
 	return Collision.Center;
+}
+
+const Circle &Actor::GetCollision() const
+{
+	return Collision;
 }

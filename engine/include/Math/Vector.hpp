@@ -10,8 +10,8 @@ struct Vector2D
 {
 
 	//TODO: template Vector2D's backing type?
-	i24f8_t X{ 0.f };
-	i24f8_t Y{ 0.f };
+	i24f8_t X{ 0_i24f8 };
+	i24f8_t Y{ 0_i24f8 };
 
 	constexpr Vector2D() = default;
 	constexpr Vector2D(i24f8_t InX, i24f8_t InY) : X(InX), Y(InY) {}
@@ -58,7 +58,7 @@ struct Vector2D
 	Vector2D& Normalize()
 	{
 		auto Mag{ Magnitude() };
-		if (Mag == 0)
+		if (Mag == 0_i24f8)
 		{
 			return *this;
 		}
@@ -73,7 +73,7 @@ struct Vector2D
 		auto Result = *this;
 		//TODO:
 		auto Mag{ Result.Magnitude() };
-		if (Mag == 0)
+		if (Mag == 0_i24f8)
 		{
 			return Result;
 		}
@@ -102,10 +102,10 @@ struct Vector2D
 
 namespace Vector
 {
-	inline constexpr Vector2D Zero{ 0, 0 };
-	inline constexpr Vector2D One{ 1, 1 };
-	inline constexpr Vector2D Up{ 0, 1 };
-	inline constexpr Vector2D Down{ 0, -1 };
-	inline constexpr Vector2D Left{ -1, 0 };
-	inline constexpr Vector2D Right{ 1, 0 };
+	inline constexpr Vector2D Zero{ 0_i24f8, 0_i24f8 };
+	inline constexpr Vector2D One{ 1_i24f8, 1_i24f8 };
+	inline constexpr Vector2D Up{ 0_i24f8, 1_i24f8 };
+	inline constexpr Vector2D Down{ 0_i24f8, -1_i24f8 };
+	inline constexpr Vector2D Left{ -1_i24f8, 0_i24f8 };
+	inline constexpr Vector2D Right{ 1_i24f8, 0_i24f8 };
 }

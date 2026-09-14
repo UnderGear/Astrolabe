@@ -49,6 +49,6 @@ struct Box
 
 	constexpr Point2D GetCenter() const
 	{
-		return { (Origin.X + Extents.X) / static_cast<i24f8_t>(2), (Origin.Y + Extents.Y) / static_cast<i24f8_t>(2) };
+		return { (Origin.X + Extents.X) / 2_i24f8, (Origin.Y + Extents.Y) / 2_i24f8 };
 	}
 };

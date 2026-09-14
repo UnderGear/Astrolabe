@@ -1,22 +1,21 @@
 #pragma once
 
 #include <cstdint>
-//#include <bit>
 
-struct Color
+#include "Hardware/Register.hpp"
+
+struct Color : Register<std::uint16_t>
 {
-	std::uint16_t Padding : 1{ 0 };
-	std::uint16_t Red : 5{ 0 };
-	std::uint16_t Green : 5{ 0 };
-	std::uint16_t Blue : 5{ 0 };
+	using Red = RegisterAccess<std::uint16_t, std::uint16_t, 0b00000000'00111110>;
+	using Green = RegisterAccess<std::uint16_t, std::uint16_t, 0b00000111'11000000>;
+	using Blue = RegisterAccess<std::uint16_t, std::uint16_t, 0b11111000'00000000>;
 
 	constexpr explicit Color() = default;
 	
 	constexpr explicit Color(std::uint16_t R, std::uint16_t G, std::uint16_t B)
-		: Red(R), Green(G), Blue(B)
-	{ }
-
-	//constexpr operator std::uint16_t() const { return std::bit_cast<std::uint16_t>(*this); }
+	{
+		SetBatch<Red, Green, Blue>(R, G, B);
+	}
 };
 
 namespace Colors
