@@ -4,6 +4,6 @@ void Camera::Tick()
 {
 	if (Target != nullptr)
 	{
-		Position = Bounds.ClampPoint(Target->Position);
+		Position = Bounds.ClampPoint(Target->GetPosition());
 	}
 }

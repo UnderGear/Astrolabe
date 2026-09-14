@@ -13,6 +13,7 @@
 #include "Hardware/Input.hpp"
 #include "Hardware/Interrupt.hpp"
 #include "Math/Box.hpp"
+#include "Math/Circle.hpp"
 #include "Math/Fixed.hpp"
 #include "Math/Point.hpp"
 #include "Math/Random.hpp"
@@ -36,8 +37,8 @@ int main()
 	Random<std::int32_t> MyRandom{ 5, -1, 1 };
 	[[maybe_unused]]std::uint32_t CurrentFrame{ 0 };
 
-	Actor TestStationary{ DisplayMode, isaac_animsuite, sprite_palette_palette, Display::SCREEN_CENTER };
-	Actor TestActor{ DisplayMode, jenna_animsuite, sprite_palette_palette, Display::SCREEN_CENTER };
+	Actor TestStationary{ DisplayMode, isaac_animsuite, sprite_palette_palette, Circle{ Display::SCREEN_CENTER, 25_i24f8 } };
+	Actor TestActor{ DisplayMode, jenna_animsuite, sprite_palette_palette, Circle{ Display::SCREEN_CENTER + Vector2D{ 50_i24f8, 50.0_i24f8 }, 25_i24f8} };
 
 	//TODO: bundle the background, level bounds, and level together a little tighter, along the lines of Actor. that should also call the appropriate dtor/tear down logic
 	auto TestBG{ DisplayMode.LoadBackground(brin_tiles, brin_palette, brin_map) };
@@ -57,16 +58,8 @@ int main()
 		//TODO: update actors or whatever we're going to call them
 
 		//TODO: this kind of input logic handling needs to live in some dedicated controller or something
-		static constexpr i24f8_t RunMultiplier{ 2.f };
-
 		auto DPadInput{ MyInput.GetDPadInput() };
 		auto IsBDown{ MyInput.IsKeyDown(InputKey::B) };
-		if (IsBDown)
-		{
-			DPadInput *= RunMultiplier;
-		}
-
-		TestActor.Velocity = DPadInput;
 		TestActor.UpdateInput(DPadInput, IsBDown);
 		TestActor.Tick();
 
@@ -79,8 +72,8 @@ int main()
 
 		// Backgrounds and sprites have to operate in different spaces, hence the awkwardly different calculation here
 		// Really, backgrounds are the weird ones.
-		TestActor.UpdateSprite(Cam.GetDrawOffset() + (TestActor.Position - Cam.GetPosition()));
-		TestStationary.UpdateSprite(Cam.GetDrawOffset() + (TestStationary.Position - Cam.GetPosition()));
+		TestActor.UpdateSprite(Cam.GetDrawOffset() + (TestActor.GetPosition() - Cam.GetPosition()));
+		TestStationary.UpdateSprite(Cam.GetDrawOffset() + (TestStationary.GetPosition() - Cam.GetPosition()));
 
 		++CurrentFrame;
 	}

@@ -53,6 +53,16 @@ bool Input::WasKeyUp(InputKey Key) const
 	return (PreviousInput & static_cast<std::uint16_t>(Key)) == 0;
 }
 
+bool Input::WasKeyPressed(InputKey Key) const
+{
+	return WasKeyUp(Key) && IsKeyDown(Key);
+}
+
+bool Input::WasKeyReleased(InputKey Key) const
+{
+	return WasKeyDown(Key) && IsKeyUp(Key);
+}
+
 Vector2D Input::GetDPadInput() const
 {
 	return DPadInput;

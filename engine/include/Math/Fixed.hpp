@@ -3,12 +3,17 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "Hardware/BIOS.hpp"
+
 // Signed fixed-point value
 template <typename SizeT, std::int32_t FractionalBitCount>
 //TODO: requires clause that the fractional bit count is reasonable
+//TODO: make sure ctor arg types fit into our Fixed
 requires std::is_integral_v<SizeT> && std::is_signed_v<SizeT>
 struct Fixed
 {
+	using BackingT = SizeT;
+	static constexpr std::int32_t FractionalCount{ FractionalBitCount };
 	SizeT Data{ 0 };
 
 	constexpr Fixed() = default;
@@ -197,16 +202,31 @@ struct Fixed
 
 	//TOOD: make a LUT? try a different iteration count? weigh expense vs needed precision vs memory footprint on gba
 	// maybe that decision can be made down the line
+	// could try the BIOS sqrt function. shift left as far as possible, invoke, shift back
 	constexpr friend Fixed Sqrt(Fixed Value)
 	{
-		Fixed X{ Value };
+		static constexpr std::int32_t SqrtShift{ Fixed::FractionalCount % 2 == 0 ? Fixed::FractionalCount : Fixed::FractionalCount + 1 };
+		static constexpr std::int32_t SqrtShiftBack{ Fixed::FractionalCount % 2 == 0 ? 0 : 1 };
+
 		Fixed Root;
 
-		constexpr auto Iterations{ 20 };
-		for (auto i{ 0 }; i < Iterations; ++i)
+		auto RawValue{ static_cast<std::uint32_t>(Value.Data) };
+		std::int32_t Shift{ std::countl_zero(RawValue) };
+
+		if (Shift <= SqrtShift)
 		{
-			Root = (X + (Value / X)) / 2;
-			X = Root;
+			auto RawRoot{ BIOS::Sqrt(RawValue << SqrtShift) };
+			Root.Data = static_cast<Fixed::BackingT>(RawRoot >> SqrtShiftBack);
+		}
+		else
+		{
+			Fixed X{ Value };
+			constexpr auto Iterations{ 20 };
+			for (auto i{ 0 }; i < Iterations; ++i)
+			{
+				Root = (X + (Value / X)) / 2;
+				X = Root;
+			}
 		}
 
 		return Root;
@@ -220,4 +240,21 @@ struct Fixed
 
 //TODO: is this the name we're going with?
 using i24f8_t = Fixed<std::int32_t, 8>;
+consteval i24f8_t operator ""_i24f8(long double Value)
+{
+	return i24f8_t{ static_cast<float>(Value) };
+}
+constexpr i24f8_t operator ""_i24f8(unsigned long long Value)
+{
+	return i24f8_t{ Value };
+}
+
 using i8f8_t = Fixed<std::int16_t, 8>;
+consteval i8f8_t operator ""_i8f8(long double Value)
+{
+	return i8f8_t{ static_cast<float>(Value) };
+}
+constexpr i8f8_t operator ""_i8f8(unsigned long long Value)
+{
+	return i8f8_t{ Value };
+}

@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include "Display/Sprite.hpp"
-#include "Math/Point.hpp"
+#include "Math/Circle.hpp"
 #include "Math/Vector.hpp"
 
 class Display;
@@ -60,17 +60,20 @@ class Actor
 	Sprite Appearance;
 	FacingDirection Facing{ FacingDirection::South };
 	AnimationSuiteType CurrentAnimationSuite{ AnimationSuiteType::Idle };
+	i24f8_t WalkSpeed{ 1.f };
+	i24f8_t RunMultiplier{ 2.f };
 	bool IsRunPressed{ false };
-
-public:
-	Point2D Position{ Point::Origin };
+	Circle Collision{ Point::Origin, i24f8_t{ 0 } };
 	Vector2D Velocity{ Vector::Zero };
 
-	explicit Actor(Display& TargetDisplay, const AnimationSuite& AnimSuite, const PaletteAsset& Pal, Point2D InPosition = Point::Origin);
+public:
+	explicit Actor(Display& TargetDisplay, const AnimationSuite& AnimSuite, const PaletteAsset& Pal, Circle InCollision);
 
 	void UpdateInput(const Vector2D& Input, bool InIsRunPressed);
 
 	void Tick();
 
 	void UpdateSprite(const Point2D& RelativePosition);
+
+	Point2D GetPosition() const;
 };

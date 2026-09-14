@@ -74,6 +74,9 @@ public:
 	bool WasKeyDown(InputKey Key) const;
 	bool WasKeyUp(InputKey Key) const;
 
+	bool WasKeyPressed(InputKey Key) const;
+	bool WasKeyReleased(InputKey Key) const;
+
 	Vector2D GetDPadInput() const;
 	Vector2D GetPreviousDPadInput() const;
 };
