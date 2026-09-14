@@ -14,7 +14,7 @@ class Camera
 
 	Point2D Position;
 
-	const Actor* Target = nullptr;
+	const Actor* Target{ nullptr };
 
 public:
 

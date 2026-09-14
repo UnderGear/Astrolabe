@@ -17,7 +17,7 @@ Display::Display()
 	Interrupts::AddHandler(Interrupts::InterruptType::VBlank, OnVBlank);
 }
 
-Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode)
+Sprite Display::LoadSprite(AnimationSuite Animations, const PaletteBankAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode)
 {
 	auto* OAM{ Sprites.RequestOAM() };
 	assert(OAM != nullptr);
@@ -35,7 +35,7 @@ Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteBankAs
 	return Sprite{ Sprites, *OAM, Animations, LoadedPaletteIndex, ObjectMode, AffineOAMIndex };
 }
 
-Sprite Display::LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode)
+Sprite Display::LoadSprite(AnimationSuite Animations, const PaletteAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode)
 {
 	auto* OAM{ Sprites.RequestOAM() };
 	assert(OAM != nullptr);

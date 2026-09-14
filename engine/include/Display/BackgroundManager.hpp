@@ -47,11 +47,13 @@ struct BackgroundTileMapEntryData
 
 class BackgroundManager
 {
+public:
 	static constexpr std::int32_t INDEX_INVALID{ -1 };
 
 	static constexpr std::size_t BackgroundCount{ 4 };
 	static constexpr std::size_t AffineBackgroundCount{ 2 };
 
+private:
 	//TODO: make sure that only sensible combinations of backgrounds can be used concurrently
 	std::array<volatile BackgroundControlRegister, BackgroundCount>& ControlRegisters
 	{

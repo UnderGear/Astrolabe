@@ -10,14 +10,14 @@ struct Vector2D;
 
 class Background
 {
-	BackgroundManager& Owner;
-	std::int32_t BackgroundIndex;
-	std::int32_t MapBlockIndex;
+	BackgroundManager* Owner;
+	std::int32_t BackgroundIndex{ BackgroundManager::INDEX_INVALID };
+	std::int32_t MapBlockIndex{ BackgroundManager::INDEX_INVALID };
 
 	BackgroundControlRegister::RegularBackgroundDimensions Dimensions;
 
-	volatile BackgroundControlRegister& ControlRegister;
-	volatile BackgroundOffset& Offset;
+	volatile BackgroundControlRegister* ControlRegister;
+	volatile BackgroundOffset* Offset;
 
 	Point2D ScreenOffset{ Point::Origin };
 
@@ -29,8 +29,8 @@ public:
 		volatile BackgroundControlRegister& InControlRegister,
 		volatile BackgroundOffset& InOffset);
 
-	Background(Background&&) = default;
-	Background& operator =(Background&&) = default;
+	Background(Background&&);
+	Background& operator =(Background&&);
 
 	Background(const Background&) = delete;
 	Background& operator =(const Background&) = delete;

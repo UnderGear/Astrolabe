@@ -46,7 +46,7 @@
 			"serverLaunchTimeout": 20000,
 			"windows":
 			{
-				"miDebuggerPath": "${env:DEVKITARM}/bin/arm-none-eabi-gdb.exe",
+				"miDebuggerPath": "D:/Tools/devkitPro/devkitARM/bin/arm-none-eabi-gdb.exe",
 			},
 			"linux":
 			{

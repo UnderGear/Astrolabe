@@ -1,4 +1,7 @@
 #include "Display/Background.hpp"
+
+#include <utility>
+
 #include "Math/Vector.hpp"
 
 Background::Background(
@@ -8,36 +11,60 @@ Background::Background(
 	BackgroundControlRegister::RegularBackgroundDimensions InDimensions,
 	volatile BackgroundControlRegister& InControlRegister,
 	volatile BackgroundOffset& InOffset)
-	: Owner(InOwner)
+	: Owner(&InOwner)
 	, BackgroundIndex(InBackgroundIndex)
 	, MapBlockIndex(InMapBlockIndex)
 	, Dimensions(InDimensions)
-	, ControlRegister(InControlRegister)
-	, Offset(InOffset)
+	, ControlRegister(&InControlRegister)
+	, Offset(&InOffset)
 {
-	ControlRegister.Set<BackgroundControlRegister::TileBlockBaseIndex>(static_cast<std::uint16_t>(BackgroundIndex));
-	ControlRegister.Set<BackgroundControlRegister::TileMapBlockBaseIndex>(static_cast<std::uint16_t>(MapBlockIndex));
-	ControlRegister.Set<BackgroundControlRegister::RegularBackgroundSize>(Dimensions);
-	ControlRegister.Set<BackgroundControlRegister::ColorMode>(BackgroundControlRegister::ColorModeOptions::PaletteBank);
+	ControlRegister->Set<BackgroundControlRegister::TileBlockBaseIndex>(static_cast<std::uint16_t>(BackgroundIndex));
+	ControlRegister->Set<BackgroundControlRegister::TileMapBlockBaseIndex>(static_cast<std::uint16_t>(MapBlockIndex));
+	ControlRegister->Set<BackgroundControlRegister::RegularBackgroundSize>(Dimensions);
+	ControlRegister->Set<BackgroundControlRegister::ColorMode>(BackgroundControlRegister::ColorModeOptions::PaletteBank);
+}
+
+Background::Background(Background&& MovedFrom)
+	: Owner(std::exchange(MovedFrom.Owner, nullptr))
+	, BackgroundIndex(std::exchange(MovedFrom.BackgroundIndex, BackgroundManager::INDEX_INVALID))
+	, MapBlockIndex(std::exchange(MovedFrom.MapBlockIndex, BackgroundManager::INDEX_INVALID))
+	, Dimensions(MovedFrom.Dimensions)
+	, ControlRegister(std::exchange(MovedFrom.ControlRegister, nullptr))
+	, Offset(std::exchange(MovedFrom.Offset, nullptr))
+{
+}
+
+Background& Background::operator=(Background&& MovedFrom)
+{
+	Owner = std::exchange(MovedFrom.Owner, nullptr);
+	BackgroundIndex = std::exchange(MovedFrom.BackgroundIndex, BackgroundManager::INDEX_INVALID);
+	MapBlockIndex = std::exchange(MovedFrom.MapBlockIndex, BackgroundManager::INDEX_INVALID);
+	Dimensions = MovedFrom.Dimensions;
+	ControlRegister = std::exchange(MovedFrom.ControlRegister, nullptr);
+	Offset = std::exchange(MovedFrom.Offset, nullptr);
+	return *this;
 }
 
 Background::~Background()
 {
-	Owner.UnloadTiles(BackgroundIndex);
-	Owner.UnloadMap(BackgroundIndex);
-	Owner.ClearPalette();
+	if (Owner != nullptr)
+	{
+		Owner->UnloadTiles(BackgroundIndex);
+		Owner->UnloadMap(BackgroundIndex);
+		Owner->ClearPalette();
+	}
 }
 
 void Background::MoveOffset(const Vector2D& MoveAmount)
 {
 	ScreenOffset += MoveAmount;
-	Offset.SetBatch<BackgroundOffset::X, BackgroundOffset::Y>(static_cast<std::int16_t>(ScreenOffset.X), static_cast<std::int16_t>(ScreenOffset.Y));
+	Offset->SetBatch<BackgroundOffset::X, BackgroundOffset::Y>(static_cast<std::int16_t>(ScreenOffset.X), static_cast<std::int16_t>(ScreenOffset.Y));
 }
 
 void Background::SetOffset(const Point2D& NewScreenOffset)
 {
 	ScreenOffset = NewScreenOffset;
-	Offset.SetBatch<BackgroundOffset::X, BackgroundOffset::Y>(static_cast<std::int16_t>(ScreenOffset.X), static_cast<std::int16_t>(ScreenOffset.Y));
+	Offset->SetBatch<BackgroundOffset::X, BackgroundOffset::Y>(static_cast<std::int16_t>(ScreenOffset.X), static_cast<std::int16_t>(ScreenOffset.Y));
 }
 
 [[nodiscard]] std::pair<int, int> Background::GetDimensions() const

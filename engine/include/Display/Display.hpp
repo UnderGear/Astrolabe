@@ -55,8 +55,8 @@ public:
 
 	explicit Display();
 
-	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteBankAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode);
-	Sprite LoadSprite(const AnimationSuite& Animations, const PaletteAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode);
+	Sprite LoadSprite(AnimationSuite Animations, const PaletteBankAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode);
+	Sprite LoadSprite(AnimationSuite Animations, const PaletteAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode);
 	Background LoadBackground(const BackgroundTileAsset& BackgroundAsset, const PaletteAsset& PaletteAsset, const BackgroundMapAsset& MapAsset);
 };
 
