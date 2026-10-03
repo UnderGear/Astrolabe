@@ -5,8 +5,8 @@
 #include "Display/Display.hpp"
 #include "Math/Point.hpp"
 
-Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, AnimationSuite InAnimations, std::int32_t InPaletteAssetIndex, Attribute0Register::ObjectModeOptions ObjectMode, std::int32_t AffineOAMIndex)
-		: Owner(&InOwner), Attributes(&InAttributes), Animations(InAnimations), PaletteAssetIndex(InPaletteAssetIndex)
+Sprite::Sprite(SpriteManager& InOwner, OAMHandle InOAMHandle, AnimationSuite InAnimations, std::int32_t InPaletteAssetIndex, Attribute0Register::ObjectModeOptions ObjectMode, std::int32_t AffineOAMIndex)
+		: Owner(&InOwner), OAM(InOAMHandle), Animations(InAnimations), PaletteAssetIndex(InPaletteAssetIndex)
 {
 	CurrentSpriteAsset = Animations[CurrentAnimationIndex][CurrentFrameIndex].Asset;
 	auto LoadedTileIndex{ Owner->LoadTiles(*CurrentSpriteAsset) };
@@ -15,6 +15,8 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, Animation
 	auto [SpriteWidth, SpriteHeight]{ GetSpriteDimensions(Attribute0Register::SpriteShapeOptions::Square, Attribute1Register::SpriteSizeOptions::S32) };
 	HalfWidth = SpriteWidth / 2;
 	HalfHeight = SpriteHeight / 2;
+
+	auto* Attributes{ Owner->GetOAM(OAM) };
 
 	//TODO: get size/shape params from the actual asset
 	//TODO: pass in params. modes, intial position
@@ -41,7 +43,7 @@ Sprite::Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, Animation
 
 Sprite::Sprite(Sprite&& MovedFrom)
 	: Owner(std::exchange(MovedFrom.Owner, nullptr))
-	, Attributes(std::exchange(MovedFrom.Attributes, nullptr))
+	, OAM(MovedFrom.OAM)
 	, Animations(MovedFrom.Animations)
 	, CurrentSpriteAsset(std::exchange(MovedFrom.CurrentSpriteAsset, nullptr))
 	, CurrentAnimationIndex(MovedFrom.CurrentAnimationIndex)
@@ -57,7 +59,7 @@ Sprite::Sprite(Sprite&& MovedFrom)
 Sprite &Sprite::operator=(Sprite&& MovedFrom)
 {
 	Owner = std::exchange(MovedFrom.Owner, nullptr);
-	Attributes = std::exchange(MovedFrom.Attributes, nullptr);
+	OAM = MovedFrom.OAM;
 	Animations = MovedFrom.Animations;
 	CurrentSpriteAsset = std::exchange(MovedFrom.CurrentSpriteAsset, nullptr);
 	CurrentAnimationIndex = MovedFrom.CurrentAnimationIndex;
@@ -72,9 +74,10 @@ Sprite &Sprite::operator=(Sprite&& MovedFrom)
 
 Sprite::~Sprite()
 {
-	if (Owner != nullptr && Attributes != nullptr)
+	if (Owner != nullptr && OAM.IsValid())
 	{
-		Owner->ReleaseOAM(*Attributes);
+		auto* Attributes{ Owner->GetOAM(OAM) };
+		Owner->ReleaseOAM(OAM);
 		Owner->ReleaseAffineOAM(Attributes->Attribute1.Get<Attribute1Register::AffineIndex>());
 		Owner->UnloadTiles(static_cast<std::int32_t>(Attributes->Attribute2.Get<Attribute2Register::TileIndex>()));
 		Owner->RemoveFromPalette(PaletteAssetIndex);
@@ -85,6 +88,8 @@ Sprite::~Sprite()
 
 void Sprite::SetPosition(const Point2D& Position)
 {
+	auto* Attributes{ Owner->GetOAM(OAM) };
+
 	Attributes->Attribute0.Set<Attribute0Register::Y>(Position.Y - HalfHeight);
 	Attributes->Attribute1.Set<Attribute1Register::X>(Position.X - HalfWidth);
 }
@@ -110,6 +115,8 @@ void Sprite::SetShouldFlipHorizontal(bool InShouldFlipHorizontal)
 
 	ShouldFlipHorizontal = InShouldFlipHorizontal;
 
+	auto* Attributes{ Owner->GetOAM(OAM) };
+
 	auto ObjectMode = Attributes->Attribute0.Get<Attribute0Register::ObjectMode>();
 	if (ObjectMode == Attribute0Register::ObjectModeOptions::Normal)
 	{
@@ -124,6 +131,8 @@ void Sprite::SetShouldFlipHorizontal(bool InShouldFlipHorizontal)
 
 void Sprite::Tick()
 {
+	auto* Attributes{ Owner->GetOAM(OAM) };
+
 	//TODO: support other animation tick types
 	//TODO: maybe return a value indicating that the animation has finished.
 	//TODO: member variable for progression frequency instead of hard-coded half second

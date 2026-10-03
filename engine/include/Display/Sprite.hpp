@@ -29,7 +29,8 @@ using AnimationSuite = std::span<const Animation>;
 class Sprite
 {
 	SpriteManager* Owner;
-	ObjectAttributes* Attributes; // this is the one in the buffer, not directly in vram
+
+	OAMHandle OAM;
 
 	AnimationSuite Animations;
 	const SpriteTileAsset* CurrentSpriteAsset;
@@ -46,7 +47,7 @@ class Sprite
 public:
 	//TODO: pass in position and other OAM params
 	//TODO: only allow the display to hand these out?
-	explicit Sprite(SpriteManager& InOwner, ObjectAttributes& InAttributes, AnimationSuite InAnimations, std::int32_t InPaletteAssetIndex, Attribute0Register::ObjectModeOptions ObjectMode, std::int32_t AffineOAMIndex);
+	explicit Sprite(SpriteManager& InOwner, OAMHandle OAMHandle, AnimationSuite InAnimations, std::int32_t InPaletteAssetIndex, Attribute0Register::ObjectModeOptions ObjectMode, std::int32_t AffineOAMIndex);
 
 	Sprite(Sprite&&);
 	Sprite& operator=(Sprite&&);
@@ -54,7 +55,7 @@ public:
 	Sprite(const Sprite&) = delete;
 	Sprite& operator=(const Sprite&) = delete;
 
-	~Sprite();
+	~Sprite(); //TODO: I'm rethinking the lifecycle of a sprite. maybe we should just get a handle to a sprite instead
 
 	// provide some access to the OAM
 	void SetPosition(const Point2D& Position);

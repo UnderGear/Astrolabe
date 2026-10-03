@@ -19,8 +19,8 @@ Display::Display()
 
 Sprite Display::LoadSprite(AnimationSuite Animations, const PaletteBankAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode)
 {
-	auto* OAM{ Sprites.RequestOAM() };
-	assert(OAM != nullptr);
+	auto OAMHandle{ Sprites.RequestOAM() };
+	assert(OAMHandle.IsValid());
 
 	auto LoadedPaletteIndex{ Sprites.AddToPalette(PaletteAsset) };
 	assert(LoadedPaletteIndex != PaletteManager::INDEX_INVALID);
@@ -32,13 +32,13 @@ Sprite Display::LoadSprite(AnimationSuite Animations, const PaletteBankAsset& Pa
 		assert(AffineOAMIndex != SpriteManager::INDEX_INVALID);
 	}
 
-	return Sprite{ Sprites, *OAM, Animations, LoadedPaletteIndex, ObjectMode, AffineOAMIndex };
+	return Sprite{ Sprites, OAMHandle, Animations, LoadedPaletteIndex, ObjectMode, AffineOAMIndex };
 }
 
 Sprite Display::LoadSprite(AnimationSuite Animations, const PaletteAsset& PaletteAsset, Attribute0Register::ObjectModeOptions ObjectMode)
 {
-	auto* OAM{ Sprites.RequestOAM() };
-	assert(OAM != nullptr);
+	auto OAMHandle{ Sprites.RequestOAM() };
+	assert(OAMHandle.IsValid());
 
 	Sprites.SetPalette(PaletteAsset);
 
@@ -49,7 +49,7 @@ Sprite Display::LoadSprite(AnimationSuite Animations, const PaletteAsset& Palett
 		assert(AffineOAMIndex != SpriteManager::INDEX_INVALID);
 	}
 
-	return Sprite{ Sprites, *OAM, Animations, PaletteManager::INDEX_INVALID, ObjectMode, AffineOAMIndex };
+	return Sprite{ Sprites, OAMHandle, Animations, PaletteManager::INDEX_INVALID, ObjectMode, AffineOAMIndex };
 }
 
 //TODO: move to level manager

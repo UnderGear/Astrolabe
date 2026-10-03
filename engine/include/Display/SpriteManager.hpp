@@ -31,6 +31,22 @@ using WideTileBlock = std::array<WideTile, 256>; // 256 blocks of wide tiles
 
 using SpriteTileAsset = Asset<std::span<const std::uint32_t>>;
 
+class SpriteManager;
+struct OAMHandle
+{
+	static constexpr std::int32_t HANDLE_INVALID{ -1 };
+
+private:
+	std::int32_t ID{ HANDLE_INVALID };
+
+public:
+	OAMHandle() = default;
+	explicit OAMHandle(std::int32_t InID) : ID(InID){}
+
+	bool IsValid() const { return ID != HANDLE_INVALID; }
+	std::int32_t GetID() const { return ID; }
+};
+
 extern void* OAMBufferAddress;
 
 //TODO: template on storage type (for raw data array size) and tile type for indexing?
@@ -52,7 +68,7 @@ private:
 	struct SpriteTileData
 	{
 		std::int32_t ReferenceCount{ 0 };
-		std::int32_t AssetID{ Assets::ID_INVALID }; //TODO: probably should be the asset ID value, not palette
+		std::int32_t AssetID{ Assets::ID_INVALID };
 		std::int32_t BeginIndex{ 0 };
 		std::int32_t Length{ 0 };
 
@@ -99,8 +115,9 @@ private:
 	OAMT ObjectBuffer;
 	OAMAffineT* ObjectBufferAffine{ std::bit_cast<OAMAffineT*>(&ObjectBuffer) };
 
-	std::stack<ObjectAttributes*, std::vector<ObjectAttributes*>> AvailableObjectAttributes;
-	std::stack<std::int32_t , std::vector<std::int32_t>> AvailableAffineObjectAttributes;
+	std::array<std::int32_t, MaxOAMs> OAMHandleToBufferIndex;
+	std::stack<std::int32_t, std::vector<std::int32_t>> AvailableObjectAttributes; //TODO: we're always compacting OAMs. do we need this bookkeeping vs knowing the used count?
+	std::stack<std::int32_t, std::vector<std::int32_t>> AvailableAffineObjectAttributes;
 
 public:
 	explicit SpriteManager(void* TileMemoryAddress);
@@ -117,8 +134,10 @@ public:
 	std::int32_t LoadTiles(const SpriteTileAsset& ToAdd);
 	void UnloadTiles(std::int32_t Index);
 	
-	ObjectAttributes* RequestOAM();
-	void ReleaseOAM(ObjectAttributes& OAM);
+	OAMHandle RequestOAM();
+	void ReleaseOAM(OAMHandle Handle);
+	ObjectAttributes* GetOAM(OAMHandle Handle);
+	void SortOAMBufferEntries();
 
 	std::int32_t RequestAffineOAM();
 	void ReleaseAffineOAM(std::int32_t Index);

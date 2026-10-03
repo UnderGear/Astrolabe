@@ -3,7 +3,6 @@
 #include "Display/SpriteManager.hpp"
 #include "Hardware/DMA.hpp"
 
-
 void* OAMBufferAddress{ nullptr };
 
 SpriteManager::SpriteManager(void* TileMemoryAddress)
@@ -17,10 +16,10 @@ SpriteManager::SpriteManager(void* TileMemoryAddress)
 	OAMMemory = reinterpret_cast<OAMT*>(MemoryMap::OAM_ADDRESS);
 	OAMAffineMemory = reinterpret_cast<OAMAffineT*>(MemoryMap::OAM_ADDRESS);
 
-	//TODO: do this with an algo
+	//TODO: do this with an algo or just std::iota?
 	for (std::int32_t i{ MaxOAMs - 1 }; i >= 0; --i)
 	{
-		AvailableObjectAttributes.push(&ObjectBuffer[i]);
+		AvailableObjectAttributes.push(i);
 	}
 
 	for (std::int32_t i{ MaxAffineOAMs - 1 }; i >= 0; --i)
@@ -182,24 +181,73 @@ void SpriteManager::UnloadTiles(std::int32_t Index)
 	LoadedTiles.erase(Found);
 }
 
-ObjectAttributes* SpriteManager::RequestOAM()
+OAMHandle SpriteManager::RequestOAM()
 {
 	if (AvailableObjectAttributes.size() == 0)
+	{
+		return {};
+	}
+
+	std::int32_t Result{ AvailableObjectAttributes.top() };
+	AvailableObjectAttributes.pop();
+
+	//TODO: assign OAMHandleToBufferIndex
+
+	return OAMHandle{ Result };
+}
+
+void SpriteManager::ReleaseOAM(OAMHandle Handle)
+{
+	//TODO: do we need to clear out any of the other stuff? we definitely DON'T want to touch the padding section
+	// Hide the object
+	if (auto* Attributes{ GetOAM(Handle) })
+	{
+		Attributes->Attribute0.Set<Attribute0Register::ObjectMode>(Attribute0Register::ObjectModeOptions::Hidden);
+	}
+
+	//TODO: clear the OAMHandleToBufferIndex entry
+	
+	AvailableObjectAttributes.push(Handle.GetID());
+}
+
+ObjectAttributes *SpriteManager::GetOAM(OAMHandle Handle)
+{
+	if (!Handle.IsValid())
 	{
 		return nullptr;
 	}
 
-	ObjectAttributes* Result{ AvailableObjectAttributes.top() };
-	AvailableObjectAttributes.pop();
-	return Result;
+	return &ObjectBuffer[OAMHandleToBufferIndex[Handle.GetID()]];
 }
 
-void SpriteManager::ReleaseOAM(ObjectAttributes& OAM)
+void SpriteManager::SortOAMBufferEntries()
 {
-	//TODO: do we need to clear out any of the other stuff? we definitely DON'T want to touch the padding section
-	// Hide the object
-	OAM.Attribute0.Set<Attribute0Register::ObjectMode>(Attribute0Register::ObjectModeOptions::Hidden);
-	AvailableObjectAttributes.push(&OAM);
+	struct OAMSorting
+	{
+		ObjectAttributes& OAM;
+		std::int32_t OldIndex;
+	};
+
+	std::vector<OAMSorting> OAMInfo;
+	OAMInfo.reserve(OAMHandleToBufferIndex.size());
+	for (std::size_t i{ 0 }; i < OAMHandleToBufferIndex.size(); ++i)
+	{
+		auto BufferIndex{ OAMHandleToBufferIndex[i] };
+		OAMInfo.emplace_back(ObjectBuffer[BufferIndex], BufferIndex);
+	}
+
+	std::ranges::stable_sort(OAMInfo, std::ranges::greater());
+
+	for (std::size_t i{ 0 }; i < OAMInfo.size(); ++i)
+	{
+		if (OAMHandleToBufferIndex[i] == OAMInfo[i].OldIndex)
+		{
+			OAMHandleToBufferIndex[i] = i;
+		}
+	}
+
+	//TODO: sort ObjectBuffer entries based on layer, Y, and hidden/shown?
+	//TODO: update OAMHandleToBufferIndex so handles remain stable
 }
 
 std::int32_t SpriteManager::RequestAffineOAM()
