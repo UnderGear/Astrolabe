@@ -224,7 +224,7 @@ void SpriteManager::SortOAMBufferEntries()
 {
 	struct OAMSorting
 	{
-		ObjectAttributes& OAM;
+		ObjectAttributes* OAM;
 		std::int32_t OldIndex;
 	};
 
@@ -233,10 +233,14 @@ void SpriteManager::SortOAMBufferEntries()
 	for (std::size_t i{ 0 }; i < OAMHandleToBufferIndex.size(); ++i)
 	{
 		auto BufferIndex{ OAMHandleToBufferIndex[i] };
-		OAMInfo.emplace_back(ObjectBuffer[BufferIndex], BufferIndex);
+		OAMInfo.emplace_back(&ObjectBuffer[BufferIndex], BufferIndex);
 	}
 
-	std::ranges::stable_sort(OAMInfo, std::ranges::greater());
+	auto Projection = [](const OAMSorting& Sorting)
+	{
+		return Sorting.OAM->Attribute0.Get<Attribute0Register::Y>();
+	};
+	std::ranges::stable_sort(OAMInfo, std::ranges::greater(), Projection);
 
 	for (std::size_t i{ 0 }; i < OAMInfo.size(); ++i)
 	{
